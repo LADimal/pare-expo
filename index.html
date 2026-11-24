@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Pare Dating Expo</title>
-<!-- pare-expo-meet-sign -->
+<!-- pare-expo-reactfx -->
 <style>@font-face{
   font-family:'Inter';
   font-style:normal;
@@ -44,6 +44,7 @@
   --radius:16px;
 }
 *{box-sizing:border-box;margin:0;padding:0}
+[hidden]{display:none !important;}
 html,body{min-height:100%;min-height:100dvh;height:auto;}
 html{background:var(--bg);}
 body{
@@ -208,8 +209,32 @@ img{max-width:100%;display:block;}
   text-align:left;line-height:1.3;
 }
 .chip:active{background:var(--line);}
+.chip.on{border-color:var(--acc);background:#F8EDEE;color:var(--acc);}
 .demo-note{font-size:13px;color:var(--soft);margin-top:10px;}
+.chip-hint{margin:12px 0 6px;font-size:14px;font-weight:700;color:var(--soft);}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 8px;}
+#liveCheck.busy,#liveCheck:disabled{opacity:.72;cursor:wait;}
+#liveCheck.is-pressed{transform:scale(.97);}
+.live-out{scroll-margin-top:88px;min-height:160px;}
 .result-empty{color:var(--soft);font-size:17px;padding:12px 0;}
+.live-card{position:relative;}
+.live-card .face{transform-origin:center bottom;}
+.live-card .face.pop{animation:livePop .35s ease;}
+.live-reading{
+  display:flex;align-items:center;gap:10px;margin-top:10px;
+  color:var(--soft);font-size:16px;
+}
+.live-reading .chat-dots{
+  display:inline-flex;padding:8px 12px;border-radius:16px 16px 16px 6px;
+}
+.said.reveal{animation:liveFade .4s ease both;}
+.status-chip{
+  display:inline-block;margin-top:12px;
+  font-weight:700;font-size:14px;padding:6px 12px;border-radius:999px;
+}
+.status-chip.block,.status-chip.hold{background:#F3E4E1;color:#801323;}
+.status-chip.caution,.status-chip.hide{background:#F5F0DC;color:#7A5A12;}
+.status-chip.deliver{background:#E7F3EC;color:var(--ok);}
 .action-pill{
   display:inline-block;margin-top:12px;background:var(--cream);color:var(--acc);
   font-weight:700;font-size:15px;padding:8px 12px;border-radius:999px;
@@ -218,6 +243,50 @@ img{max-width:100%;display:block;}
 .action-pill.caution,.action-pill.hide{background:#F5F0DC;color:#7A5A12;}
 .action-pill.deliver{background:#E7F3EC;color:var(--ok);}
 .pare-do{margin-top:10px;font-size:16.5px;line-height:1.4;}
+.pare-do.reveal,.action-pill.reveal{animation:liveFade .4s ease both;}
+.live-card.shake{animation:liveShake .45s ease;}
+.live-card.sparkle .spark{
+  position:absolute;width:8px;height:8px;border-radius:1px;
+  background:var(--gold);opacity:0;pointer-events:none;
+  animation:liveSpark .9s ease-out forwards;
+}
+.live-card.sparkle .spark:nth-child(1){top:8px;right:18px;animation-delay:.05s;}
+.live-card.sparkle .spark:nth-child(2){top:36px;right:8px;width:6px;height:6px;animation-delay:.18s;}
+.live-card.sparkle .spark:nth-child(3){top:14px;right:48px;width:5px;height:5px;animation-delay:.3s;}
+.live-again-row{margin-top:14px;}
+.live-history{margin-top:16px;padding-top:14px;border-top:1px solid var(--line);}
+.live-history h3{font-family:Inter,sans-serif;font-size:13px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--soft);margin:0 0 8px;}
+.live-history ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px;}
+.live-history li{
+  background:var(--cream);border-radius:12px;padding:10px 12px;
+}
+.live-history .hist-msg{font-size:14px;color:var(--dark);margin:0 0 4px;}
+.live-history .hist-meta{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+.live-history .status-chip{margin-top:0;font-size:12px;padding:4px 9px;}
+.live-history .hist-robin{font-size:13px;color:var(--soft);margin:6px 0 0;line-height:1.35;}
+@keyframes livePop{
+  from{opacity:0;transform:scale(.86) translateY(8px);}
+  to{opacity:1;transform:scale(1) translateY(0);}
+}
+@keyframes liveFade{
+  from{opacity:0;transform:translateY(6px);}
+  to{opacity:1;transform:translateY(0);}
+}
+@keyframes liveShake{
+  0%,100%{transform:translateX(0);}
+  25%{transform:translateX(-5px);}
+  50%{transform:translateX(5px);}
+  75%{transform:translateX(-3px);}
+}
+@keyframes liveSpark{
+  0%{opacity:0;transform:scale(.3) rotate(0deg);}
+  35%{opacity:1;transform:scale(1) rotate(12deg);}
+  100%{opacity:0;transform:scale(1.25) rotate(28deg);}
+}
+@media (prefers-reduced-motion:reduce){
+  .live-card .face.pop,.said.reveal,.pare-do.reveal,.action-pill.reveal,
+  .live-card.shake,.live-card.sparkle .spark{animation:none;}
+}
 
 /* Meet */
 .meet{overflow:auto;padding-bottom:12px;}
@@ -955,13 +1024,23 @@ html,body{overflow-x:hidden;overflow-y:auto;}
         <div class="panel live-box">
           <label for="liveInput" style="font-weight:700;display:block;margin-bottom:8px">The message</label>
           <textarea id="liveInput" placeholder="Type a message here"></textarea>
+          <p class="chip-hint">Or try one of these</p>
           <div class="chips" id="liveChips"></div>
           <div class="btn-row">
             <button type="button" class="btn" id="liveCheck">Check message</button>
           </div>
           <p class="demo-note">Demo rules, not the live app. These are simple keyword checks for the booth, not Pare's real screener.</p>
         </div>
-        <div class="panel" id="liveResult"></div>
+        <div class="panel live-out" id="liveOut">
+          <div id="liveResult" data-state="empty" aria-live="polite"></div>
+          <div class="btn-row live-again-row">
+            <button type="button" class="btn ghost" id="liveAgain" hidden>Try another</button>
+          </div>
+          <div class="live-history" id="liveHistory" hidden>
+            <h3>Recent checks</h3>
+            <ul id="liveHistoryList"></ul>
+          </div>
+        </div>
       </div>
     </section>
 
@@ -1414,14 +1493,16 @@ html,body{overflow-x:hidden;overflow-y:auto;}
     "Want to split the dinner bill?"
   ];
 
+  const LIVE_CHIPS = [
+    { label: "Coffee tomorrow?", text: "Want to grab coffee tomorrow?" },
+    { label: "Gift card ask", text: "Send me $200 in gift cards." },
+    { label: "Move to WhatsApp", text: "What's your WhatsApp?" },
+    { label: "SIN number?", text: "What's your SIN number?" }
+  ];
+
   function startLive(){
     show("live");
-    $("#liveInput").value = "";
-    $("#liveResult").innerHTML = "";
-    const empty = document.createElement("div");
-    empty.className = "result-empty";
-    empty.textContent = "Type a message, or tap one of the examples, then press Check message.";
-    $("#liveResult").appendChild(empty);
+    resetLivePanel(true);
   }
 
   function normalizeText(raw){
@@ -1707,23 +1788,220 @@ html,body{overflow-x:hidden;overflow-y:auto;}
     };
   }
 
-  function renderLive(text){
+  const LIVE_READ_MS = 850;
+  let liveTimer = 0;
+  let liveBusy = false;
+  let liveLast = null;
+  const livePast = [];
+
+  function reducedLiveMotion(){
+    return !!(window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches);
+  }
+
+  function headerOffset(){
+    const top = $(".top");
+    return top ? Math.round(top.getBoundingClientRect().height) + 10 : 10;
+  }
+
+  function scrollToLiveEl(el, block){
+    if(!el) return;
+    const reduce = reducedLiveMotion();
+    const header = headerOffset();
+    el.style.scrollMarginTop = header + "px";
+    const r = el.getBoundingClientRect();
+    const vh = window.innerHeight || document.documentElement.clientHeight;
+    const fullyVisible = r.top >= header && r.bottom <= vh - 8;
+    if(fullyVisible) return;
+    el.scrollIntoView({
+      behavior: reduce ? "auto" : "smooth",
+      block: block || "center",
+      inline: "nearest"
+    });
+  }
+
+  function liveStatus(res){
+    if(res.action === "deliver") return { label: "Delivered", kind: "deliver" };
+    if(res.action === "block") return { label: "Held", kind: "block" };
+    if(res.action === "hide") return { label: "Number hidden", kind: "hide" };
+    return { label: "A caution", kind: "caution" };
+  }
+
+  function liveFaceFor(res){
+    if(res.action === "deliver") return "yay";
+    if(res.action === "caution") return "thinking";
+    return "holdon";
+  }
+
+  function setLiveButton(busy){
+    const btn = $("#liveCheck");
+    if(!btn) return;
+    liveBusy = busy;
+    btn.disabled = !!busy;
+    btn.classList.toggle("busy", !!busy);
+    btn.textContent = busy ? "Checking..." : "Check message";
+    if(!busy) btn.classList.remove("is-pressed");
+  }
+
+  function flashLiveButton(){
+    const btn = $("#liveCheck");
+    if(!btn) return;
+    btn.classList.add("is-pressed");
+    requestAnimationFrame(() => {
+      setTimeout(() => btn.classList.remove("is-pressed"), 140);
+    });
+  }
+
+  function showLiveEmpty(msg){
     const box = $("#liveResult");
     box.innerHTML = "";
-    const res = screenMessage(text);
-    if(!res){
-      const e = document.createElement("div");
-      e.className = "result-empty";
-      e.textContent = "Type a message first, then press Check message.";
-      box.appendChild(e);
+    box.dataset.state = "empty";
+    const e = document.createElement("div");
+    e.className = "result-empty";
+    e.textContent = msg;
+    box.appendChild(e);
+    const again = $("#liveAgain");
+    if(again) again.hidden = true;
+  }
+
+  function resetLivePanel(clearHistory){
+    if(liveTimer){
+      clearTimeout(liveTimer);
+      liveTimer = 0;
+    }
+    setLiveButton(false);
+    liveLast = null;
+    if(clearHistory){
+      livePast.length = 0;
+      renderLiveHistory();
+    }
+    const input = $("#liveInput");
+    if(input) input.value = "";
+    showLiveEmpty("Type a message, or tap one of the examples, then press Check message.");
+  }
+
+  function truncateLive(text, n){
+    const t = String(text || "").trim();
+    if(t.length <= n) return t;
+    return t.slice(0, n - 1).trimEnd() + "...";
+  }
+
+  function renderLiveHistory(){
+    const wrap = $("#liveHistory");
+    const list = $("#liveHistoryList");
+    if(!wrap || !list) return;
+    list.innerHTML = "";
+    if(!livePast.length){
+      wrap.hidden = true;
       return;
     }
+    wrap.hidden = false;
+    livePast.forEach((item) => {
+      const li = document.createElement("li");
+      const msg = document.createElement("p");
+      msg.className = "hist-msg";
+      msg.textContent = truncateLive(item.text, 72);
+      const meta = document.createElement("div");
+      meta.className = "hist-meta";
+      const chip = document.createElement("span");
+      chip.className = "status-chip " + item.kind;
+      chip.textContent = item.label;
+      meta.appendChild(chip);
+      const robin = document.createElement("p");
+      robin.className = "hist-robin";
+      robin.textContent = truncateLive(item.robin, 90);
+      li.appendChild(msg);
+      li.appendChild(meta);
+      li.appendChild(robin);
+      list.appendChild(li);
+    });
+  }
+
+  function archiveLiveResult(){
+    if(!liveLast) return;
+    livePast.unshift(liveLast);
+    if(livePast.length > 3) livePast.length = 3;
+    liveLast = null;
+    renderLiveHistory();
+  }
+
+  function revealLiveReply(card, img, res){
+    const face = liveFaceFor(res);
+    const status = liveStatus(res);
+    img.src = FACES[face];
+    img.alt = "Robin, " + face + " expression";
+    img.classList.remove("pop");
+    void img.offsetWidth;
+    img.classList.add("pop");
+    const reading = card.querySelector(".live-reading");
+    if(reading) reading.hidden = true;
+    const said = card.querySelector(".said");
+    const chip = card.querySelector(".status-chip");
+    const pill = card.querySelector(".action-pill");
+    const pd = card.querySelector(".pare-do");
+    said.hidden = false;
+    said.textContent = res.robin;
+    chip.hidden = false;
+    chip.className = "status-chip " + status.kind;
+    chip.textContent = status.label;
+    pill.hidden = false;
+    pill.className = "action-pill " + res.action;
+    pill.textContent = "What Pare would do: " + res.actionLabel;
+    pd.hidden = false;
+    pd.textContent = res.pare;
+    if(!reducedLiveMotion()){
+      said.classList.add("reveal");
+      pill.classList.add("reveal");
+      pd.classList.add("reveal");
+      if(res.action === "block") card.classList.add("shake");
+      if(res.action === "deliver"){
+        card.classList.add("sparkle");
+        for(let i = 0; i < 3; i++){
+          const spark = document.createElement("span");
+          spark.className = "spark";
+          spark.setAttribute("aria-hidden", "true");
+          card.appendChild(spark);
+        }
+      }
+    }
+    const box = $("#liveResult");
+    const again = $("#liveAgain");
+    if(again) again.hidden = false;
+    liveLast = {
+      text: ($("#liveInput") && $("#liveInput").value) || "",
+      label: status.label,
+      kind: status.kind,
+      robin: res.robin
+    };
+    setLiveButton(false);
+    box.dataset.state = "ready";
+    scrollToLiveEl(card, "center");
+  }
+
+  function renderLive(text){
+    if(liveBusy) return;
+    const box = $("#liveResult");
+    const raw = text;
+    const res = screenMessage(raw);
+    flashLiveButton();
+    if(!res){
+      if(liveTimer){
+        clearTimeout(liveTimer);
+        liveTimer = 0;
+      }
+      setLiveButton(false);
+      showLiveEmpty("Type a message first, then press Check message.");
+      return;
+    }
+    archiveLiveResult();
+    setLiveButton(true);
+    box.innerHTML = "";
+    box.dataset.state = "reading";
     const card = document.createElement("div");
-    card.className = "robin-card";
+    card.className = "robin-card live-card";
     const img = document.createElement("img");
-    img.className = "face";
-    img.src = FACES[res.face];
-    img.alt = "Robin, " + res.face + " expression";
+    img.className = "face pop";
+    img.src = FACES.thinking;
+    img.alt = "Robin thinking";
     const col = document.createElement("div");
     const who = document.createElement("div");
     who.className = "who";
@@ -1731,36 +2009,73 @@ html,body{overflow-x:hidden;overflow-y:auto;}
     const sm = document.createElement("small");
     sm.textContent = "Pare's AI assistant";
     who.appendChild(sm);
+    const reading = document.createElement("div");
+    reading.className = "live-reading";
+    const dots = document.createElement("div");
+    dots.className = "chat-dots";
+    dots.innerHTML = "<span></span><span></span><span></span>";
+    const readingText = document.createElement("span");
+    readingText.textContent = "Robin is reading...";
+    reading.appendChild(dots);
+    reading.appendChild(readingText);
     const said = document.createElement("div");
     said.className = "said";
-    said.textContent = res.robin;
+    said.hidden = true;
+    const chip = document.createElement("div");
+    chip.className = "status-chip";
+    chip.hidden = true;
     const pill = document.createElement("div");
-    pill.className = "action-pill " + res.action;
-    pill.textContent = "What Pare would do: " + res.actionLabel;
+    pill.className = "action-pill";
+    pill.hidden = true;
     const pd = document.createElement("div");
     pd.className = "pare-do";
-    pd.textContent = res.pare;
+    pd.hidden = true;
     col.appendChild(who);
+    col.appendChild(reading);
     col.appendChild(said);
+    col.appendChild(chip);
     col.appendChild(pill);
     col.appendChild(pd);
     card.appendChild(img);
     card.appendChild(col);
     box.appendChild(card);
+    scrollToLiveEl($("#liveOut") || box, "center");
+    const delay = reducedLiveMotion() ? 0 : LIVE_READ_MS;
+    if(liveTimer) clearTimeout(liveTimer);
+    liveTimer = setTimeout(() => {
+      liveTimer = 0;
+      revealLiveReply(card, img, res);
+    }, delay);
+  }
+
+  function tryAnother(){
+    const input = $("#liveInput");
+    scrollToLiveEl(input, "center");
+    if(input){
+      input.focus();
+      if(typeof input.select === "function") input.select();
+    }
   }
 
   $("#liveCheck").addEventListener("click", () => renderLive($("#liveInput").value));
   $("#liveInput").addEventListener("keydown", (e) => {
     if(e.key === "Enter" && (e.ctrlKey || e.metaKey)){ e.preventDefault(); renderLive($("#liveInput").value); }
   });
+  if($("#liveAgain")) $("#liveAgain").addEventListener("click", tryAnother);
 
   const chipWrap = $("#liveChips");
-  EXAMPLES.forEach(ex => {
+  LIVE_CHIPS.forEach((ex) => {
     const b = document.createElement("button");
     b.type = "button";
     b.className = "chip";
-    b.textContent = ex;
-    b.addEventListener("click", () => { $("#liveInput").value = ex; renderLive(ex); });
+    b.textContent = ex.label;
+    b.addEventListener("click", () => {
+      const input = $("#liveInput");
+      input.value = ex.text;
+      $$(".chip", chipWrap).forEach((c) => c.classList.remove("on"));
+      b.classList.add("on");
+      input.focus();
+    });
     chipWrap.appendChild(b);
   });
 
