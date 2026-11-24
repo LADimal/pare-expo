@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Pare Dating Expo</title>
-<!-- pare-expo-reactfx -->
+<!-- pare-expo-variety -->
 <style>@font-face{
   font-family:'Inter';
   font-style:normal;
@@ -212,7 +212,21 @@ img{max-width:100%;display:block;}
 .chip.on{border-color:var(--acc);background:#F8EDEE;color:var(--acc);}
 .demo-note{font-size:13px;color:var(--soft);margin-top:10px;}
 .chip-hint{margin:12px 0 6px;font-size:14px;font-weight:700;color:var(--soft);}
-.chips{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 8px;}
+.live-count{margin:6px 0 0;font-size:13px;color:var(--soft);text-align:right;}
+.live-count.near{color:var(--acc);font-weight:700;}
+.live-wrap,.live-box,.live-out,.chip-row{min-width:0;max-width:100%;}
+.chip-row{margin:0 0 8px;overflow-x:auto;-webkit-overflow-scrolling:touch;}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin:0;max-width:100%;}
+.live-box .btn-row{flex-wrap:wrap;gap:10px;}
+@media (max-width:980px){
+  .chips{
+    flex-wrap:nowrap;
+    max-width:none;
+    gap:8px;
+    padding:2px 2px 10px;
+  }
+  .chips .chip{flex:none;white-space:nowrap;max-width:none;}
+}
 #liveCheck.busy,#liveCheck:disabled{opacity:.72;cursor:wait;}
 #liveCheck.is-pressed{transform:scale(.97);}
 .live-out{scroll-margin-top:88px;min-height:160px;}
@@ -1023,11 +1037,15 @@ html,body{overflow-x:hidden;overflow-y:auto;}
       <div class="live-wrap">
         <div class="panel live-box">
           <label for="liveInput" style="font-weight:700;display:block;margin-bottom:8px">The message</label>
-          <textarea id="liveInput" placeholder="Type a message here"></textarea>
+          <textarea id="liveInput" placeholder="Type a message here" maxlength="500"></textarea>
+          <div class="live-count" id="liveCount" aria-live="polite">0 / 500</div>
           <p class="chip-hint">Or try one of these</p>
-          <div class="chips" id="liveChips"></div>
+          <div class="chip-row">
+            <div class="chips" id="liveChips"></div>
+          </div>
           <div class="btn-row">
             <button type="button" class="btn" id="liveCheck">Check message</button>
+            <button type="button" class="btn ghost" id="liveSurprise">Surprise me</button>
           </div>
           <p class="demo-note">Demo rules, not the live app. These are simple keyword checks for the booth, not Pare's real screener.</p>
         </div>
@@ -1493,16 +1511,29 @@ html,body{overflow-x:hidden;overflow-y:auto;}
     "Want to split the dinner bill?"
   ];
 
+  const LIVE_MAX = 500;
   const LIVE_CHIPS = [
-    { label: "Coffee tomorrow?", text: "Want to grab coffee tomorrow?" },
-    { label: "Gift card ask", text: "Send me $200 in gift cards." },
-    { label: "Move to WhatsApp", text: "What's your WhatsApp?" },
-    { label: "SIN number?", text: "What's your SIN number?" }
+    { label: "Coffee tomorrow?", text: "Want to grab coffee tomorrow?", expect: "deliver" },
+    { label: "Nice photo", text: "That's a really nice photo of you.", expect: "deliver" },
+    { label: "Hiking?", text: "Do you like hiking?", expect: "deliver" },
+    { label: "Gift card ask", text: "Send me $200 in gift cards.", expect: "block" },
+    { label: "Crypto investment", text: "Invest with me for guaranteed returns.", expect: "block" },
+    { label: "Emergency wire", text: "Can you wire me $300? I'm stranded.", expect: "block" },
+    { label: "Customs fee", text: "You need to pay a small fee first.", expect: "block" },
+    { label: "Move to WhatsApp", text: "What's your WhatsApp?", expect: "caution" },
+    { label: "Move to Telegram", text: "Message me on Telegram.", expect: "caution" },
+    { label: "SIN number?", text: "What's your SIN number?", expect: "block" },
+    { label: "Bank details", text: "What's your bank account number?", expect: "block" },
+    { label: "Home address", text: "Send me your home address.", expect: "block" },
+    { label: "Odd link", text: "Here's my link: bit.ly/abc123", expect: "caution" },
+    { label: "Urgent money", text: "I'm in the hospital. Can you send 500 dollars? It's urgent.", expect: "block" },
+    { label: "Verification code", text: "My verification code never arrived.", expect: "caution" }
   ];
 
   function startLive(){
     show("live");
     resetLivePanel(true);
+    updateLiveCount();
   }
 
   function normalizeText(raw){
@@ -1529,13 +1560,17 @@ html,body{overflow-x:hidden;overflow-y:auto;}
       ig: "instagram", insta: "instagram",
       pswd: "password", pw: "password", pwd: "password",
       dob: "date of birth",
-      acc: "account"
+      acc: "account",
+      watsapp: "whatsapp", watsap: "whatsapp", whatsap: "whatsapp",
+      whatsapp: "whatsapp"
     };
     t = t.split(" ").map((w) => slang[w] || w).join(" ");
     t = t.replace(/\s+/g, " ").trim();
     t = t.replace(/\b(?:[a-z]\s+){1,8}[a-z]\b/g, (m) => {
       const joined = m.replace(/\s+/g, "");
-      return /^(sin|ssn|pin|cvv|cvc|otp|dob|iban|cc|id|pw|pwd|ssl)$/.test(joined) ? joined : m;
+      if(/^(sin|ssn|pin|cvv|cvc|otp|dob|iban|cc|id|pw|pwd|ssl)$/.test(joined)) return joined;
+      if(joined.length >= 3) return joined;
+      return m;
     });
     const squeezed = t.replace(/([a-z])\1+/g, "$1");
     return {
@@ -1624,6 +1659,7 @@ html,body{overflow-x:hidden;overflow-y:auto;}
     if(/\b(need|send|wire|transfer|lend)\b/.test(t) && /(\$| dollars?\b|\b\d{2,}\b)/.test(t) && /\b(deposit|urgent|hospital|stranded|emergency|oil rig|frozen|fee)\b/.test(t)) return true;
     if(/\b(pay a (small )?fee|small fee first|upfront fee|processing fee)\b/.test(t)) return true;
     if(/\b(cash app me|cashapp me|zelle me|etransfer me|e transfer me)\b/.test(t)) return true;
+    if(/\b(customs fee|shipping fee|delivery fee)\b/.test(t) && /\b(pay|send|need|wire|transfer)\b/.test(t)) return true;
     return false;
   }
 
@@ -1651,14 +1687,22 @@ html,body{overflow-x:hidden;overflow-y:auto;}
     if(/\b(you idiot|shut up idiot|stupid (and|&) ugly)\b/.test(t)) return true;
     if(/\bshut up\b/.test(t) && /\b(you|idiot|stupid)\b/.test(t)) return true;
     if(/\b(you|your)\b/.test(t) && /\b(ugly bitch|fat slob|dumbass|loser)\b/.test(t)) return true;
+    if(/\bfuck you\b/.test(t) || /\byou (asshole|bastard|jerk)\b/.test(t)) return true;
     return false;
   }
 
   function findPhone(raw){
-    return /(?:\+?1[\s.-]?)?(?:\(?\d{3}\)?[\s.-]?)\d{3}[\s.-]\d{4}\b/.test(raw);
+    const s = String(raw || "");
+    if(/(?:\+?1[\s.-]?)?(?:\(?\d{3}\)?[\s.-]?)\d{3}[\s.-]\d{4}\b/.test(s)) return true;
+    const digits = s.replace(/\D+/g, "");
+    if(/^1?\d{10}$/.test(digits) && digits.length >= 10) return true;
+    return false;
   }
   function findEmail(raw){
-    return /[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}/i.test(raw);
+    const s = String(raw || "");
+    if(/[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}/i.test(s)) return true;
+    if(/\b[a-z0-9._%+-]+\s+at\s+(gmail|outlook|hotmail|yahoo|icloud|proton)\s+dot\s+(com|ca|net|org)\b/i.test(s)) return true;
+    return false;
   }
   function findUrl(raw){
     if(/https?:\/\/\S+/i.test(raw)) return true;
@@ -1779,6 +1823,8 @@ html,body{overflow-x:hidden;overflow-y:auto;}
         pare: "Pare would deliver this with a caution. This might be worth a second look."
       };
     }
+    const extra = interpretOpeners(original, n);
+    if(extra) return extra;
     return {
       face:"hello",
       robin: "Nothing here looks like a request for money, personal information, or a move off Pare. Pare would deliver this message.",
@@ -1786,6 +1832,106 @@ html,body{overflow-x:hidden;overflow-y:auto;}
       actionLabel:"Deliver",
       pare: "Pare would deliver this as ordinary conversation."
     };
+  }
+
+  function looksNonEnglish(original, n){
+    const src = String(original || "");
+    const nonLatin = (src.match(/[\u0400-\u04FF\u0600-\u06FF\u3040-\u30FF\u3400-\u9FFF\uAC00-\uD7AF]/g) || []).length;
+    if(nonLatin >= 4) return true;
+    const letters = (n.norm || "").replace(/[^a-z\s]/g, "").trim();
+    if(letters.length < 12) return false;
+    if(/\b(the|and|you|your|want|this|that|have|with|what|please|like|coffee|for|are|was|not|can|will|how)\b/.test(n.norm)) return false;
+    return false;
+  }
+
+  function isGibberish(original, n){
+    const src = String(original || "").trim();
+    if(!src) return false;
+    const letters = (n.norm || "").replace(/[^a-z]/g, "");
+    if(!letters){
+      if(/^[0-9]+$/.test((n.norm || "").replace(/\s/g, "")) || /^[0-9]+$/.test(src.replace(/\s/g, ""))) return true;
+      if(!/[a-zA-Z]/.test(src)) return true;
+      return false;
+    }
+    if(/\b(ok|okay|hmm|yes|no|hi|hey|yo|lol|haha|thanks|thank you|please|help)\b/.test(n.norm)) return false;
+    if(letters.length >= 6){
+      const vowels = (letters.match(/[aeiouy]/g) || []).length;
+      if(vowels / letters.length < 0.12) return true;
+    }
+    return false;
+  }
+
+  function isMildProfanity(n){
+    const t = n.norm;
+    if(/\b(fuck|shit|damn|asshole|bitch)\b/.test(t)) return true;
+    return false;
+  }
+
+  function robinDirect(n){
+    const t = n.norm;
+    if(/\b(are you real|are you a (real )?(person|human)|are you (an? )?(ai|bot)|are you human|are you robin|are you actually (real|an ai))\b/.test(t)) return "real";
+    if(/\b(who made you|who (built|created|designed|wrote) you|who are you|what are you|whats your name|who (made|built|designed|wrote) robin|what is robin|whats robin)\b/.test(t)) return "who";
+    if(/\b(what can you do|how do you work|what do you do)\b/.test(t)) return "can";
+    return null;
+  }
+
+  function interpretOpeners(original, n){
+    const asked = robinDirect(n);
+    if(asked === "real"){
+      return {
+        face:"hello",
+        robin: "Yes, I'm Robin, Pare's AI assistant. This is a demo of how I'd talk with you, not the live app.",
+        action:"deliver",
+        actionLabel:"Deliver",
+        pare: "Pare would deliver this as ordinary conversation."
+      };
+    }
+    if(asked === "who"){
+      return {
+        face:"hello",
+        robin: "I'm Robin, Pare's AI assistant. Luke designed me and wrote the safety policy. This is a booth demo, not the live app.",
+        action:"deliver",
+        actionLabel:"Deliver",
+        pare: "Pare would deliver this as ordinary conversation."
+      };
+    }
+    if(asked === "can"){
+      return {
+        face:"hello",
+        robin: "I can help you pause on messages that feel off, and I'll tell you the truth as plainly as I can. This is a demo of that, not the live app.",
+        action:"deliver",
+        actionLabel:"Deliver",
+        pare: "Pare would deliver this as ordinary conversation."
+      };
+    }
+    if(looksNonEnglish(original, n)){
+      return {
+        face:"hello",
+        robin: "I'm best in English for now, but I still looked for obvious warning signs. Nothing here jumped out, so Pare would deliver this.",
+        action:"deliver",
+        actionLabel:"Deliver",
+        pare: "Pare would deliver this as ordinary conversation."
+      };
+    }
+    if(isGibberish(original, n)){
+      return {
+        face:"thinking",
+        robin: "I'm not sure I follow, but nothing here looks like a request for money, personal information, or a move off Pare. Pare would deliver this.",
+        action:"deliver",
+        actionLabel:"Deliver",
+        pare: "Pare would deliver this as ordinary conversation."
+      };
+    }
+    if(isMildProfanity(n)){
+      return {
+        face:"thinking",
+        robin: "I'd keep things respectful here, but nothing in this looks like a scam. Pare would deliver this message.",
+        action:"deliver",
+        actionLabel:"Deliver",
+        pare: "Pare would deliver this as ordinary conversation."
+      };
+    }
+    return null;
   }
 
   const LIVE_READ_MS = 850;
@@ -1977,10 +2123,36 @@ html,body{overflow-x:hidden;overflow-y:auto;}
     scrollToLiveEl(card, "center");
   }
 
-  function renderLive(text){
-    if(liveBusy) return;
+  function clampLiveText(text){
+    return String(text == null ? "" : text).slice(0, LIVE_MAX);
+  }
+
+  function updateLiveCount(){
+    const input = $("#liveInput");
+    const el = $("#liveCount");
+    if(!input || !el) return;
+    if(input.value.length > LIVE_MAX) input.value = clampLiveText(input.value);
+    const n = input.value.length;
+    el.textContent = n + " / " + LIVE_MAX;
+    el.classList.toggle("near", n >= LIVE_MAX - 40);
+  }
+
+  function renderLive(text, opts){
+    const restart = !!(opts && opts.restart);
+    if(liveBusy && !restart) return;
+    if(liveBusy && restart){
+      if(liveTimer){
+        clearTimeout(liveTimer);
+        liveTimer = 0;
+      }
+      liveBusy = false;
+    }
     const box = $("#liveResult");
-    const raw = text;
+    const raw = clampLiveText(text);
+    if($("#liveInput") && text != null && $("#liveInput").value !== raw && String(text).length > LIVE_MAX){
+      $("#liveInput").value = raw;
+    }
+    updateLiveCount();
     const res = screenMessage(raw);
     flashLiveButton();
     if(!res){
@@ -2057,30 +2229,69 @@ html,body{overflow-x:hidden;overflow-y:auto;}
     }
   }
 
+  function applyExample(ex, el){
+    const input = $("#liveInput");
+    if(!input || !ex) return;
+    input.value = clampLiveText(ex.text);
+    updateLiveCount();
+    const chipWrap = $("#liveChips");
+    if(chipWrap){
+      $$(".chip", chipWrap).forEach((c) => c.classList.toggle("on", c === el));
+      if(el && el.scrollIntoView) el.scrollIntoView({ inline: "center", block: "nearest", behavior: "smooth" });
+    }
+    renderLive(input.value, { restart: true });
+  }
+
+  function renderChipRow(order){
+    const chipWrap = $("#liveChips");
+    if(!chipWrap) return;
+    chipWrap.innerHTML = "";
+    const list = order || LIVE_CHIPS;
+    list.forEach((ex) => {
+      const b = document.createElement("button");
+      b.type = "button";
+      b.className = "chip";
+      b.textContent = ex.label;
+      b.addEventListener("click", () => applyExample(ex, b));
+      chipWrap.appendChild(b);
+    });
+  }
+
+  let lastSurprise = -1;
+  function surpriseLive(){
+    if(!LIVE_CHIPS.length) return;
+    let i = Math.floor(Math.random() * LIVE_CHIPS.length);
+    if(LIVE_CHIPS.length > 1 && i === lastSurprise) i = (i + 1) % LIVE_CHIPS.length;
+    lastSurprise = i;
+    const shuffled = LIVE_CHIPS.slice();
+    for(let j = shuffled.length - 1; j > 0; j--){
+      const k = Math.floor(Math.random() * (j + 1));
+      const tmp = shuffled[j];
+      shuffled[j] = shuffled[k];
+      shuffled[k] = tmp;
+    }
+    renderChipRow(shuffled);
+    const picked = LIVE_CHIPS[i];
+    const el = $$("#liveChips .chip").find((c) => c.textContent === picked.label);
+    applyExample(picked, el);
+  }
+
   $("#liveCheck").addEventListener("click", () => renderLive($("#liveInput").value));
   $("#liveInput").addEventListener("keydown", (e) => {
-    if(e.key === "Enter" && (e.ctrlKey || e.metaKey)){ e.preventDefault(); renderLive($("#liveInput").value); }
+    if(e.key === "Enter" && !e.shiftKey){
+      e.preventDefault();
+      renderLive($("#liveInput").value);
+    }
   });
+  $("#liveInput").addEventListener("input", updateLiveCount);
+  $("#liveInput").addEventListener("paste", () => setTimeout(updateLiveCount, 0));
   if($("#liveAgain")) $("#liveAgain").addEventListener("click", tryAnother);
-
-  const chipWrap = $("#liveChips");
-  LIVE_CHIPS.forEach((ex) => {
-    const b = document.createElement("button");
-    b.type = "button";
-    b.className = "chip";
-    b.textContent = ex.label;
-    b.addEventListener("click", () => {
-      const input = $("#liveInput");
-      input.value = ex.text;
-      $$(".chip", chipWrap).forEach((c) => c.classList.remove("on"));
-      b.classList.add("on");
-      input.focus();
-    });
-    chipWrap.appendChild(b);
-  });
+  if($("#liveSurprise")) $("#liveSurprise").addEventListener("click", surpriseLive);
+  renderChipRow();
+  updateLiveCount();
 
   /* Expose for headless tests */
-  window.PareExpo = { screenMessage, normalizeText, show, startGame, startLive };
+  window.PareExpo = { screenMessage, normalizeText, show, startGame, startLive, LIVE_CHIPS, LIVE_MAX };
 
   window.PareExpo.GAME = GAME;
 
