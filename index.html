@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Pare Dating Expo</title>
-<!-- pare-expo-vote-gojo -->
+<!-- pare-expo-gojo-ball -->
 <style>@font-face{
   font-family:'Inter';
   font-style:normal;
@@ -389,7 +389,7 @@ html.rippling,body.rippling{overflow:hidden;}
 .purple-overlay video{
   display:none;object-fit:cover;background:#000;
 }
-.purple-overlay.clip canvas{visibility:hidden;}
+.purple-overlay.clip #purpleCanvas{visibility:hidden;}
 .purple-overlay.clip video{display:block;}
 .purple-flash{
   position:absolute;inset:0;background:#fff;
@@ -704,14 +704,39 @@ body.present .top{margin-bottom:16px;}
   }
 }
 
-/* Portrait phones: fill the screen with the clip and keep Gojo's face in frame.
-   object-position is set in JS from the clip time. Desktop and landscape stay as they were. */
+/* Blurred backdrop behind the framed clip. Hidden on desktop and landscape. */
+.purple-back{
+  display:none;
+  position:absolute;inset:0;
+  width:100%;height:100%;
+  pointer-events:none;
+  z-index:0;
+  filter:blur(28px) brightness(0.36) saturate(1.15);
+  transform:scale(1.18);
+  transform-origin:center center;
+}
+/* Portrait phones: show the clip in a 5:4 frame so the purple ball and
+   Gojo's face both fit, with a blurred backdrop filling the rest. */
 @media (orientation: portrait) and (max-width: 900px){
+  .purple-overlay.clip{
+    background:#0a0610;
+  }
+  .purple-overlay.clip .purple-back{
+    display:block;
+    visibility:visible;
+  }
   .purple-overlay.clip video{
-    object-fit:cover;
-    object-position:var(--gojo-pos, 88% 50%);
+    inset:auto;
+    left:0;right:0;bottom:auto;
     width:100%;
-    height:100%;
+    height:auto;
+    aspect-ratio:5 / 4;
+    top:50%;
+    transform:translateY(-50%);
+    object-fit:cover;
+    object-position:var(--gojo-pos, 50% 50%);
+    z-index:1;
+    background:#000;
   }
   .purple-skip{
     left:12px;
@@ -1007,6 +1032,7 @@ body.present .top{margin-bottom:16px;}
 <div id="purpleOverlay" class="purple-overlay" aria-hidden="true">
   <div id="rippleVeil" class="ripple-veil"></div>
   <canvas id="purpleCanvas"></canvas>
+  <canvas id="purpleBack" class="purple-back" aria-hidden="true"></canvas>
   <video id="purpleVideo" playsinline webkit-playsinline preload="auto"></video>
   <button type="button" class="purple-play" id="purplePlay" hidden>Tap to play</button>
   <div id="purpleFlash" class="purple-flash"></div>
@@ -4002,6 +4028,7 @@ var qrcode = function() {
 
   const purpleOverlay = $("#purpleOverlay");
   const purpleCanvas = $("#purpleCanvas");
+  const purpleBack = $("#purpleBack");
   const purpleVideo = $("#purpleVideo");
   const purpleFlash = $("#purpleFlash");
   const purpleMute = $("#purpleMute");
@@ -4908,16 +4935,17 @@ var qrcode = function() {
     });
   }
 
-  // On portrait phones, keep Gojo's face in the cover crop.
-  // X is the subject point in the 1280x720 clip (0 left, 1 right).
+  // On portrait phones the clip sits in a 5:4 frame so the purple ball
+  // and Gojo's face both stay in view. X is the midpoint of that pair
+  // in the 1280x720 clip (0 left, 1 right).
   const GOJO_VIDEO_W = 1280;
   const GOJO_VIDEO_H = 720;
   const GOJO_FOCUS = [
     [0, 0.50],
-    [3.8, 0.55],
-    [4.4, 0.78],
-    [7.8, 0.78],
-    [8.6, 0.62],
+    [3.6, 0.52],
+    [4.4, 0.56],
+    [7.8, 0.56],
+    [8.8, 0.54],
     [10, 0.50]
   ];
   let gojoCropRaf = 0;
@@ -4941,14 +4969,33 @@ var qrcode = function() {
     return window.innerHeight > window.innerWidth && window.innerWidth <= 900;
   }
 
+  function paintGojoBackdrop(){
+    if(!purpleBack || !purpleVideo) return;
+    if(!isPortraitPhoneClip() || purpleMode !== "clip") return;
+    if(purpleVideo.readyState < 2) return;
+    const w = Math.max(16, Math.round(window.innerWidth * 0.32));
+    const h = Math.max(16, Math.round(window.innerHeight * 0.32));
+    if(purpleBack.width !== w || purpleBack.height !== h){
+      purpleBack.width = w;
+      purpleBack.height = h;
+    }
+    try{
+      const ctx = purpleBack.getContext("2d");
+      ctx.drawImage(purpleVideo, 0, 0, w, h);
+    }catch(err){}
+  }
+
   function applyGojoCrop(){
     if(!purpleVideo) return;
     if(!isPortraitPhoneClip()){
       purpleVideo.style.objectPosition = "";
+      purpleVideo.style.removeProperty("--gojo-pos");
+      if(purpleOverlay) purpleOverlay.classList.remove("gojo-framed");
       return;
     }
+    if(purpleOverlay) purpleOverlay.classList.add("gojo-framed");
     const vw = purpleVideo.clientWidth || window.innerWidth;
-    const vh = purpleVideo.clientHeight || window.innerHeight;
+    const vh = purpleVideo.clientHeight || Math.round(vw * 4 / 5);
     const t = purpleVideo.currentTime || 0;
     const focus = gojoFocusAt(t);
     const scale = Math.max(vw / GOJO_VIDEO_W, vh / GOJO_VIDEO_H);
@@ -4962,6 +5009,7 @@ var qrcode = function() {
     const value = (pos * 100).toFixed(2) + "% 50%";
     purpleVideo.style.objectPosition = value;
     purpleVideo.style.setProperty("--gojo-pos", value);
+    paintGojoBackdrop();
   }
 
   function startGojoCropLoop(){
@@ -4985,6 +5033,7 @@ var qrcode = function() {
       purpleVideo.style.objectPosition = "";
       purpleVideo.style.removeProperty("--gojo-pos");
     }
+    if(purpleOverlay) purpleOverlay.classList.remove("gojo-framed");
   }
 
   function playClip(){
