@@ -2234,6 +2234,17 @@ textarea:focus,.chat-form input:focus,.live-box textarea:focus{border-color:var(
 @media (prefers-reduced-motion: reduce){
   .egg2 *,.egg2 *::before,.egg2 *::after{animation-duration:.01ms !important;animation-delay:0s !important;animation-iteration-count:1 !important;}
 }
+/* Phones: full-width section title, a compact chat button, and no duplicate while the hero's Chat with Robin button is on screen */
+@media (max-width:759px){
+  body:has(#view-home.on) #demos .sec-head{padding-right:0;}
+  .chat-fab{padding:6px !important;gap:0;}
+  .chat-fab .fab-text{display:none;}
+  .fab-av{width:48px;height:48px;}
+  .fab-av img{width:44px;height:44px;}
+  .fab-dot{left:auto !important;right:2px;top:2px;}
+}
+.chat-fab{transition:transform .25s ease,opacity .25s ease;}
+.chat-fab.fab-away{animation:none !important;opacity:0;transform:translateY(24px) scale(.9);pointer-events:none;}
 </style>
 </head>
 <body>
@@ -7787,6 +7798,13 @@ window.PARE_LIVE = window.PARE_LIVE || {
   if(heroChat) heroChat.addEventListener("click", function(){ if(window.PareExpo && window.PareExpo.openView) window.PareExpo.openView("chat"); });
   var fab = document.getElementById("chatFab");
   if(!fab) return;
+  /* Hide the floating button while the hero's own Chat with Robin button is visible */
+  var heroChat = document.getElementById("heroChat");
+  if(heroChat && "IntersectionObserver" in window){
+    new IntersectionObserver(function(es){
+      es.forEach(function(e){ fab.classList.toggle("fab-away", e.isIntersecting); });
+    }).observe(heroChat);
+  }
   fab.addEventListener("click", function(){
     if(window.PareExpo && window.PareExpo.openView) window.PareExpo.openView("chat");
     setTimeout(function(){ var i = document.getElementById("chatInput"); if(i && window.matchMedia("(hover:hover)").matches) i.focus(); }, 500);
