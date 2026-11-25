@@ -5960,7 +5960,6 @@ textarea:focus,.chat-form input:focus,.live-box textarea:focus{border-color:var(
   function renderStart(){
     var R = (document.querySelector("#view-home .hero-art") || {}).src || "", B = window.PARE_BIRDS || {};
     card.innerHTML = '<div class="quiz-result quiz-start"><div class="qs-birds" aria-hidden="true"><img src="'+R+'" alt=""><img src="'+(B.darcy||R)+'" alt=""><img src="'+(B.rumi||R)+'" alt=""></div><div class="quiz-step">5 questions · under a minute</div>'+
-      '<div class="quiz-q" style="margin-top:6px">Find the sidekick that fits you</div>'+
       '<div class="btn-row"><button type="button" class="btn" id="quizStart">Start the quiz</button></div></div>';
     document.getElementById("quizStart").addEventListener("click", function(){ renderQ(); });
   }
