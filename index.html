@@ -1349,7 +1349,7 @@ html.ri-lock #view-home .hero-art{visibility:hidden;}
 .bub.robin.act-review .screen-tag{color:#8a5a00;}
 .screen-means{display:block;margin-top:8px;padding-top:8px;border-top:1px dashed var(--line);font-size:13px;line-height:1.4;color:var(--muted, #6b5a5c);}
 .screen-code{display:block;margin-top:4px;font:600 10.5px/1.3 ui-monospace,SFMono-Regular,Menlo,monospace;letter-spacing:.02em;color:var(--muted, #8a7a7c);opacity:.8;}
-.egg-67{position:fixed;inset:0;z-index:200;display:flex;align-items:center;justify-content:center;gap:18px;pointer-events:none;font:900 min(34vw,180px)/1 "Playfair Display",Georgia,serif;font-variant-numeric:lining-nums;color:var(--acc,#801323);text-shadow:0 10px 40px rgba(128,19,35,.25);animation:eggFade 2.6s ease forwards;}
+.egg-67{position:fixed;inset:0;z-index:200;background:rgba(246,242,236,.9);display:flex;align-items:center;justify-content:center;gap:18px;pointer-events:none;font:900 min(34vw,180px)/1 "Playfair Display",Georgia,serif;font-variant-numeric:lining-nums;color:var(--acc,#801323);text-shadow:0 10px 40px rgba(128,19,35,.25);animation:eggFade 2.6s ease forwards;}
 .egg-67 .e6{animation:eggSee .5s ease-in-out infinite alternate;}
 .egg-67 .e7{animation:eggSee .5s ease-in-out infinite alternate-reverse;}
 .egg-67 .hands{font-size:.38em;animation:eggShrug .25s ease-in-out infinite alternate;}
@@ -1357,11 +1357,39 @@ html.ri-lock #view-home .hero-art{visibility:hidden;}
 @keyframes eggSee{from{transform:translateY(-18%) rotate(-6deg)}to{transform:translateY(18%) rotate(6deg)}}
 @keyframes eggShrug{from{transform:translateY(-10%) rotate(-10deg)}to{transform:translateY(10%) rotate(10deg)}}
 @keyframes eggFade{0%{opacity:0;transform:scale(.6)}12%{opacity:1;transform:scale(1)}80%{opacity:1}100%{opacity:0;transform:scale(1.08)}}
-.egg-keynote{position:fixed;inset:0;z-index:200;pointer-events:none;background:rgba(8,8,10,.78);display:flex;align-items:flex-end;justify-content:center;padding-bottom:22vh;animation:eggFade 3s ease forwards;}
-.egg-keynote .spot{position:absolute;left:50%;top:-10%;width:120vmax;height:120vmax;transform:translateX(-50%);background:radial-gradient(closest-side,rgba(118,185,0,.28),rgba(118,185,0,0) 60%);animation:eggSpot 3s ease-in-out;}
-.egg-keynote .kn{position:relative;text-align:center;color:#f5f5f5;padding:16px 22px;border-radius:18px;background:linear-gradient(160deg,#1b1b1e,#0c0c0e);border:1px solid rgba(255,255,255,.12);box-shadow:0 20px 60px rgba(0,0,0,.5),inset 0 1px 0 rgba(255,255,255,.12);}
-.egg-keynote b{display:block;font-size:22px;letter-spacing:.01em;}
-.egg-keynote small{display:block;margin-top:4px;font-size:14px;color:#9be22d;}
+.egg-keynote{position:fixed;inset:0;z-index:200;background:#09090a;color:#f4f4f5;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:24px 22px calc(env(safe-area-inset-bottom,0px) + 24px);text-align:center;cursor:pointer;animation:knIn .35s ease both;font-family:Inter,sans-serif;}
+.egg-keynote.out{animation:knOut .35s ease forwards;}
+@keyframes knIn{from{opacity:0}to{opacity:1}}
+@keyframes knOut{to{opacity:0}}
+.kn-live{font-size:11px;font-weight:700;letter-spacing:.22em;text-transform:uppercase;color:#a1a1aa;display:flex;align-items:center;gap:8px;}
+.kn-live i{width:7px;height:7px;border-radius:50%;background:#ef4444;box-shadow:0 0 0 0 rgba(239,68,68,.6);animation:knRec 1.2s ease-in-out infinite;}
+@keyframes knRec{50%{box-shadow:0 0 0 6px rgba(239,68,68,0)}}
+.kn-stage{position:relative;width:min(64vw,250px);margin:26px 0 8px;}
+.kn-stage::before{content:"";position:absolute;left:50%;top:-40%;width:180%;height:170%;transform:translateX(-50%);
+  background:radial-gradient(closest-side, rgba(255,255,255,.16), rgba(255,255,255,0));pointer-events:none;}
+.kn-bird{position:relative;animation:knWalk 1s cubic-bezier(.16,1,.3,1) .15s both;}
+@keyframes knWalk{from{transform:translateX(-60vw) rotate(-4deg)}70%{transform:translateX(4%) rotate(2deg)}to{transform:none}}
+.kn-bird img{width:100%;display:block;filter:drop-shadow(0 18px 24px rgba(0,0,0,.6));}
+.kn-jacket{position:absolute;inset:0;background:linear-gradient(155deg,#4a4a50 0%,#1a1a1d 38%,#060607 70%,#2a2a2e 100%);
+  -webkit-mask-size:contain;mask-size:contain;-webkit-mask-repeat:no-repeat;mask-repeat:no-repeat;-webkit-mask-position:center;mask-position:center;
+  clip-path:polygon(30% 52%,58% 40%,86% 44%,90% 70%,80% 84%,30% 84%,8% 96%,4% 88%);opacity:.96;}
+.kn-shades{position:absolute;left:62%;top:11.5%;width:28%;transform:rotate(-6deg) translateY(-30px);opacity:0;animation:knShades .5s cubic-bezier(.3,1.5,.5,1) 1.05s forwards;}
+@keyframes knShades{to{transform:rotate(-6deg);opacity:1}}
+.kn-floor{height:10px;margin:-6px auto 0;width:70%;border-radius:50%;background:radial-gradient(closest-side,rgba(0,0,0,.9),rgba(0,0,0,0));}
+.kn-title{font-family:"Playfair Display",Georgia,serif;font-weight:600;font-size:clamp(26px,7.4vw,40px);line-height:1.08;letter-spacing:-.02em;max-width:12em;margin-top:18px;
+  animation:knUp .7s cubic-bezier(.16,1,.3,1) 1.3s both;}
+.kn-title em{font-style:normal;color:#76b900;}
+@keyframes knUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+.kn-chart{display:flex;align-items:flex-end;gap:10px;height:72px;margin-top:22px;animation:knUp .5s ease 1.6s both;}
+.kn-chart span{width:30px;border-radius:3px 3px 0 0;background:#76b900;transform-origin:bottom;transform:scaleY(0);animation:knBar .9s cubic-bezier(.16,1,.3,1) forwards;}
+.kn-chart span:nth-child(1){height:22%;animation-delay:1.75s;opacity:.45}
+.kn-chart span:nth-child(2){height:45%;animation-delay:1.9s;opacity:.65}
+.kn-chart span:nth-child(3){height:72%;animation-delay:2.05s;opacity:.85}
+.kn-chart span:nth-child(4){height:100%;animation-delay:2.2s}
+@keyframes knBar{to{transform:scaleY(1)}}
+.kn-cap{margin-top:10px;font-size:12px;color:#a1a1aa;letter-spacing:.04em;animation:knUp .5s ease 2.3s both;}
+.kn-tap{position:absolute;left:0;right:0;bottom:calc(env(safe-area-inset-bottom,0px) + 18px);font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:#52525b;}
 @keyframes eggSpot{from{transform:translateX(-80%)}to{transform:translateX(-50%)}}
 html.egg-roll body{animation:eggRoll 1.2s cubic-bezier(.45,.05,.35,1);}
 @keyframes eggRoll{to{transform:rotate(360deg)}}
@@ -1371,7 +1399,7 @@ html.egg-gold body{filter:saturate(1.15);}
 .hero-art.egg-spin{animation:eggSpin .9s cubic-bezier(.3,1.4,.5,1);}
 @keyframes eggSpin{0%{transform:rotate(0) scale(1)}50%{transform:rotate(200deg) scale(1.15)}100%{transform:rotate(360deg) scale(1)}}
 .egg-toast{position:fixed;left:50%;top:calc(env(safe-area-inset-top,0px) + 16px);transform:translateX(-50%);z-index:210;background:#1b1b1e;color:#fff;padding:10px 16px;border-radius:999px;font-weight:700;font-size:14px;box-shadow:0 10px 30px rgba(0,0,0,.3);animation:eggFade 3s ease forwards;pointer-events:none;white-space:nowrap;}
-@media (prefers-reduced-motion: reduce){.egg-67 span,.egg-keynote .spot{animation:none;}html.egg-roll body{animation:none;}}
+@media (prefers-reduced-motion: reduce){.egg-67 span,.egg-keynote *{animation:none !important;opacity:1 !important;transform:none !important;}html.egg-roll body{animation:none;}}
 .bub.me{align-self:flex-end;background:var(--acc);color:var(--cream);border-bottom-right-radius:6px;}
 @keyframes bubIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
 .typing{align-self:flex-start;background:var(--white);border:1px solid var(--line);border-radius:18px 18px 18px 6px;padding:12px 14px;display:flex;gap:5px;}
@@ -6110,7 +6138,7 @@ window.PARE_LIVE = window.PARE_LIVE || {
     {k:/^\W*(6\s*[-–—~.,\/x]?\s*7|six\s*[-]?\s*seven|67+)\W*$/i, fx:"67",
      r:"Six... seven. I don't know what it means either, and neither does anyone over forty. That's what makes it perfect."},
     {k:/leather jacket|the more you buy|more you buy,? the more you save|jensen|nvidia|accelerated computing/i, fx:"jacket",
-     r:"Leather jacket on. Keynote mode activated. The more you match, the more you save."},
+     r:"Thank you, thank you. Leather jacket and shades are back in the closet. The real keynote is simple: good matches start with a good first message. Want help writing one?"},
     {k:/do a barrel roll/i, fx:"roll", r:"Wheee. Okay, I'm dizzy. Ask me something about dating while I find my feet."},
     {k:/sudo make me a (match|date)|make me a sandwich/i, fx:"party", r:"Permission granted. Sadly, I still can't conjure a date out of thin air, but I can help you write a great first message."},
     {k:/\brizz\b/i, r:"Unspoken rizz is real. The best rizz is asking a good question and actually listening to the answer."},
@@ -6136,11 +6164,29 @@ window.PARE_LIVE = window.PARE_LIVE || {
       o.className = "egg-67"; o.setAttribute("aria-hidden", "true");
       o.innerHTML = "<span class='e6'>6</span><span class='hands'><i>🤲</i></span><span class='e7'>7</span>";
       document.body.appendChild(o); setTimeout(function(){ o.remove(); }, 2600);
+      return new Promise(function(done){ setTimeout(done, 1700); });
     } else if(kind === "jacket"){
-      var j = document.createElement("div");
-      j.className = "egg-keynote"; j.setAttribute("aria-hidden", "true");
-      j.innerHTML = "<div class='spot'></div><div class='kn'><b>🕶️ Keynote mode</b><small>The more you match, the more you save</small></div>";
-      document.body.appendChild(j); setTimeout(function(){ j.remove(); }, 3000);
+      return new Promise(function(done){
+        var src = (document.querySelector("#view-home .hero-art") || {}).src || "";
+        var j = document.createElement("div");
+        j.className = "egg-keynote"; j.setAttribute("role", "dialog"); j.setAttribute("aria-label", "Robin's keynote. Tap to continue.");
+        j.innerHTML = "<div class='kn-live'><i></i>Live · Pare Keynote 2026</div>" +
+          "<div class='kn-stage'><div class='kn-bird'><img alt='Robin in a leather jacket and sunglasses'><div class='kn-jacket'></div>" +
+          "<svg class='kn-shades' viewBox='0 0 100 40' aria-hidden='true'><path d='M2 12 L30 10' stroke='#0b0b0c' stroke-width='5' stroke-linecap='round'/>" +
+          "<path d='M28 6 H92 Q96 6 95 11 L91 28 Q89 36 80 36 H44 Q35 36 32 28 L27 11 Q26 6 28 6Z' fill='#0b0b0c'/>" +
+          "<path d='M38 11 H58' stroke='rgba(255,255,255,.55)' stroke-width='3' stroke-linecap='round'/></svg></div><div class='kn-floor'></div></div>" +
+          "<div class='kn-title'>The more you match, the more you <em>save</em>.</div>" +
+          "<div class='kn-chart' aria-hidden='true'><span></span><span></span><span></span><span></span></div>" +
+          "<div class='kn-cap'>Good matches, accelerated</div><div class='kn-tap'>Tap to continue</div>";
+        j.querySelector("img").src = src;
+        var jk = j.querySelector(".kn-jacket");
+        jk.style.webkitMaskImage = jk.style.maskImage = "url(\"" + src + "\")";
+        document.body.appendChild(j);
+        var closed = false;
+        function close(){ if(closed) return; closed = true; j.classList.add("out"); setTimeout(function(){ j.remove(); done(); }, 340); }
+        j.addEventListener("click", close);
+        setTimeout(close, 4600);
+      });
     } else if(kind === "roll"){
       document.documentElement.classList.remove("egg-roll"); void document.documentElement.offsetWidth;
       document.documentElement.classList.add("egg-roll");
@@ -6247,8 +6293,12 @@ window.PARE_LIVE = window.PARE_LIVE || {
     if(d){ pending = []; } else { pending.push(text); if(pending.length > 3) pending.shift(); }
     if(d){
       wait(700).then(function(){
-        if(d.fx) try { eggFx(d.fx); } catch(e){}
-        finish(d.reply, d.res);
+        var fxDone = null;
+        if(d.fx) try { fxDone = eggFx(d.fx); } catch(e){}
+        if(fxDone && fxDone.then){
+          typing(false);
+          fxDone.then(function(){ typing(true); return wait(450); }).then(function(){ finish(d.reply, d.res); }, function(){ finish(d.reply, d.res); });
+        } else finish(d.reply, d.res);
       });
       return;
     }
