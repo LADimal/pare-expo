@@ -9,308 +9,128 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,500;1,600&display=swap" rel="stylesheet">
 <style>
 :root{
-  --acc:#7d1426; --acc2:#5c0e1c; --accent:#9b2335;
-  --dark:#1c1214; --ink:#1c1214; --ink-2:#3a2a2c;
-  --cream:#faf7f2; --bg:#f6f2ec; --paper:#f6f2ec; --paper-2:#efe9e0; --alt:#fbf9f6; --white:#fff;
-  --soft:#6b5f5c; --muted:#6b5f5c; --faint:#9a8e8a;
+  --acc:#7d1426; --acc2:#5c0e1c;
+  --dark:#1c1214; --ink:#1c1214;
+  --cream:#faf7f2; --bg:#f6f2ec; --white:#fff;
+  --soft:#6b5f5c; --faint:#9a8e8a;
   --line:#e6dfd5; --line-2:#d6cdc1;
-  --gold:#c9a24a;
-  --r-s:6px; --r-m:10px; --r-l:14px; --radius:14px;
-  --shadow:0 1px 2px rgba(28,18,20,.04), 0 6px 20px rgba(28,18,20,.05);
+  --r-m:10px;
 }
 *{box-sizing:border-box;margin:0;padding:0}
-[hidden]{display:none !important;}
-html,body{min-height:100%;min-height:100dvh;height:auto;}
-html{background:var(--bg);}
-body{
+html,body{min-height:100%;min-height:100dvh;background:var(--bg);color:var(--ink);
   font-family:Inter,"Segoe UI","Helvetica Neue",Arial,sans-serif;
-  color:var(--ink);
-  background:var(--bg);
-  min-height:100%;
-  min-height:100dvh;
-  -webkit-font-smoothing:antialiased;
-  touch-action:manipulation;
-  font-feature-settings:"ss01","cv11";
-  text-rendering:optimizeLegibility;
-}
-h1,h2,h3{
-  font-family:"Playfair Display",Georgia,"Times New Roman",serif;
-  font-weight:600;
-  letter-spacing:-.015em;
-  font-variant-numeric:lining-nums;
-}
-button,textarea,input{font-family:inherit;color:inherit;}
-button{cursor:pointer;border:0;background:none;}
+  -webkit-font-smoothing:antialiased;touch-action:manipulation;}
+h1{font-family:"Playfair Display",Georgia,serif;font-weight:600;letter-spacing:-.015em;}
+button{cursor:pointer;border:0;background:none;font-family:inherit;color:inherit;}
 img{max-width:100%;display:block;}
 a{color:inherit;}
-::selection{background:rgba(125,20,38,.16);}
-:focus-visible{outline:2px solid var(--acc);outline-offset:3px;}
-
-.app{min-height:100%;min-height:100dvh;display:flex;flex-direction:column;max-width:1280px;margin:0 auto;padding:0 20px 40px;}
-.top{
-  display:flex;align-items:center;gap:16px;
-  width:100vw;position:relative;left:50%;right:50%;
-  margin:0 -50vw 0;padding:10px max(20px, calc(50vw - 640px + 20px));
-  min-height:64px;flex:none;
-  background:rgba(246,242,236,.94);color:var(--ink);
-  border-bottom:1px solid var(--line);
-}
-.home-btn{
-  order:2;border:1px solid var(--line-2);color:var(--ink);border-radius:var(--r-m);min-height:38px;padding:8px 14px;
-  font-size:12px;letter-spacing:.12em;background:var(--white);text-decoration:none;display:inline-flex;align-items:center;
-  font-weight:700;text-transform:uppercase;transition:border-color .2s,background .2s;
-}
-.home-btn:hover{border-color:var(--ink);}
-.brand{display:flex;align-items:center;gap:12px;flex:1;min-width:0;}
-.brand-mark{
-  width:28px;height:28px;border-radius:50%;flex:none;
-  background:var(--acc);
-  box-shadow:0 0 0 3px rgba(125,20,38,.12);
-}
-.brand-text{display:flex;align-items:baseline;gap:10px;min-width:0;padding-left:12px;border-left:1px solid var(--line-2);}
-.brand .pare{
-  font-family:"Playfair Display",Georgia,"Times New Roman",serif;
-  font-size:19px;font-weight:600;color:var(--ink);letter-spacing:0;line-height:1;
-}
-.brand .tag{
-  font-size:11px;letter-spacing:.2em;text-transform:uppercase;
-  color:var(--faint);font-weight:600;
-}
-.stage{flex:1;display:flex;flex-direction:column;align-items:center;min-height:0;padding-top:12px;}
-
-.preview-banner{
-  width:100vw;position:relative;left:50%;right:50%;margin:0 -50vw;
-  background:#2a181c;color:#f3e6d8;
-  font-size:12.5px;line-height:1.4;font-weight:500;
-  text-align:center;padding:8px 16px;
-}
-
-/* Made by Luke / hire-done reveal */
-.hire-done{
-  text-align:center;
-  width:min(640px,100%);
-  padding:12px 16px 8px;
-  display:block;
-}
-.hire-done h1{
-  font-size:clamp(32px,5vw,52px);
-  line-height:1.1;margin-bottom:8px;
-}
+.preview-banner{width:100%;background:#2a181c;color:#f3e6d8;font-size:12.5px;line-height:1.4;font-weight:500;text-align:center;padding:8px 16px;}
+.app{max-width:1280px;margin:0 auto;padding:0 20px 40px;min-height:100dvh;display:flex;flex-direction:column;}
+.top{display:flex;align-items:center;gap:16px;width:100vw;position:relative;left:50%;margin:0 -50vw;padding:10px max(20px, calc(50vw - 640px + 20px));min-height:64px;background:rgba(246,242,236,.94);border-bottom:1px solid var(--line);}
+.home-btn{order:2;border:1px solid var(--line-2);color:var(--ink);border-radius:var(--r-m);min-height:38px;padding:8px 14px;font-size:12px;letter-spacing:.12em;background:var(--white);text-decoration:none;display:inline-flex;align-items:center;font-weight:700;text-transform:uppercase;}
+.brand{display:flex;align-items:center;gap:12px;flex:1;}
+.brand-mark{width:28px;height:28px;border-radius:50%;background:var(--acc);flex:none;}
+.brand-text{display:flex;align-items:baseline;gap:10px;padding-left:12px;border-left:1px solid var(--line-2);}
+.brand .pare{font-family:"Playfair Display",Georgia,serif;font-size:19px;font-weight:600;line-height:1;}
+.brand .tag{font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--faint);font-weight:600;}
+.stage{flex:1;display:flex;flex-direction:column;align-items:center;padding-top:12px;}
+.hire-done{text-align:center;width:min(640px,100%);padding:12px 16px 24px;}
+.hire-done h1{font-size:clamp(32px,5vw,52px);line-height:1.1;margin-bottom:8px;}
 .hire-done p{font-size:18px;color:var(--soft);line-height:1.35;}
-.hire-photo-row{
-  display:flex;align-items:flex-end;justify-content:center;gap:8px;
-  margin:0 auto 16px;position:relative;
-}
-.hire-polaroid{
-  margin:0;
-  background:#FFFAF4;
-  padding:12px 12px 28px;
-  border:1px solid rgba(212,175,55,.4);
-  box-shadow:0 14px 36px rgba(43,5,8,.16);
-  transform:rotate(-2deg);
-  position:relative;z-index:1;
-  animation:polaroidIn .75s ease both;
-}
-.hire-polaroid img{
-  width:200px;height:250px;object-fit:cover;object-position:center 18%;
-  display:block;background:#e8e4dc;
-}
-@keyframes polaroidIn{
-  from{opacity:0;transform:rotate(-10deg) translateY(22px) scale(.94);}
-  to{opacity:1;transform:rotate(-2deg) translateY(0) scale(1);}
-}
-.hire-art{width:150px;height:auto;margin:0 auto 10px;}
-.hire-robin-peek{
-  width:92px;margin:0 0 6px;position:relative;z-index:2;
-  transform:rotate(6deg);
-  animation:robinPeek .7s ease .15s both;
-}
-@keyframes robinPeek{
-  from{opacity:0;transform:rotate(12deg) translateY(14px);}
-  to{opacity:1;transform:rotate(6deg) translateY(0);}
-}
+.hire-photo-row{display:flex;align-items:flex-end;justify-content:center;gap:8px;margin:0 auto 16px;position:relative;}
+.hire-polaroid{margin:0;background:#FFFAF4;padding:12px 12px 28px;border:1px solid rgba(212,175,55,.4);box-shadow:0 14px 36px rgba(43,5,8,.16);transform:rotate(-2deg);position:relative;z-index:1;}
+.hire-polaroid > img{width:200px;height:250px;object-fit:cover;object-position:center 18%;display:block;background:#e8e4dc;}
+.hire-robin-peek{width:92px;margin:0 0 6px;position:relative;z-index:2;transform:rotate(6deg);}
 .hire-name{font-size:22px !important;font-weight:700;color:var(--dark);margin-top:10px;}
 .hire-note{font-size:17px !important;color:var(--dark);max-width:28em;margin:6px auto 8px;line-height:1.4;}
 .hire-meta{font-size:16px;color:var(--soft);margin:2px 0 8px;}
 .hire-meta a{color:inherit;text-decoration:underline;text-underline-offset:2px;}
-
-.ig-badge{position:absolute;right:-12px;top:-12px;z-index:2;width:40px;height:40px;cursor:pointer;-webkit-tap-highlight-color:transparent;border-radius:50%;display:grid;place-items:center;color:#fff;
-  background:radial-gradient(circle at 30% 107%,#fdf497 0%,#fd5949 45%,#d6249f 60%,#285aeb 90%);box-shadow:0 4px 12px rgba(214,36,159,.35);
-  animation:igPulse 2s ease-in-out infinite;}
+.ig-badge{position:absolute;right:-12px;top:-12px;z-index:2;width:40px;height:40px;border-radius:50%;display:grid;place-items:center;color:#fff;background:radial-gradient(circle at 30% 107%,#fdf497 0%,#fd5949 45%,#d6249f 60%,#285aeb 90%);box-shadow:0 4px 12px rgba(214,36,159,.35);text-decoration:none;}
 .ig-badge svg{width:22px;height:22px;display:block;}
-.ig-badge:active{transform:scale(.92);}
-@keyframes igPulse{0%,100%{transform:scale(1)}50%{transform:scale(1.08)}}
-
-.socials{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 10px !important;}
-.hire-done .socials{justify-content:center;margin:4px 0 14px !important;}
-.socials a{display:inline-flex;align-items:center;gap:6px;min-height:36px;padding:6px 14px;border:1px solid var(--line,#e5ded4);border-radius:999px;
-  background:#fff;color:var(--ink,#1c1214);font-size:13px;font-weight:600;text-decoration:none;line-height:1;}
-.socials a:hover{border-color:var(--ink,#1c1214);}
-.socials svg{width:16px;height:16px;flex:none;display:block;}
+.socials{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin:4px 0 14px !important;}
+.socials a{display:inline-flex;align-items:center;gap:6px;min-height:36px;padding:6px 14px;border:1px solid var(--line);border-radius:999px;background:#fff;color:var(--ink);font-size:13px;font-weight:600;text-decoration:none;}
+.socials svg{width:16px;height:16px;flex:none;}
 .socials a:first-child svg{color:#0a66c2;}
 .socials a:last-child svg{color:#c13584;}
-
-/* Room for the Weak Hero clip the other change is landing on this screen */
-.vd-clip{margin:6px auto 16px;max-width:220px;}
-.vd-clip figcaption{margin:0 0 8px;font-size:13px;font-weight:600;color:var(--ink);}
-.vd-frame{position:relative;aspect-ratio:480/352;border-radius:var(--r-m,14px);overflow:hidden;background:#1c1214;box-shadow:0 10px 28px rgba(60,20,30,.18);}
-.vd-frame video{display:block;width:100%;height:100%;object-fit:cover;}
-.vd-sound{position:absolute;right:8px;bottom:8px;border:0;border-radius:999px;padding:7px 12px;font:700 12px/1 Inter,sans-serif;background:rgba(255,255,255,.92);color:#1c1214;
-  box-shadow:0 4px 12px rgba(0,0,0,.25);cursor:pointer;}
-.vd-sound:active{transform:scale(.94);}
-
-.btn{
-  display:inline-flex;align-items:center;justify-content:center;
-  background:var(--acc);color:#fff;font-weight:600;font-size:15.5px;
-  letter-spacing:.005em;
-  padding:12px 22px;border-radius:var(--r-m);min-height:48px;min-width:140px;
-  box-shadow:0 1px 0 rgba(255,255,255,.12) inset, 0 1px 2px rgba(28,18,20,.12);
-  transition:background .2s, box-shadow .2s, transform .15s, border-color .2s;
-  text-decoration:none;border:0;font-family:inherit;
-}
-.btn:hover{background:var(--acc2);}
-.btn:active{transform:scale(.97);background:var(--acc2);}
+.btn{display:inline-flex;align-items:center;justify-content:center;background:var(--acc);color:#fff;font-weight:600;font-size:15.5px;padding:12px 22px;border-radius:var(--r-m);min-height:48px;min-width:140px;text-decoration:none;font-family:inherit;border:0;}
 .btn.ghost{background:var(--white);color:var(--ink);border:1px solid var(--line-2);box-shadow:none;}
-.btn.ghost:hover{border-color:var(--ink);}
-.btn-row{display:flex;gap:12px;flex-wrap:wrap;margin-top:16px;}
-.hire-done-btns{justify-content:center;}
-.hire-done-btns a.btn{min-width:160px;text-decoration:none;}
-.luke-grade-hint{font-size:13px;color:var(--soft);margin:10px 0 0;line-height:1.35;text-align:center;flex:none;}
-
-/* Rolling credits under the footer, after the grade link */
-.credits-block{margin:28px auto 0;text-align:center;max-width:560px;}
-.credits-invite{
-  font-size:13px;font-weight:600;letter-spacing:.04em;
-  color:var(--soft);margin:0 0 12px;
-}
-.credits-well{
-  position:relative;
-  background:#221014;
-  color:#f4efe6;
-  border-radius:var(--r-l);
-  overflow:hidden;
-  box-shadow:0 10px 28px rgba(60,20,30,.18);
-}
-.credits-mask{
-  position:relative;
-  height:min(360px, 56dvh);
-  overflow:hidden;
-  cursor:pointer;
-  -webkit-mask-image:linear-gradient(to bottom, transparent 0, #000 28px, #000 calc(100% - 32px), transparent 100%);
-  mask-image:linear-gradient(to bottom, transparent 0, #000 28px, #000 calc(100% - 32px), transparent 100%);
-}
-.credits-roll{
-  padding: 64px 22px 64px;
-  will-change:transform;
-}
-.credits-roll.running{
-  animation:creditRoll var(--dur, 40s) linear forwards;
-  animation-play-state:var(--play, running);
-}
-@keyframes creditRoll{
-  from{transform:translateY(0);}
-  to{transform:translateY(calc(-1 * var(--dist, 0px)));}
-}
-.cr-kicker{
-  font-size:11px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;
-  color:var(--gold);margin:0 0 8px;
-}
-.cr-title{
-  font-family:"Playfair Display",Georgia,serif;
-  font-size:28px;font-weight:600;line-height:1.1;margin:0 0 36px;color:#fff;
-}
-.cr-egg{margin:0 auto 38px;max-width:280px;}
-.cr-thumb{
-  width:92px;height:92px;margin:0 auto 10px;
-  border-radius:12px;overflow:hidden;
-  background:#14090c;
-  box-shadow:0 6px 16px rgba(0,0,0,.35);
-}
-.cr-thumb img{width:100%;height:100%;object-fit:cover;}
-.cr-egg h3{
-  font-family:"Playfair Display",Georgia,serif;
-  font-size:20px;line-height:1.15;margin:0 0 4px;color:#fff;font-weight:600;
-}
-.cr-by{font-size:13px;font-weight:600;color:#e8c48a;margin:0 0 4px;}
-.cr-blurb{font-size:14px;line-height:1.4;color:rgba(244,239,230,.78);margin:0;font-weight:500;}
-.cr-section{margin:8px auto 36px;max-width:300px;}
-.cr-section h3{
-  font-family:"Playfair Display",Georgia,serif;
-  font-size:20px;margin:0 0 12px;color:#fff;
-}
-.cr-sponsors{list-style:none;display:flex;flex-direction:column;gap:7px;}
-.cr-sponsors li{font-size:14px;line-height:1.35;color:rgba(244,239,230,.86);font-weight:500;}
-.cr-note{font-size:13.5px;line-height:1.45;color:rgba(244,239,230,.8);margin:0 auto 10px;max-width:280px;}
-.cr-cta{margin:8px auto 0;display:flex;flex-direction:column;align-items:center;gap:10px;}
-.cr-end{margin:64px auto 0;max-width:300px;}
-.cr-end .cr-section{margin-bottom:18px;}
-.egg-link{
-  display:inline-flex;align-items:center;justify-content:center;
-  background:var(--acc);color:var(--cream);text-decoration:none;
-  font-weight:700;font-size:15px;letter-spacing:.01em;
-  padding:10px 22px;border-radius:999px;min-height:44px;
-  box-shadow:0 1px 0 rgba(255,255,255,.14) inset, 0 3px 10px rgba(0,0,0,.28);
-}
-.egg-link:hover{background:var(--acc2);}
-.egg-link:active{transform:scale(.97);}
-.egg-link:focus-visible{outline-color:#e8c48a;}
-.cr-thanks p{
-  font-size:15px;line-height:1.5;color:rgba(244,239,230,.88);
-  margin:0 auto 12px;max-width:300px;font-weight:500;
-}
-.cr-sign{
-  font-family:"Playfair Display",Georgia,serif;
-  font-style:italic;font-size:20px;color:#fff;margin:16px 0 0;
-}
-.cr-team{font-size:13.5px;line-height:1.5;color:rgba(244,239,230,.78);margin:0 auto;max-width:280px;}
-.credits-controls{
-  display:flex;align-items:center;justify-content:space-between;gap:10px;
-  padding:8px 12px 10px;
-  background:linear-gradient(to top, #221014, rgba(34,16,20,.92) 70%, transparent);
-  position:relative;z-index:1;
-}
-.credits-hint{font-size:12px;font-weight:600;color:rgba(244,239,230,.62);padding-left:4px;}
-.credits-skip{
-  min-height:36px;padding:6px 14px;border-radius:999px;
-  border:1px solid rgba(244,239,230,.28);color:#f4efe6;
-  font-size:13px;font-weight:700;background:transparent;
-}
-.credits-skip:hover{border-color:#f4efe6;}
-.credits-well.is-paused .credits-hint{color:#e8c48a;}
-.credits-well.is-done .credits-mask{cursor:default;}
-.credits-well.is-done .credits-controls{display:none;}
-
-@media (min-width:800px){
-  .credits-mask{height:360px;}
-  .cr-title{font-size:32px;}
-}
+.btn-row{display:flex;gap:12px;flex-wrap:wrap;margin-top:16px;justify-content:center;}
+.hire-done-btns a.btn{min-width:160px;}
+.luke-grade-hint{font-size:13px;color:var(--soft);margin:10px 0 0;line-height:1.35;text-align:center;}
 @media (max-height:800px){
-  .hire-polaroid img{width:160px;height:200px;}
+  .hire-polaroid > img{width:160px;height:200px;}
   .hire-polaroid{padding:10px 10px 22px;}
   .hire-robin-peek{width:72px;}
 }
 @media (max-width:420px){
   .app{padding:0 12px 32px;}
-  .credits-roll{padding-left:16px;padding-right:16px;}
   .hire-done h1{font-size:28px;}
   .hire-done p{font-size:16px;}
   .hire-done-btns{flex-direction:column;align-items:stretch;}
   .hire-done-btns .btn{width:100%;}
 }
-@media (prefers-reduced-motion:reduce){
-  .credits-roll, .credits-roll.running{animation:none;transform:none;padding-top:28px;padding-bottom:28px;}
-  .credits-mask{
-    height:auto;max-height:none;overflow:visible;cursor:default;
-    -webkit-mask-image:none;mask-image:none;
-  }
-  .credits-skip{display:none;}
-  .hire-polaroid,.hire-robin-peek,.ig-badge{animation:none;}
-  .btn:active{transform:none;}
+/* Quiet friend-group credits under the Type shit! thank-you footer */
+.quiet-credits{position:relative;margin:16px auto 0;max-width:400px;width:100%;}
+.qc-mask{
+  height:148px;overflow:hidden;cursor:pointer;
+  -webkit-mask-image:linear-gradient(to bottom, transparent 0, #000 16px, #000 calc(100% - 16px), transparent 100%);
+  mask-image:linear-gradient(to bottom, transparent 0, #000 16px, #000 calc(100% - 16px), transparent 100%);
 }
+.qc-roll{padding:148px 6px 36px;will-change:transform;color:rgba(28,18,20,.34);}
+.qc-head{
+  font-size:9px;font-weight:600;letter-spacing:.16em;text-transform:uppercase;
+  color:rgba(28,18,20,.22);margin:16px 0 7px;text-align:center;
+}
+.qc-row{
+  display:grid;
+  grid-template-columns:32px minmax(0,1fr) minmax(0,1fr);
+  column-gap:8px;row-gap:1px;
+  align-items:center;
+  margin:0 auto 11px;
+  max-width:340px;
+}
+.qc-thumb{
+  width:32px;height:32px;border-radius:4px;object-fit:cover;display:block;
+  opacity:.38;filter:grayscale(.4);grid-row:1 / span 2;
+  background:transparent;
+}
+.qc-role{
+  font-size:10px;letter-spacing:.07em;text-transform:uppercase;
+  text-align:right;font-weight:600;color:rgba(28,18,20,.3);line-height:1.2;
+}
+.qc-name{font-size:13px;text-align:left;font-weight:500;color:rgba(28,18,20,.4);line-height:1.2;}
+.qc-blurb{grid-column:2 / -1;font-size:11px;line-height:1.35;text-align:center;color:rgba(28,18,20,.28);margin-top:1px;}
+.qc-line,.qc-note{font-size:12px;line-height:1.4;text-align:center;margin:0 auto 5px;max-width:300px;color:rgba(28,18,20,.32);font-weight:500;}
+.qc-sign{font-family:"Playfair Display",Georgia,serif;font-style:italic;font-size:14px;text-align:center;margin:8px 0 0;color:rgba(28,18,20,.34);}
+.qc-end{margin:48px auto 0;text-align:center;}
+.qc-title{font-family:"Playfair Display",Georgia,serif;font-size:18px;font-weight:600;color:rgba(28,18,20,.38);margin:0 0 8px;letter-spacing:.02em;}
+.qc-link{font-size:12px;color:rgba(28,18,20,.34);text-decoration:underline;text-underline-offset:2px;font-weight:500;}
+.qc-link:hover{color:rgba(28,18,20,.55);}
+.qc-skip{
+  position:absolute;right:2px;bottom:0;z-index:1;
+  font-size:10px;letter-spacing:.1em;text-transform:uppercase;
+  color:rgba(28,18,20,.2);padding:6px 8px;min-height:28px;background:none;border:0;font-family:inherit;
+  opacity:0;
+}
+.qc-skip:focus-visible{opacity:1;color:rgba(28,18,20,.45);}
+.quiet-credits.qc-static .qc-mask{
+  height:auto;overflow:visible;cursor:default;
+  -webkit-mask-image:none;mask-image:none;
+}
+.quiet-credits.qc-static .qc-roll{padding:8px 6px 4px;transform:none !important;}
+.quiet-credits.qc-static .qc-roll > :not(.qc-end){display:none;}
+.quiet-credits.qc-static .qc-skip{display:none;}
+@media (prefers-reduced-motion:reduce){
+  .qc-mask{height:auto;overflow:visible;cursor:default;-webkit-mask-image:none;mask-image:none;}
+  .qc-roll{padding:8px 6px 4px;transform:none !important;}
+  .qc-roll > :not(.qc-end){display:none;}
+  .qc-skip{display:none;}
+}
+
 </style>
 </head>
 <body>
-  <div class="preview-banner">Preview only. The live site is unchanged. This is how credits would roll after Type shit!, on Luke's thank-you page.</div>
+  <div class="preview-banner">Preview of the quiet credits. The same roll is now on the live Type shit! thank-you page, under the A00# line.</div>
   <div class="app">
     <header class="top">
       <a class="home-btn" href="https://ladimal.github.io/pare-expo/">Home</a>
@@ -320,7 +140,7 @@ a{color:inherit;}
       </div>
     </header>
     <div class="stage">
-      <div class="hire-done on" id="hireDone">
+      <div class="hire-done on">
         <div class="hire-photo-row">
           <figure class="hire-polaroid">
             <img src="credits/luke.jpg" alt="Luke Dimal">
@@ -334,93 +154,60 @@ a{color:inherit;}
         <p>BCIT CIT</p>
         <p class="hire-meta"><a href="mailto:lukedimal@outlook.com">lukedimal@outlook.com</a></p>
         <p class="socials"><a href="https://www.linkedin.com/in/luke-dimal-105457133/" target="_blank" rel="noopener" aria-label="Luke on LinkedIn"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="2" width="20" height="20" rx="4" fill="currentColor"/><path d="M7 10v7M7 7v.01M11 17v-7M11 13.2c0-2 1.2-3.2 2.8-3.2S16.5 11 16.5 13v4" stroke="#fff" stroke-width="2" stroke-linecap="round" fill="none"/></svg>LinkedIn</a><a href="https://www.instagram.com/lukes_maxing/" target="_blank" rel="noopener" aria-label="Luke on Instagram"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5" stroke="currentColor" stroke-width="2" fill="none"/><circle cx="12" cy="12" r="4" stroke="currentColor" stroke-width="2" fill="none"/><circle cx="17.2" cy="6.8" r="1.2" fill="currentColor"/></svg>Instagram</a></p>
-
-        <figure class="vd-clip" id="voteClip">
-          <figcaption>A little something from the team.</figcaption>
-          <div class="vd-frame">
-            <video id="voteClipVid" muted playsinline webkit-playsinline loop autoplay preload="metadata" poster="memes/thanks.jpg"><source src="memes/thanks.webm" type="video/webm"><source src="memes/thanks.mp4" type="video/mp4"></video>
-            <button type="button" class="vd-sound" id="voteClipSound">Tap for sound</button>
-          </div>
-        </figure>
-
         <div class="btn-row hire-done-btns">
-          <a class="btn" id="lukeGrade" href="https://forms.gle/xrMetQxjRrob7h4b6" target="_blank" rel="noopener noreferrer">Grade our project</a>
-          <a class="btn ghost" id="hireHome" href="https://ladimal.github.io/pare-expo/">Back to home</a>
+          <a class="btn" href="https://forms.gle/xrMetQxjRrob7h4b6" target="_blank" rel="noopener noreferrer">Grade our project</a>
+          <a class="btn ghost" href="https://ladimal.github.io/pare-expo/">Back to home</a>
         </div>
         <p class="luke-grade-hint">Remember your A00# in Other Comments.</p>
-
-        <div class="credits-block">
-          <p class="credits-invite">If you're still here, the credits are rolling.</p>
-          <div class="credits-well" id="creditsWell">
-            <div class="credits-mask" id="creditsMask" role="region" aria-label="Rolling credits. Tap to pause. Use skip to jump to the end.">
-              <div class="credits-roll" id="creditsRoll">
-                <p class="cr-kicker">Pare Dating Expo</p>
-                <h2 class="cr-title">Credits</h2>
-
-                <article class="cr-egg">
-                  <div class="cr-thumb"><img src="credits/jensen.jpg" alt="Jensen Huang holding a championship belt"></div>
-                  <h3>Return of Jensen Huang</h3>
-                  <p class="cr-by">Inspired by Luke Dimal</p>
-                  <p class="cr-blurb">Success, and a little too much charm.</p>
-                </article>
-
-                <article class="cr-egg">
-                  <div class="cr-thumb"><img src="credits/gta6.jpg" alt="Doakes giving the I'm watching you look"></div>
-                  <h3>GTA VI Sick Days</h3>
-                  <p class="cr-by">Inspired by Ken Yu</p>
-                  <p class="cr-blurb">Missing since GTA 6 came out.</p>
-                </article>
-
-                <article class="cr-egg">
-                  <div class="cr-thumb"><img src="credits/weakhero.jpg" alt="A student in a pale jacket turning toward the camera"></div>
-                  <h3>Weak Hero</h3>
-                  <p class="cr-by">Inspired by Vincent Kim</p>
-                  <p class="cr-blurb">The smart one. Also a lovable menace.</p>
-                </article>
-
-                <article class="cr-egg">
-                  <div class="cr-thumb"><img src="credits/gojo.jpg" alt="Gojo charging a blast of purple energy"></div>
-                  <h3>Gojo</h3>
-                  <p class="cr-by">Inspired by Richard Cunningham</p>
-                  <p class="cr-blurb">Gym rat. Unreasonably strong.</p>
-                </article>
-
-                <section class="cr-section">
-                  <h3>Thank you to my sponsors</h3>
-                  <ul class="cr-sponsors">
-                    <li>Pre-workout, scoop still in the tub</li>
-                    <li>Official delays of GTA 6</li>
-                    <li>Energy drinks after midnight</li>
-                    <li>The BCIT library Wi-Fi</li>
-                    <li>One shared charger, somehow still alive</li>
-                    <li>The group chat that never sleeps</li>
-                  </ul>
-                </section>
-
-                <section class="cr-section">
-                  <h3>Disclaimer</h3>
-                  <p class="cr-note">All memes are inspired by true events in real life.</p>
-                  <p class="cr-note">Any resemblance to the friend group is entirely intentional.</p>
-                </section>
-
-                <div class="cr-end" id="creditsEnd">
-                  <section class="cr-section cr-thanks">
-                    <h3>A note from Luke</h3>
-                    <p>I loved making this. It was a fun, slightly messy, amazing learning experience.</p>
-                    <p class="cr-team">Thanks to the Pare Dating team. Emma Irvine, our CEO, and Ken, Gracie, and Len. And to BCIT for the practicum.</p>
-                    <p class="cr-sign">Luke</p>
-                  </section>
-                  <div class="cr-cta">
-                    <a class="egg-link" href="https://ladimal.github.io/pare-expo/#chat">Want to see the Easter eggs?</a>
-                  </div>
-                </div>
+        <div class="quiet-credits" id="quietCredits">
+          <div class="qc-mask" id="qcMask" role="region" aria-label="Credits. Tap to pause.">
+            <div class="qc-roll" id="qcRoll">
+              <p class="qc-head">easter eggs</p>
+              <div class="qc-row">
+                <img class="qc-thumb" data-src="credits/jensen-sm.webp?v=1" alt="" width="32" height="32" decoding="async">
+                <span class="qc-role">Jensen Huang</span>
+                <span class="qc-name">Luke Dimal</span>
+                <span class="qc-blurb">Success, and a little too much charm.</span>
+              </div>
+              <div class="qc-row">
+                <img class="qc-thumb" data-src="credits/gta6-sm.webp?v=1" alt="" width="32" height="32" decoding="async">
+                <span class="qc-role">GTA VI Sick Days</span>
+                <span class="qc-name">Ken Yu</span>
+                <span class="qc-blurb">Missing since GTA 6 came out.</span>
+              </div>
+              <div class="qc-row">
+                <img class="qc-thumb" data-src="credits/weakhero-sm.webp?v=1" alt="" width="32" height="32" decoding="async">
+                <span class="qc-role">Weak Hero</span>
+                <span class="qc-name">Vincent Kim</span>
+                <span class="qc-blurb">The smart one. Also a lovable menace.</span>
+              </div>
+              <div class="qc-row">
+                <img class="qc-thumb" data-src="credits/gojo-sm.webp?v=1" alt="" width="32" height="32" decoding="async">
+                <span class="qc-role">Gojo</span>
+                <span class="qc-name">Richard Cunningham</span>
+                <span class="qc-blurb">Gym rat. Unreasonably strong.</span>
+              </div>
+              <p class="qc-head">sponsors</p>
+              <p class="qc-line">Pre-workout, scoop still in the tub</p>
+              <p class="qc-line">Official delays of GTA 6</p>
+              <p class="qc-line">Energy drinks after midnight</p>
+              <p class="qc-line">The BCIT library Wi-Fi</p>
+              <p class="qc-line">One shared charger, somehow still alive</p>
+              <p class="qc-line">The group chat that never sleeps</p>
+              <p class="qc-head">a disclaimer</p>
+              <p class="qc-note">All memes are inspired by true events in real life.</p>
+              <p class="qc-note">Any resemblance to the friend group is entirely intentional.</p>
+              <p class="qc-head">special thanks</p>
+              <p class="qc-note">I loved making this. It was a fun, slightly messy, amazing learning experience.</p>
+              <p class="qc-note">Thanks to the Pare Dating team. Emma Irvine, our CEO, and Ken, Gracie, and Len. And to BCIT for the practicum.</p>
+              <p class="qc-sign">Luke</p>
+              <div class="qc-end" id="qcEnd">
+                <p class="qc-title">Pare Dating</p>
+                <a class="qc-link" href="https://ladimal.github.io/pare-expo/#chat">Want to see the Easter eggs?</a>
               </div>
             </div>
-            <div class="credits-controls">
-              <span class="credits-hint" id="creditsHint">Tap to pause</span>
-              <button type="button" class="credits-skip" id="creditsSkip">Skip</button>
-            </div>
           </div>
+          <button type="button" class="qc-skip" id="qcSkip">skip</button>
         </div>
       </div>
     </div>
@@ -428,95 +215,87 @@ a{color:inherit;}
 <script>
 (function(){
   var reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-  var vid = document.getElementById("voteClipVid");
-  var sound = document.getElementById("voteClipSound");
-  if(vid && sound){
-    sound.addEventListener("click", function(){
-      var on = vid.muted;
-      vid.muted = !on;
-      if(on){ vid.play().catch(function(){}); sound.textContent = "Sound on"; }
-      else sound.textContent = "Tap for sound";
+  var box = document.getElementById("quietCredits");
+  var mask = document.getElementById("qcMask");
+  var roll = document.getElementById("qcRoll");
+  var skip = document.getElementById("qcSkip");
+  if(!box || !mask || !roll) return;
+
+  function loadThumbs(){
+    box.querySelectorAll("img[data-src]").forEach(function(img){
+      if(!img.getAttribute("src")) img.src = img.getAttribute("data-src");
     });
   }
 
-  var well = document.getElementById("creditsWell");
-  var mask = document.getElementById("creditsMask");
-  var roll = document.getElementById("creditsRoll");
-  var hint = document.getElementById("creditsHint");
-  var skip = document.getElementById("creditsSkip");
-  if(!well || !mask || !roll) return;
-
   if(reduce){
-    hint.textContent = "Scroll to read";
+    box.classList.add("qc-static");
+    loadThumbs();
     return;
   }
 
-  var paused = false, done = false, started = false;
+  var y = 0, last = 0, paused = false, done = false, started = false;
+  var speed = 22;
 
-  function maxDist(){
-    return Math.max(0, roll.scrollHeight - mask.clientHeight);
-  }
+  function maxDist(){ return Math.max(0, roll.scrollHeight - mask.clientHeight); }
   function endDist(){
-    var end = document.getElementById("creditsEnd");
+    var end = document.getElementById("qcEnd");
     var max = maxDist();
     if(!end) return max;
-    var pad = 36;
-    var target = end.offsetTop + end.offsetHeight - (mask.clientHeight - pad);
+    var target = end.offsetTop + end.offsetHeight - (mask.clientHeight - 20);
     return Math.max(0, Math.min(max, target));
   }
-  function distance(){ return endDist(); }
+  function tick(ts){
+    if(!last) last = ts;
+    var dt = Math.min(0.05, (ts - last) / 1000);
+    last = ts;
+    if(roll.getAttribute("data-freeze") === "1"){ requestAnimationFrame(tick); return; }
+    if(!paused && !done){
+      var d = endDist();
+      y += speed * dt;
+      if(y >= d){ y = d; finish(); }
+      roll.style.transform = "translate3d(0," + (-y) + "px,0)";
+    }
+    if(!done) requestAnimationFrame(tick);
+  }
   function start(){
     if(started || done) return;
     started = true;
-    var dist = distance();
-    var sec = Math.max(32, Math.min(58, dist / 36));
-    roll.style.setProperty("--dist", dist + "px");
-    roll.style.setProperty("--dur", sec + "s");
-    roll.classList.add("running");
+    loadThumbs();
+    roll.style.paddingTop = "40px";
+    last = 0;
+    requestAnimationFrame(tick);
   }
   function finish(){
     if(done) return;
     done = true;
     paused = false;
-    var dist = roll.style.getPropertyValue("--dist") || (distance() + "px");
-    roll.classList.remove("running");
-    roll.style.transform = "translateY(calc(-1 * " + dist + "))";
-    well.classList.remove("is-paused");
-    well.classList.add("is-done");
-    hint.textContent = "";
+    y = endDist();
+    roll.style.transform = "translate3d(0," + (-y) + "px,0)";
     if(skip) skip.hidden = true;
-  }
-  function toggle(){
-    if(done || !started) return;
-    paused = !paused;
-    roll.style.setProperty("--play", paused ? "paused" : "running");
-    well.classList.toggle("is-paused", paused);
-    hint.textContent = paused ? "Tap to play" : "Tap to pause";
   }
 
   mask.addEventListener("click", function(e){
     if(e.target.closest("a")) return;
     if(!started) start();
-    else toggle();
+    else if(!done) paused = !paused;
   });
-  if(skip) skip.addEventListener("click", function(){
+  if(skip) skip.addEventListener("click", function(e){
+    e.stopPropagation();
+    loadThumbs();
     if(!started){
-      var dist = distance();
-      roll.style.setProperty("--dist", dist + "px");
+      started = true;
+      roll.style.paddingTop = "40px";
     }
     finish();
   });
-  roll.addEventListener("animationend", function(){ finish(); });
 
   if("IntersectionObserver" in window){
     var io = new IntersectionObserver(function(entries){
       entries.forEach(function(en){
-        if(en.isIntersecting && en.intersectionRatio >= 0.55) start();
+        if(en.isIntersecting && en.intersectionRatio >= 0.4) start();
       });
-    }, {threshold:[0.55]});
-    io.observe(well);
-  } else {
-    start();
+    }, {threshold:[0.4]});
+    io.observe(box);
   }
 })();
 </script>

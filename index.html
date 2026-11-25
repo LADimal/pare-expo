@@ -2278,6 +2278,64 @@ textarea:focus,.chat-form input:focus,.live-box textarea:focus{border-color:var(
   .hp-clip{transition:none;}
 }
 .hire-done .luke-grade-hint{margin:10px 0 0;}
+
+/* Quiet friend-group credits under the Type shit! thank-you footer */
+.quiet-credits{position:relative;margin:16px auto 0;max-width:400px;width:100%;}
+.qc-mask{
+  height:148px;overflow:hidden;cursor:pointer;
+  -webkit-mask-image:linear-gradient(to bottom, transparent 0, #000 16px, #000 calc(100% - 16px), transparent 100%);
+  mask-image:linear-gradient(to bottom, transparent 0, #000 16px, #000 calc(100% - 16px), transparent 100%);
+}
+.qc-roll{padding:148px 6px 36px;will-change:transform;color:rgba(28,18,20,.34);}
+.qc-head{
+  font-size:9px;font-weight:600;letter-spacing:.16em;text-transform:uppercase;
+  color:rgba(28,18,20,.22);margin:16px 0 7px;text-align:center;
+}
+.qc-row{
+  display:grid;
+  grid-template-columns:32px minmax(0,1fr) minmax(0,1fr);
+  column-gap:8px;row-gap:1px;
+  align-items:center;
+  margin:0 auto 11px;
+  max-width:340px;
+}
+.qc-thumb{
+  width:32px;height:32px;border-radius:4px;object-fit:cover;display:block;
+  opacity:.38;filter:grayscale(.4);grid-row:1 / span 2;
+  background:transparent;
+}
+.qc-role{
+  font-size:10px;letter-spacing:.07em;text-transform:uppercase;
+  text-align:right;font-weight:600;color:rgba(28,18,20,.3);line-height:1.2;
+}
+.qc-name{font-size:13px;text-align:left;font-weight:500;color:rgba(28,18,20,.4);line-height:1.2;}
+.qc-blurb{grid-column:2 / -1;font-size:11px;line-height:1.35;text-align:center;color:rgba(28,18,20,.28);margin-top:1px;}
+.qc-line,.qc-note{font-size:12px;line-height:1.4;text-align:center;margin:0 auto 5px;max-width:300px;color:rgba(28,18,20,.32);font-weight:500;}
+.qc-sign{font-family:"Playfair Display",Georgia,serif;font-style:italic;font-size:14px;text-align:center;margin:8px 0 0;color:rgba(28,18,20,.34);}
+.qc-end{margin:48px auto 0;text-align:center;}
+.qc-title{font-family:"Playfair Display",Georgia,serif;font-size:18px;font-weight:600;color:rgba(28,18,20,.38);margin:0 0 8px;letter-spacing:.02em;}
+.qc-link{font-size:12px;color:rgba(28,18,20,.34);text-decoration:underline;text-underline-offset:2px;font-weight:500;}
+.qc-link:hover{color:rgba(28,18,20,.55);}
+.qc-skip{
+  position:absolute;right:2px;bottom:0;z-index:1;
+  font-size:10px;letter-spacing:.1em;text-transform:uppercase;
+  color:rgba(28,18,20,.2);padding:6px 8px;min-height:28px;background:none;border:0;font-family:inherit;
+  opacity:0;
+}
+.qc-skip:focus-visible{opacity:1;color:rgba(28,18,20,.45);}
+.quiet-credits.qc-static .qc-mask{
+  height:auto;overflow:visible;cursor:default;
+  -webkit-mask-image:none;mask-image:none;
+}
+.quiet-credits.qc-static .qc-roll{padding:8px 6px 4px;transform:none !important;}
+.quiet-credits.qc-static .qc-roll > :not(.qc-end){display:none;}
+.quiet-credits.qc-static .qc-skip{display:none;}
+@media (prefers-reduced-motion:reduce){
+  .qc-mask{height:auto;overflow:visible;cursor:default;-webkit-mask-image:none;mask-image:none;}
+  .qc-roll{padding:8px 6px 4px;transform:none !important;}
+  .qc-roll > :not(.qc-end){display:none;}
+  .qc-skip{display:none;}
+}
 </style>
 </head>
 <body>
@@ -2633,6 +2691,57 @@ textarea:focus,.chat-form input:focus,.live-box textarea:focus{border-color:var(
           <button type="button" class="btn ghost" id="hireHome">Back to home</button>
         </div>
         <p class="luke-grade-hint">Remember your A00# in Other Comments.</p>
+
+        <div class="quiet-credits" id="quietCredits">
+          <div class="qc-mask" id="qcMask" role="region" aria-label="Credits. Tap to pause.">
+            <div class="qc-roll" id="qcRoll">
+              <p class="qc-head">easter eggs</p>
+              <div class="qc-row">
+                <img class="qc-thumb" data-src="credits/jensen-sm.webp?v=1" alt="" width="32" height="32" decoding="async">
+                <span class="qc-role">Jensen Huang</span>
+                <span class="qc-name">Luke Dimal</span>
+                <span class="qc-blurb">Success, and a little too much charm.</span>
+              </div>
+              <div class="qc-row">
+                <img class="qc-thumb" data-src="credits/gta6-sm.webp?v=1" alt="" width="32" height="32" decoding="async">
+                <span class="qc-role">GTA VI Sick Days</span>
+                <span class="qc-name">Ken Yu</span>
+                <span class="qc-blurb">Missing since GTA 6 came out.</span>
+              </div>
+              <div class="qc-row">
+                <img class="qc-thumb" data-src="credits/weakhero-sm.webp?v=1" alt="" width="32" height="32" decoding="async">
+                <span class="qc-role">Weak Hero</span>
+                <span class="qc-name">Vincent Kim</span>
+                <span class="qc-blurb">The smart one. Also a lovable menace.</span>
+              </div>
+              <div class="qc-row">
+                <img class="qc-thumb" data-src="credits/gojo-sm.webp?v=1" alt="" width="32" height="32" decoding="async">
+                <span class="qc-role">Gojo</span>
+                <span class="qc-name">Richard Cunningham</span>
+                <span class="qc-blurb">Gym rat. Unreasonably strong.</span>
+              </div>
+              <p class="qc-head">sponsors</p>
+              <p class="qc-line">Pre-workout, scoop still in the tub</p>
+              <p class="qc-line">Official delays of GTA 6</p>
+              <p class="qc-line">Energy drinks after midnight</p>
+              <p class="qc-line">The BCIT library Wi-Fi</p>
+              <p class="qc-line">One shared charger, somehow still alive</p>
+              <p class="qc-line">The group chat that never sleeps</p>
+              <p class="qc-head">a disclaimer</p>
+              <p class="qc-note">All memes are inspired by true events in real life.</p>
+              <p class="qc-note">Any resemblance to the friend group is entirely intentional.</p>
+              <p class="qc-head">special thanks</p>
+              <p class="qc-note">I loved making this. It was a fun, slightly messy, amazing learning experience.</p>
+              <p class="qc-note">Thanks to the Pare Dating team. Emma Irvine, our CEO, and Ken, Gracie, and Len. And to BCIT for the practicum.</p>
+              <p class="qc-sign">Luke</p>
+              <div class="qc-end" id="qcEnd">
+                <p class="qc-title">Pare Dating</p>
+                <a class="qc-link" href="#chat">Want to see the Easter eggs?</a>
+              </div>
+            </div>
+          </div>
+          <button type="button" class="qc-skip" id="qcSkip">skip</button>
+        </div>
       </div>
       <div class="hire-fest" id="hireFest" aria-hidden="true"></div>
     </section>
@@ -7328,7 +7437,7 @@ textarea:focus,.chat-form input:focus,.live-box textarea:focus{border-color:var(
   /* Play once per visit; tapping the Robin at the top replays it. */
   var seen = false;
   try{ seen = sessionStorage.getItem("robinIntroSeen") === "1"; sessionStorage.setItem("robinIntroSeen", "1"); }catch(e){}
-  if(!seen && location.hash !== "#results") play();
+  if(!seen && location.hash !== "#results" && location.hash !== "#chat") play();
   if(heroArt){
     heroArt.style.cursor = "pointer";
     heroArt.setAttribute("title", "Replay the opening");
@@ -7742,6 +7851,13 @@ window.PARE_LIVE = window.PARE_LIVE || {
     pollResults();
     setInterval(pollResults, 2000);
   }
+  function openChatHash(){
+    if(location.hash !== "#chat") return;
+    var intro = $("#robinIntro"); if(intro){ intro.classList.remove("on"); document.documentElement.classList.remove("ri-lock"); }
+    openView("chat");
+  }
+  openChatHash();
+  window.addEventListener("hashchange", openChatHash);
 })();
 </script>
 <script>(function(){
@@ -8465,5 +8581,92 @@ document.addEventListener("click", function(e){
   var m = document.getElementById("madeByLuke");
   if(m) m.click();
 });</script>
+<script>
+(function(){
+  var reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  var box = document.getElementById("quietCredits");
+  var mask = document.getElementById("qcMask");
+  var roll = document.getElementById("qcRoll");
+  var skip = document.getElementById("qcSkip");
+  if(!box || !mask || !roll) return;
+
+  function loadThumbs(){
+    box.querySelectorAll("img[data-src]").forEach(function(img){
+      if(!img.getAttribute("src")) img.src = img.getAttribute("data-src");
+    });
+  }
+
+  if(reduce){
+    box.classList.add("qc-static");
+    loadThumbs();
+    return;
+  }
+
+  var y = 0, last = 0, paused = false, done = false, started = false;
+  var speed = 22;
+
+  function maxDist(){ return Math.max(0, roll.scrollHeight - mask.clientHeight); }
+  function endDist(){
+    var end = document.getElementById("qcEnd");
+    var max = maxDist();
+    if(!end) return max;
+    var target = end.offsetTop + end.offsetHeight - (mask.clientHeight - 20);
+    return Math.max(0, Math.min(max, target));
+  }
+  function tick(ts){
+    if(!last) last = ts;
+    var dt = Math.min(0.05, (ts - last) / 1000);
+    last = ts;
+    if(roll.getAttribute("data-freeze") === "1"){ requestAnimationFrame(tick); return; }
+    if(!paused && !done){
+      var d = endDist();
+      y += speed * dt;
+      if(y >= d){ y = d; finish(); }
+      roll.style.transform = "translate3d(0," + (-y) + "px,0)";
+    }
+    if(!done) requestAnimationFrame(tick);
+  }
+  function start(){
+    if(started || done) return;
+    started = true;
+    loadThumbs();
+    roll.style.paddingTop = "40px";
+    last = 0;
+    requestAnimationFrame(tick);
+  }
+  function finish(){
+    if(done) return;
+    done = true;
+    paused = false;
+    y = endDist();
+    roll.style.transform = "translate3d(0," + (-y) + "px,0)";
+    if(skip) skip.hidden = true;
+  }
+
+  mask.addEventListener("click", function(e){
+    if(e.target.closest("a")) return;
+    if(!started) start();
+    else if(!done) paused = !paused;
+  });
+  if(skip) skip.addEventListener("click", function(e){
+    e.stopPropagation();
+    loadThumbs();
+    if(!started){
+      started = true;
+      roll.style.paddingTop = "40px";
+    }
+    finish();
+  });
+
+  if("IntersectionObserver" in window){
+    var io = new IntersectionObserver(function(entries){
+      entries.forEach(function(en){
+        if(en.isIntersecting && en.intersectionRatio >= 0.4) start();
+      });
+    }, {threshold:[0.4]});
+    io.observe(box);
+  }
+})();
+</script>
 </body>
 </html>
