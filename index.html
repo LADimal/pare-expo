@@ -300,6 +300,19 @@ img{max-width:100%;display:block;}
 .live-history .hist-meta{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
 .live-history .status-chip{margin-top:0;font-size:12px;padding:4px 9px;}
 .live-history .hist-robin{font-size:13px;color:var(--soft);margin:6px 0 0;line-height:1.35;}
+.live-thread{display:flex;flex-direction:column;gap:8px;margin:0 0 16px;}
+.live-thread-head{font-family:Inter,sans-serif;font-size:13px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--soft);margin:0 0 4px;}
+.live-msg{max-width:92%;padding:8px 12px;border-radius:16px;font-size:15px;line-height:1.35;background:#fff;border:1px solid var(--line);}
+.live-msg.them{align-self:flex-start;border-bottom-left-radius:4px;}
+.live-msg.me{align-self:flex-end;background:var(--cream);border-color:transparent;border-bottom-right-radius:4px;}
+.live-msg-who{display:block;font-size:12px;font-weight:700;color:var(--soft);margin:0 0 2px;}
+.live-msg p{margin:0;}
+.live-signs,.live-takeaway{margin:10px 0 0;font-size:14px;line-height:1.45;color:var(--dark);}
+.live-signs{color:var(--dark);}
+.live-takeaway{color:var(--soft);}
+.live-signs-label,.live-takeaway-label{font-weight:700;color:var(--dark);}
+.live-card .status-chip,.live-card .action-pill{display:block;width:fit-content;}
+
 @keyframes livePop{
   from{opacity:0;transform:scale(.86) translateY(8px);}
   to{opacity:1;transform:scale(1) translateY(0);}
@@ -2111,15 +2124,15 @@ textarea:focus,.chat-form input:focus,.live-box textarea:focus{border-color:var(
       <button type="button" class="back-link" data-back>Back</button>
       <div class="mode-head">
         <h1>Robin reacts live</h1>
-        <p>Type a message a member might send or receive. Robin will react, and you'll see what Pare would do with it.</p>
+        <p>Pick a conversation, or type a message a member might send. Robin will read the context and tell you how he'd handle it.</p>
       </div>
       <div class="live-wrap">
         <div class="panel live-box">
-          <label for="liveInput" style="font-weight:700;display:block;margin-bottom:8px">The message</label>
+          <label for="liveInput" style="font-weight:700;display:block;margin-bottom:8px">A message to check</label>
           <textarea id="liveInput" placeholder="Type a message here" maxlength="500"></textarea>
           <div class="live-count" id="liveCount" aria-live="polite">0 / 500</div>
           <p class="live-hint" id="liveHint">This box is for a message you want Robin to react to. To talk with him, use <button type="button" class="text-link" id="liveHintChat">Chat with Robin</button>.</p>
-          <p class="chip-hint">Or try one of these</p>
+          <p class="chip-hint">Or try one of these conversations</p>
           <div class="chip-row">
             <div class="chips" id="liveChips"></div>
           </div>
@@ -2127,7 +2140,7 @@ textarea:focus,.chat-form input:focus,.live-box textarea:focus{border-color:var(
             <button type="button" class="btn" id="liveCheck">Check message</button>
             <button type="button" class="btn ghost" id="liveSurprise">Surprise me</button>
           </div>
-          <p class="demo-note">Demo rules, not the live app. These are simple keyword checks for the booth, not Pare's real screener.</p>
+          <p class="demo-note">Demo rules for the booth, not Pare's real screener. Robin reads the whole conversation, not just one word.</p>
         </div>
         <div class="panel live-out is-empty" id="liveOut">
           <div id="liveResult" data-state="empty" aria-live="polite"></div>
@@ -2729,35 +2742,302 @@ textarea:focus,.chat-form input:focus,.live-box textarea:focus{border-color:var(
   }
 
   /* ---------- 2. Robin reacts live ---------- */
-  const EXAMPLES = [
-    "Want to grab coffee tomorrow?",
-    "Send me $200 in gift cards.",
-    "Call me at 604-555-0123.",
-    "Invest with me for guaranteed returns.",
-    "I spent $200 on dinner.",
-    "Anyone want easy money? DM me on WhatsApp.",
-    "Send me your login verification code.",
-    "Want to split the dinner bill?"
+  /* LIVE_SCENARIOS is the preset list for Robin reacts live.
+     Each item:
+       id        stable key, no spaces
+       label     short chip text
+       from      other member, like "Helen, 54"
+       messages  [{who: "them"|"me", text}]  them = the match, me = the Pare member
+       level     "safe" | "caution" | "high"
+       signs     short phrases Robin noticed
+       why       why the conversation is safe or suspicious
+       robin     Robin's suggested response, in his voice
+       takeaway  one educational line
+     Add a new scenario by appending an object with those fields. */
+  const LIVE_SCENARIOS = [
+    {
+      id: "coffee-after-work",
+      label: "Coffee after work",
+      from: "Mark, 58",
+      level: "safe",
+      messages: [
+        { who: "them", text: "Hi, I enjoyed your profile. The bit about Saturday farmers markets made me smile." },
+        { who: "me", text: "That's kind of you. I usually go to the one on Lonsdale." },
+        { who: "them", text: "I live up in Lynn Valley, so that's an easy one for me too." },
+        { who: "me", text: "Small world." },
+        { who: "them", text: "Would you like to grab coffee after work? I'm off around five on Thursday and there's a quiet place on Lonsdale I like." }
+      ],
+      signs: ["Public cafe", "A clear time", "No personal details asked"],
+      why: "He's suggesting a casual first coffee in a public neighbourhood spot, and the chat has stayed on ordinary plans.",
+      robin: "That's a solid first date. A public cafe, a clear time, and he's not asking for anything personal. I'd say yes if you like the sound of him, and tell a friend where you're going.",
+      takeaway: "A simple coffee invite in a public place is ordinary dating, even if the word coffee shows up a lot."
+    },
+    {
+      id: "quiet-investment",
+      label: "A quiet investment",
+      from: "Nadia, 44",
+      level: "high",
+      messages: [
+        { who: "them", text: "I work in logistics, mostly from home now. It's quieter than I expected at this age." },
+        { who: "me", text: "I went part time last year. The quieter pace suits me." },
+        { who: "them", text: "Same. I've actually done better with my savings since I had more time to look after them. A friend put me onto a trading desk that's been surprisingly steady." },
+        { who: "me", text: "Oh?" },
+        { who: "them", text: "I can show you how I started, if you're curious. They have a private page I use, and you begin with a small Interac e-Transfer just to open it. I'd hate for you to miss it while the return is still this good." }
+      ],
+      signs: ["Unsolicited investment", "A private page", "An Interac to open an account", "A fear of missing out"],
+      why: "A friendly chat about work turned into an investment you didn't ask for, on a private page, funded by e-Transfer. That's a common long-game romance pattern, even when it starts gently.",
+      robin: "I'd stop here and I wouldn't send any money. Talking about retirement is one thing. Asking you to open an account on a private page with an Interac e-Transfer is something else, and it's a pattern we see in romance fraud. If you want investing help, a person you already know, or a registered advisor you chose, is a safer place to start. I can also have our team look at this conversation.",
+      takeaway: "An investment offer from someone you met on a dating app, especially with a private page and a first payment, is a serious warning sign."
+    },
+    {
+      id: "whatsapp-kids",
+      label: "WhatsApp and the kids",
+      from: "Priya, 47",
+      level: "safe",
+      messages: [
+        { who: "them", text: "My two are 16 and 19 now, which is a strange in-between." },
+        { who: "me", text: "I have a son at UBC. I get the in-between." },
+        { who: "them", text: "I use WhatsApp more often because my children message me there. It's how we share photos of the dog." },
+        { who: "me", text: "We do the same thing in our family." },
+        { who: "them", text: "Anyway, I'd still rather keep getting to know you here for now. Want to compare notes on quiet walks in Stanley Park?" }
+      ],
+      signs: ["Mentions WhatsApp as a family habit", "Wants to stay on Pare"],
+      why: "WhatsApp comes up because of her kids, not as a way to move you off the app. She even says she'd rather keep talking here.",
+      robin: "This looks like ordinary family chat. She mentioned WhatsApp because that's how her kids reach her, and she wants to stay on Pare. No need to be alarmed by the word itself.",
+      takeaway: "A mention of WhatsApp is not a red flag on its own. Watch for being pushed to continue the romance there."
+    },
+    {
+      id: "leave-the-app",
+      label: "Maybe we leave the app",
+      from: "Chris, 56",
+      level: "caution",
+      messages: [
+        { who: "them", text: "I've really enjoyed this. You have a dry sense of humour I don't meet often." },
+        { who: "me", text: "That's a relief. I worry I come off a bit terse over text." },
+        { who: "them", text: "Not at all. I don't check this app as often as I mean to, though. Notifications get buried under work email." },
+        { who: "me", text: "I know that feeling." },
+        { who: "them", text: "I'm on WhatsApp most evenings, and it's easier for me to keep a conversation going there. Want to pick this up on WhatsApp so we don't lose the thread?" }
+      ],
+      signs: ["Early request to leave Pare", "Framed as convenience"],
+      why: "The chat has been warm and there's no money involved, but asking to move to WhatsApp early means Pare can no longer help if anything turns. That's worth slowing down, not a reason to assume the worst.",
+      robin: "He sounds genuine so far, and he hasn't asked for money. I'd still keep the conversation here a little longer. Moving off Pare early is common, and sometimes it's harmless, but it's also how people get isolated from the protections the app gives you. You can say you'd like to stay here until you've met.",
+      takeaway: "I barely use this app is a common lead-in to leaving the platform. You can stay here until you've met in person."
+    },
+    {
+      id: "retirement-advisor",
+      label: "Retirement planning",
+      from: "Tom, 61",
+      level: "safe",
+      messages: [
+        { who: "them", text: "I retire from the district in the spring. I'm looking forward to it, and a bit nervous too." },
+        { who: "me", text: "I keep meaning to sit down and look at my own numbers." },
+        { who: "them", text: "I'm planning my retirement and recently spoke with a financial advisor. She had me bring a list of questions, which helped." },
+        { who: "me", text: "That's smart. I should do the same." },
+        { who: "them", text: "If you ever want a coffee and a rant about paperwork, I'm happy to swap stories. No advice, just commiseration." }
+      ],
+      signs: ["Talks about his own advisor", "No product pitch", "No ask for money"],
+      why: "He's talking about his own retirement planning and a professional he already hired. He isn't offering to invest your money or send you a link.",
+      robin: "This is two people talking about a real life stage. He mentioned an advisor he already works with, not a chance to get you in on something. That's a normal conversation at this age.",
+      takeaway: "Talking about retirement or investments is not automatically a scam. The risk starts when someone pitches you a chance and wants money or a move off the app."
+    },
+    {
+      id: "book-the-table",
+      label: "I'll book the table",
+      from: "Linda, 63",
+      level: "caution",
+      messages: [
+        { who: "them", text: "There's a new cafe on Main that does a proper pot of tea, not a bag in a mug." },
+        { who: "me", text: "You've already sold me." },
+        { who: "them", text: "Saturday morning, then? I can take care of the reservation so you don't have to think about it." },
+        { who: "me", text: "That would be lovely." },
+        { who: "them", text: "Perfect. If you share your full name and phone number I can put the booking under both of us and text you the confirmation." }
+      ],
+      signs: ["Offers to handle the booking", "Asks for full name and phone together"],
+      why: "A reservation usually only needs one name. Asking for your full name and phone so they can take care of it is a bit more than the situation requires, especially before you've met.",
+      robin: "This might be nothing more than helpfulness, but I'd be a little careful. A cafe booking usually needs one name, not your full name and number. You can offer to book it yourself, or suggest you both just arrive at a time. That keeps things easy and keeps your details with you.",
+      takeaway: "If someone needs your full name and number to do a favour for you, it's fair to do that favour yourself instead."
+    },
+    {
+      id: "dinner-reservation",
+      label: "Dinner reservation",
+      from: "Helen, 54",
+      level: "safe",
+      messages: [
+        { who: "them", text: "I've been craving that little Italian place on Commercial. Have you been?" },
+        { who: "me", text: "Once, years ago. I remember the ravioli." },
+        { who: "them", text: "Let's go Friday if you're free. I can call ahead. They get busy." },
+        { who: "me", text: "Friday works." },
+        { who: "them", text: "Can I have your phone number so I can confirm our dinner reservation? I'll text you once I have the time." }
+      ],
+      signs: ["Already agreed on a public restaurant", "Number used to confirm the booking"],
+      why: "You've already chosen a public place and a day. Asking for a number to confirm the booking is a practical step, not a demand for ID or money.",
+      robin: "This reads like ordinary date planning. You already agreed on the restaurant, and she wants a number so she can text you the time. If you'd rather not share it yet, you can ask her to confirm the time here on Pare instead. That's a perfectly fair preference, not a suspicion.",
+      takeaway: "A phone number to confirm a plan you've both made is different from handing over ID so a stranger can book something for you."
+    },
+    {
+      id: "hard-morning",
+      label: "A hard morning",
+      from: "Robert, 57",
+      level: "high",
+      messages: [
+        { who: "them", text: "I've really come to look forward to your messages. You make the week easier." },
+        { who: "me", text: "That's a nice thing to hear. I feel the same way." },
+        { who: "them", text: "I don't want to worry you, but I'm at VGH. They think it might be my heart. I'm all right, just shaken." },
+        { who: "me", text: "I'm so sorry. Do you have family with you?" },
+        { who: "them", text: "That's the hard part. I came in a cab and my wallet's at home. They need a deposit for a prescription they won't fill otherwise. If you could Interac me $280 I can sort it this morning and I'll pay you back on Friday. I'd rather you didn't mention it to anyone, I feel embarrassed enough." }
+      ],
+      signs: ["A sudden medical emergency", "A wallet left at home", "An Interac request", "A wish that you keep it quiet"],
+      why: "After a warm, trusting chat, a hospital story appears with a request for money and a wish that you not tell anyone. Real friends in a crisis usually have more than one person to call, and a hospital in Vancouver does not need an e-Transfer from a dating match.",
+      robin: "I'm sorry if this is a real scare for him, and I won't pretend I know his medical situation. I would not send the money. Hospitals here don't collect a prescription deposit by Interac from someone you met online, and being asked to keep it quiet is a classic pressure tactic. If you want to help, you can encourage him to contact family or the hospital social worker, and you can report the message so our team can look at it.",
+      takeaway: "A sudden emergency plus a request for money, plus please don't tell anyone, is a pattern, not a coincidence."
+    },
+    {
+      id: "splitting-dinner",
+      label: "Splitting dinner",
+      from: "David, 52",
+      level: "safe",
+      messages: [
+        { who: "them", text: "That place in Gastown was a bit rich for a Tuesday, wasn't it?" },
+        { who: "me", text: "The steaks were good, I'll give them that." },
+        { who: "them", text: "I spent $200 on dinner. Happy to, but next time let's do the noodle shop on Victoria and split it down the middle." },
+        { who: "me", text: "Deal. I'm more of a noodle person anyway." },
+        { who: "them", text: "Thursday? I'll book a table for two under David." }
+      ],
+      signs: ["Talking about his own bill", "Suggests splitting next time", "Books under his own name"],
+      why: "He's joking about what he already paid, not asking you to send him money. Splitting a future bill and booking under his own name is normal.",
+      robin: "He's talking about a dinner he already bought, and suggesting you split the next one. That's ordinary and even considerate. Nothing here is asking you to send money.",
+      takeaway: "People talk about what they spent. A scam starts when someone asks you to send money to them."
+    },
+    {
+      id: "when-are-you-home",
+      label: "When are you home?",
+      from: "James, 45",
+      level: "caution",
+      messages: [
+        { who: "them", text: "Want to do an early dinner this week? I can work around your schedule." },
+        { who: "me", text: "I usually finish at the office around six, later on Tuesdays." },
+        { who: "them", text: "Tuesdays you stay late? Do you work from home the rest of the week?" },
+        { who: "me", text: "Mondays and Fridays I do. The commute from Burnaby is a lot otherwise." },
+        { who: "them", text: "So you're home alone those days? I sometimes get a free afternoon. It would be easy for me to swing by, if that's not too forward." }
+      ],
+      signs: ["Shifted from planning dinner to when you're home alone", "Offered to come by"],
+      why: "Starting with dinner is fine. Pressing for which days you're home alone, then offering to drop in, is more personal than a first meeting needs to be.",
+      robin: "Planning around work is normal. What I'd notice is the turn toward when you're home alone, and the offer to come by. I'd keep the first meeting in a public place, and I wouldn't confirm that you're in the house by yourself.",
+      takeaway: "It's reasonable to share a general schedule. You don't need to say when the house is empty or invite someone over before you've met in public."
+    },
+    {
+      id: "parcel-from-kids",
+      label: "A parcel from the kids",
+      from: "Susan, 49",
+      level: "safe",
+      messages: [
+        { who: "them", text: "My daughter's in Halifax for school, and she mailed me a birthday parcel." },
+        { who: "me", text: "That's sweet. I love a care package." },
+        { who: "them", text: "Canada Post says it's out for delivery tomorrow. She also sent tea, which she knows I'll hoard." },
+        { who: "me", text: "What a kid." },
+        { who: "them", text: "When it arrives I could bring you a tin, if you'd like to meet for a walk around Trout Lake. No agenda, just a walk." }
+      ],
+      signs: ["Her own parcel", "No fee asked", "A public walk"],
+      why: "The parcel and Canada Post are her own family news, not a package coming to you that needs a fee paid.",
+      robin: "This is a mum talking about a gift from her daughter, then inviting you on a public walk. There's no fee, no rush, and no request that you pay for anything.",
+      takeaway: "Travel, gifts and Canada Post show up in ordinary life. Be cautious only when someone says a package is for you and you need to pay to release it."
+    },
+    {
+      id: "parcel-for-you",
+      label: "A parcel for you",
+      from: "Anne, 62",
+      level: "high",
+      messages: [
+        { who: "them", text: "I've had such a good time talking. You mentioned you like woollen throws." },
+        { who: "me", text: "I did. Mine is falling apart." },
+        { who: "them", text: "I hope this isn't too much, but I sent you a little something from my last trip. A throw, and some tea." },
+        { who: "me", text: "That's very generous, though you didn't have to." },
+        { who: "them", text: "Canada Post just emailed me. They're holding it at the depot because of a small customs fee, $64. If you pay it by e-Transfer to the address they sent me, they can release it today. I'll pass you the note." }
+      ],
+      signs: ["An unexpected gift", "A customs fee you must pay", "An e-Transfer to a third party"],
+      why: "You didn't ask for a gift, and now a parcel in your name needs a fee paid by e-Transfer. That's a common courier and customs ruse. Real Canada Post fees don't get settled that way through a person you met on a dating app.",
+      robin: "It's a kind thought on the surface, and I can see why it would feel rude to refuse. I still wouldn't pay the fee. Unexpected parcels with a release payment are a well-worn pattern, and Canada Post won't ask you to Interac a stranger to get a package out. You can thank her and decline, and if an email shows up, don't follow it. Our team can take a look if you'd like.",
+      takeaway: "If a gift you didn't ask for comes with a fee to release it, treat it as a warning, not as a favour you owe."
+    },
+    {
+      id: "getting-to-know-you",
+      label: "Getting to know you",
+      from: "Karen, 51",
+      level: "caution",
+      messages: [
+        { who: "them", text: "I like these slower chats. They feel more like sitting at a kitchen table." },
+        { who: "me", text: "Me too. The quick back-and-forth ones wear me out." },
+        { who: "them", text: "Here's a fun one. What was your first pet's name? I had a ginger cat called Biscuit, which tells you a lot about me." },
+        { who: "me", text: "Ha, that's a good name." },
+        { who: "them", text: "And the street you grew up on? I always think those old street names stay with you. Mine was Birch." }
+      ],
+      signs: ["First pet's name", "The street you grew up on", "Classic account-recovery questions"],
+      why: "These can sound like warm getting-to-know-you questions, and maybe that's all they are. They're also the kind of answers banks use for account recovery, and people with bad intent sometimes collect them slowly.",
+      robin: "She might just be making conversation. I'd still keep those answers vague, or change the subject, because a first pet and the street you grew up on are classic security questions. You can share plenty of real stories without giving those exact details.",
+      takeaway: "Warm personal questions are fine. Be careful with the exact answers banks use to reset an account."
+    },
+    {
+      id: "ill-come-to-you",
+      label: "I'll come to you",
+      from: "Peter, 50",
+      level: "high",
+      messages: [
+        { who: "them", text: "Dinner was the plan, but I'm flexible. What's a typical week like for you?" },
+        { who: "me", text: "Office in the mornings, home by late afternoon most days." },
+        { who: "them", text: "And evenings? Is anyone else in the house, or is it just you and the cat you mentioned?" },
+        { who: "me", text: "Just me and the cat, most nights." },
+        { who: "them", text: "Good. I'm actually nearby Tuesday. I could come to you instead of us going out. No need to tell anyone, it'll be easier if it's just us. What's the address?" }
+      ],
+      signs: ["Pushed for who else is in the house", "Wants to come over", "Asks you to keep it quiet", "Asks for the address"],
+      why: "This went from a dinner plan to confirming you're alone, asking you not to tell anyone, and requesting your address. That's a personal safety concern, not just a bold invitation.",
+      robin: "I'd keep this to a public place, and I wouldn't share your address or confirm that you're in the house alone. The don't tell anyone part worries me more than the idea of a quiet evening. You don't owe him a yes, and if the tone feels off, you can end the chat and talk to our team.",
+      takeaway: "Someone who wants to know when you're alone, and to keep the visit quiet, is giving you a reason to slow down or stop."
+    },
+    {
+      id: "small-favour",
+      label: "A small favour",
+      from: "Michael, 60",
+      level: "caution",
+      messages: [
+        { who: "them", text: "I've had a lovely time talking with you this week." },
+        { who: "me", text: "I have too. You tell a good story." },
+        { who: "them", text: "I'm heading to Kelowna for a few days to see my sister. Bit of a last-minute thing." },
+        { who: "me", text: "I hope it's a good visit." },
+        { who: "them", text: "I have a delivery coming Friday and I won't be back in time. If I have it sent to you, could you take it in and I'll pick it up when I'm home? It's just a small box." }
+      ],
+      signs: ["Hasn't met you yet", "Asks to reroute a parcel to your address"],
+      why: "He may be in a bind, but asking a person you haven't met to receive a package at their home is a big ask. It can also be a way to get your address or involve you in a delivery you don't control.",
+      robin: "It's a flattering kind of trust, and it may be sincere. I'd still say no to receiving a parcel before you've met. You can be kind and still keep your address to yourself. Suggest he hold the package at the post office or with a neighbour he already knows.",
+      takeaway: "A small favour that needs your home address is not a small favour. It's fine to decline."
+    },
+    {
+      id: "tickets-then-more",
+      label: "Tickets, then a bit more",
+      from: "Grace, 48",
+      level: "high",
+      messages: [
+        { who: "them", text: "There's a concert at the Queen E next month. I can get us better seats through a colleague." },
+        { who: "me", text: "That sounds fun. What's the price like?" },
+        { who: "them", text: "If you Interac me $95 I can lock the two seats today. I'll sort the rest." },
+        { who: "me", text: "Let me think about it tonight." },
+        { who: "them", text: "They just told me the hold is until morning, and I already put my card down for the other fees. If you can send $95 now, and another $160 for the service charge, we'll be set. I don't want to lose the seats when we were both excited." }
+      ],
+      signs: ["A modest ticket favour first", "A second, larger payment", "A short deadline"],
+      why: "A small, time-limited payment that grows after you hesitate is a classic escalation. Tickets bought through a colleague with two Interac transfers and a short deadline are not how box offices work.",
+      robin: "I'd pass on sending the money. A small ticket hold that turns into a second, larger payment overnight is a pattern, not a box office. If you still want to go, you can buy your own seat from the venue and meet him there. No hard feelings needed.",
+      takeaway: "When a small favour becomes a bigger, urgent payment, that's the moment to stop, not to pay just this once."
+    }
   ];
 
   const LIVE_MAX = 500;
-  const LIVE_CHIPS = [
-    { label: "Coffee tomorrow?", text: "Want to grab coffee tomorrow?", expect: "deliver" },
-    { label: "Nice photo", text: "That's a really nice photo of you.", expect: "deliver" },
-    { label: "Hiking?", text: "Do you like hiking?", expect: "deliver" },
-    { label: "Gift card ask", text: "Send me $200 in gift cards.", expect: "block" },
-    { label: "Crypto investment", text: "Invest with me for guaranteed returns.", expect: "block" },
-    { label: "Emergency wire", text: "Can you wire me $300? I'm stranded.", expect: "block" },
-    { label: "Customs fee", text: "You need to pay a small fee first.", expect: "block" },
-    { label: "Move to WhatsApp", text: "What's your WhatsApp?", expect: "caution" },
-    { label: "Move to Telegram", text: "Message me on Telegram.", expect: "caution" },
-    { label: "SIN number?", text: "What's your SIN number?", expect: "block" },
-    { label: "Bank details", text: "What's your bank account number?", expect: "block" },
-    { label: "Home address", text: "Send me your home address.", expect: "block" },
-    { label: "Odd link", text: "Here's my link: bit.ly/abc123", expect: "caution" },
-    { label: "Urgent money", text: "I'm in the hospital. Can you send 500 dollars? It's urgent.", expect: "block" },
-    { label: "Verification code", text: "My verification code never arrived.", expect: "caution" }
-  ];
+  const LIVE_CHIPS = LIVE_SCENARIOS.map((s) => ({
+    label: s.label,
+    id: s.id,
+    text: s.messages[s.messages.length - 1].text,
+    expect: s.level === "high" ? "block" : s.level === "caution" ? "caution" : "deliver",
+    level: s.level,
+    scenario: s
+  }));
 
   function startLive(){
     show("live");
@@ -2814,9 +3094,10 @@ textarea:focus,.chat-form input:focus,.live-box textarea:focus{border-color:var(
   function isPresetLiveText(raw){
     const text = String(raw == null ? "" : raw).trim();
     if(!text) return false;
-    if(EXAMPLES.some((t) => t === text)) return true;
-    if(LIVE_CHIPS.some((c) => c.text === text)) return true;
-    return false;
+    return LIVE_SCENARIOS.some((s) => {
+      if(s.label === text || s.id === text) return true;
+      return !!(s.messages && s.messages.some((m) => String(m.text) === text));
+    });
   }
 
   /* Free-typed text that looks like a visitor talking to Robin, not a
@@ -3035,114 +3316,366 @@ textarea:focus,.chat-form input:focus,.live-box textarea:focus{border-color:var(
     location: "I'd be careful about sharing your home address or whether you're home alone, especially early on."
   };
 
-  function screenMessage(raw){
-    const original = (raw || "").trim();
-    if(!original) return null;
-    const n = normalizeText(original);
+  function firstNameFrom(from){
+    const raw = String(from || "").trim();
+    if(!raw) return "Them";
+    return raw.split(",")[0].trim() || "Them";
+  }
 
-    if(isCredentialRequest(n)){
+  function parseConversation(raw){
+    const text = String(raw == null ? "" : raw).trim();
+    if(!text) return [];
+    const lines = text.split(/\n+/);
+    const prefix = /^(them|they|him|her|match|you|me|i)[:\-]\s*(.+)$/i;
+    const parsed = [];
+    for(let i = 0; i < lines.length; i++){
+      const line = lines[i].trim();
+      if(!line) continue;
+      const m = line.match(prefix);
+      if(m){
+        const who = /^(you|me|i)$/i.test(m[1]) ? "me" : "them";
+        parsed.push({ who: who, text: m[2].trim() });
+      }
+    }
+    if(parsed.length) return parsed;
+    return [{ who: "them", text: text }];
+  }
+
+  function levelMeta(level, actionOverride){
+    if(level === "high"){
       return {
-        topic:"credential",
-        face:"holdon",
-        robin: ROBIN.money,
-        action:"block",
-        actionLabel:"Block",
-        pare: "Pare would not send this. " + PARE.money
+        level: "high",
+        action: "block",
+        actionLabel: "Hold",
+        face: "holdon"
       };
     }
-    if(isMoneyAsk(n)){
-      const why = /oil rig|hospital|emergency|bank card is frozen/.test(n.norm) ? " " + ROBIN.moneyWhy : "";
+    if(level === "caution"){
+      const hide = actionOverride === "hide";
       return {
-        topic:"money",
-        face:"holdon",
-        robin: ROBIN.money + why,
-        action:"block",
-        actionLabel:"Block",
-        pare: "Pare would not send this. " + PARE.money
+        level: "caution",
+        action: hide ? "hide" : "caution",
+        actionLabel: hide ? "Hide number" : "Deliver with a caution",
+        face: "thinking"
       };
     }
-    if(isSexualAsk(n)){
-      return {
-        topic:"sexual",
-        face:"holdon",
-        robin: ROBIN_EXTRA.sexual,
-        action:"block",
-        actionLabel:"Block",
-        pare: "Pare would not send this. This message was held because it asked for sexual photos or was sexually explicit. Please keep things respectful. Our safety team will take a look."
-      };
-    }
-    if(isThreat(n) || isHarassment(n)){
-      return {
-        topic:"harassment",
-        face:"holdon",
-        robin: "In cases like this, the notice comes from Pare, not from me.",
-        action:"block",
-        actionLabel:"Block",
-        pare: "Pare would not send this. " + PARE.harassment
-      };
-    }
-    if(isLocationProbe(n)){
-      return {
-        topic:"location",
-        face:"holdon",
-        robin: ROBIN_EXTRA.location,
-        action:"block",
-        actionLabel:"Block",
-        pare: "Pare would not send this. " + PARE.money
-      };
-    }
-    if(isSecurityProbe(n)){
-      return {
-        topic:"security",
-        face:"holdon",
-        robin: ROBIN_EXTRA.security,
-        action:"caution",
-        actionLabel:"Deliver with caution",
-        pare: "Pare would deliver this with a caution. Questions about first pets, schools, birthplaces and similar details are often used to guess answers to account security questions."
-      };
-    }
-    if(findPhone(original) || findEmail(original)){
-      return {
-        topic:"contact",
-        face:"holdon",
-        robin: ROBIN.offPlatform,
-        action:"hide",
-        actionLabel:"Hide number",
-        pare: "Pare would hide the phone number or email and deliver the rest. " + PARE.contact
-      };
-    }
-    if(isOffPlatform(n, original)){
-      return {
-        topic:"offPlatform",
-        face:"holdon",
-        robin: ROBIN.offPlatform,
-        action:"caution",
-        actionLabel:"Deliver with caution",
-        pare: "Pare would deliver this with a caution. Being asked to move the chat off Pare early is treated as a red flag."
-      };
-    }
-    if(hasSensitiveHint(n) && !isMathOrReligionSin(n)){
-      return {
-        topic:"caution",
-        face:"thinking",
-        robin: ROBIN_EXTRA.caution,
-        action:"caution",
-        actionLabel:"Deliver with caution",
-        pare: "Pare would deliver this with a caution. This might be worth a second look."
-      };
-    }
-    const extra = interpretOpeners(original, n);
-    if(extra) return extra;
     return {
-      face:"hello",
-      robin: "Nothing here looks like a request for money, personal information, or a move off Pare. Pare would deliver this message.",
-      action:"deliver",
-      actionLabel:"Deliver",
-      pare: "Pare would deliver this as ordinary conversation."
+      level: "safe",
+      action: "deliver",
+      actionLabel: "Deliver",
+      face: "yay"
     };
   }
 
+  const ASSESS_COPY = {
+    safe: {
+      topic: "ok",
+      signs: ["No money request", "No pressure to leave Pare", "No personal details demanded"],
+      robin: "Nothing here looks like a request for money, personal information, or a move off Pare. If the rest of the chat feels the same, this is ordinary dating conversation.",
+      why: "This reads as ordinary conversation. There is no request for money, no push off the app, and no demand for sensitive details.",
+      takeaway: "Common words like coffee, money, travel or WhatsApp are not warning signs on their own. Context is what matters."
+    },
+    investment: {
+      topic: "investment",
+      signs: ["An unsolicited investment", "A request to send money or join a private page"],
+      robin: "I'd stop here and I wouldn't send any money. Talking about retirement or savings is one thing. Being asked to invest, especially on a private page or with an Interac e-Transfer, is a pattern we see in romance fraud. A registered advisor you chose is a safer place to start. I can also have our team look at this.",
+      why: "An investment offer you didn't ask for, combined with a payment or a private page, is a serious warning sign.",
+      takeaway: "An investment offer from someone you met on a dating app, especially with a first payment, is a reason to stop."
+    },
+    money: {
+      topic: "money",
+      signs: ["A request that you send money"],
+      robin: "Please don't send it. Asking a person you met on a dating app to send money, gift cards or an e-Transfer is a very common pattern, and it isn't your fault. Can I get someone from the team to look at this right now?",
+      why: "This asks you to send money or a payment to someone you met on the app.",
+      takeaway: "People talk about what they spent. The risk starts when someone asks you to send money to them."
+    },
+    emergency: {
+      topic: "emergency",
+      signs: ["A sudden emergency", "A request for money"],
+      robin: "I'm sorry if this is a real scare, and I won't pretend I know their situation. I would not send the money. A sudden emergency plus a request for an e-Transfer, especially if you're asked not to tell anyone, is a classic pressure pattern. If you want to help, encourage them to contact family or local services, and you can report the message so our team can look at it.",
+      why: "A sudden crisis is being used to ask for money, often with a story that is hard to check.",
+      takeaway: "A sudden emergency plus a request for money, plus a wish that you keep it quiet, is a pattern, not a coincidence."
+    },
+    customs: {
+      topic: "customs",
+      signs: ["An unexpected parcel or gift", "A fee you must pay to release it"],
+      robin: "I can see why this would feel rude to refuse. I still wouldn't pay the fee. Unexpected parcels with a release payment are a well-worn pattern, and Canada Post won't ask you to Interac a stranger to get a package out. You can thank them and decline, and if an email shows up, don't follow it.",
+      why: "A gift or parcel you didn't ask for now needs a fee paid by e-Transfer or a similar method.",
+      takeaway: "If a gift you didn't ask for comes with a fee to release it, treat it as a warning, not as a favour you owe."
+    },
+    locationHigh: {
+      topic: "location",
+      signs: ["Interest in when you're home alone", "A request for your address or a private visit"],
+      robin: "I'd keep this to a public place, and I wouldn't share your address or confirm that you're in the house alone. The don't tell anyone part, if it's there, worries me more than the idea of a quiet evening. You don't owe a yes, and if the tone feels off, you can end the chat and talk to our team.",
+      why: "This goes beyond planning a date and toward when you're alone, your address, or a private visit.",
+      takeaway: "Someone who wants to know when you're alone, or to keep a visit quiet, is giving you a reason to slow down or stop."
+    },
+    locationCaution: {
+      topic: "location",
+      signs: ["The chat turned toward when you're home or alone"],
+      robin: "Planning around work is normal. What I'd notice is the turn toward when you're home, or home alone. I'd keep the first meeting in a public place, and I wouldn't confirm that you're in the house by yourself.",
+      why: "A schedule question is fine. Pressing for when the house is empty, or offering to drop in, is more personal than a first meeting needs.",
+      takeaway: "It's reasonable to share a general schedule. You don't need to say when the house is empty."
+    },
+    offPlatform: {
+      topic: "offPlatform",
+      signs: ["A request to move the chat off Pare"],
+      robin: "There's no money ask here, which is good. I'd still keep the conversation here a little longer. Moving off Pare early is common, and sometimes it's harmless, but it's also how people get isolated from the protections the app gives you. You can say you'd like to stay here until you've met.",
+      why: "Asking to continue on WhatsApp or another app early means Pare can no longer help if anything turns.",
+      takeaway: "I barely use this app is a common lead-in to leaving the platform. You can stay here until you've met in person."
+    },
+    identity: {
+      topic: "identity",
+      signs: ["Asks for full name and phone together", "Offers to handle a booking for you"],
+      robin: "This might be nothing more than helpfulness, but I'd be a little careful. A booking usually needs one name, not your full name and number. You can offer to book it yourself, or suggest you both just arrive at a time.",
+      why: "Asking for your full name and phone so they can take care of a reservation is more than the situation requires, especially before you've met.",
+      takeaway: "If someone needs your full name and number to do a favour for you, it's fair to do that favour yourself instead."
+    },
+    security: {
+      topic: "security",
+      signs: ["Questions that match common account-recovery details"],
+      robin: ROBIN_EXTRA.security,
+      why: "These can sound like warm getting-to-know-you questions. They're also the kind of answers banks use for account recovery.",
+      takeaway: "Warm personal questions are fine. Be careful with the exact answers banks use to reset an account."
+    },
+    favour: {
+      topic: "favour",
+      signs: ["Asks you to receive a delivery or do a favour that needs your address"],
+      robin: "It's a flattering kind of trust, and it may be sincere. I'd still say no to receiving a parcel before you've met. You can be kind and still keep your address to yourself. Suggest they hold the package at the post office or with someone they already know.",
+      why: "Asking a person you haven't met to receive a package at their home is a big ask, and it can be a way to get your address.",
+      takeaway: "A small favour that needs your home address is not a small favour. It's fine to decline."
+    },
+    contact: {
+      topic: "contact",
+      signs: ["A phone number or email in the message"],
+      robin: ROBIN.offPlatform,
+      why: "Pare would hide the phone number or email and deliver the rest. You can keep talking here until you've met.",
+      takeaway: "Phone numbers and emails can wait until you've met in a public place."
+    },
+    credential: {
+      topic: "credential",
+      signs: ["A request for login details, codes or official ID"],
+      robin: ROBIN.money,
+      why: "This asks for personal information that should never be shared in a dating chat, like a code, a bank detail or a government ID.",
+      takeaway: "No genuine match needs your SIN, bank details, passwords or login codes."
+    },
+    sexual: {
+      topic: "sexual",
+      signs: ["A sexual request or explicit content"],
+      robin: ROBIN_EXTRA.sexual,
+      why: "This message asked for sexual photos or was sexually explicit.",
+      takeaway: "You don't have to send photos like that, and it's okay to say no."
+    },
+    harassment: {
+      topic: "harassment",
+      signs: ["Hurtful or threatening language"],
+      robin: "In cases like this, the notice comes from Pare, not from me.",
+      why: "This message may come across as hurtful or threatening, so Pare would not send it.",
+      takeaway: "You don't have to stay in a conversation that insults or threatens you."
+    },
+    link: {
+      topic: "link",
+      signs: ["An odd or shortened link"],
+      robin: "I'd be a little careful with a link like this, especially early on. You can ask them to describe it here on Pare, and you don't have to tap it.",
+      why: "Short or unexpected links can hide a destination you wouldn't choose to visit.",
+      takeaway: "You can keep the conversation here and skip a link you weren't expecting."
+    },
+    caution: {
+      topic: "caution",
+      signs: ["Something here deserves a second look"],
+      robin: ROBIN_EXTRA.caution,
+      why: "This might be worth a second look. It may be nothing, but I'd be a little careful before sharing personal details.",
+      takeaway: "A caution is a pause, not a verdict. You can keep talking and still keep your details to yourself."
+    }
+  };
+
+  function packResult(level, copy, extra){
+    const meta = levelMeta(level, extra && extra.action);
+    const signs = (extra && extra.signs) || copy.signs || [];
+    const why = (extra && extra.why) || copy.why;
+    const robin = (extra && extra.robin) || copy.robin;
+    const takeaway = (extra && extra.takeaway) || copy.takeaway;
+    return Object.assign({
+      topic: copy.topic,
+      flags: (extra && extra.flags) || [],
+      robin: robin,
+      why: why,
+      pare: why,
+      signs: signs,
+      takeaway: takeaway,
+      messages: extra && extra.messages,
+      from: extra && extra.from,
+      label: extra && extra.label
+    }, meta);
+  }
+
+  function assessConversation(messages){
+    const msgs = (Array.isArray(messages) ? messages : parseConversation(messages))
+      .map((m) => ({
+        who: m && m.who === "me" ? "me" : "them",
+        text: String(m && m.text != null ? m.text : m || "").trim()
+      }))
+      .filter((m) => m.text);
+    if(!msgs.length) return null;
+
+    const allRaw = msgs.map((m) => m.text).join("\n");
+    const n = normalizeText(allRaw);
+    const t = n.norm;
+    const flags = [];
+
+    const moneyLanguage = isMoneyAsk(n);
+    const emergency = /\b(hospital|vgh|stranded|stuck overseas|emergency|wallet(s| is| was)? at home|prescription|oil rig)\b/.test(t);
+    const secrecy = /\b(dont tell|do not tell|didnt mention|rather you didnt|keep it (quiet|secret|between)|no need to tell anyone|dont mention)\b/.test(t);
+    const investmentPitch = /\b(invest with me|guaranteed returns?|investment opportunity|trading desk|private page|easy money|double your money)\b/.test(t)
+      || (/\b(invest|investment|trading|crypto|bitcoin)\b/.test(t) && (moneyLanguage || /\b(private page|open (an? )?account|get started|i can show you how|join this|the return is still)\b/.test(t)));
+    const advisorOnly = /\b(financial advisor|planning my retirement|spoke with a financial advisor|retir)\b/.test(t)
+      && !investmentPitch
+      && !moneyLanguage;
+    const giftForYou = /\b(sent you|a little something|gift i sent|parcel for you|package for you)\b/.test(t);
+    const parcelHold = (/\b(canada post|customs|holding it|depot|release it)\b/.test(t) && /\b(fee|pay|etransfer|e transfer|interac|release)\b/.test(t) && (giftForYou || moneyLanguage || /\b(pay (it|the fee)|customs fee|shipping fee|delivery fee|small fee)\b/.test(t)));
+    const homeAlone = /\b(home alone|youre alone|you are alone|just you|anyone else in the house|is it just you|in the house (by yourself|alone)|just me and the cat)\b/.test(t);
+    const visitOffer = /\b(come to you|come by|swing by|drop by|come over|i could come|ill come)\b/.test(t);
+    const addressAsk = /\b(whats the address|what is the address|your address|your home address|send (me )?your (home )?address|full address)\b/.test(t);
+    const moveAsk = /\b(pick this up on|message me on|add me on|dm me on|move (this |the chat )?to|continue (this |the conversation )?on|whats your (whatsapp|telegram|signal|snap|kik|instagram|number)|what is your (whatsapp|telegram)|text me instead|switch apps|want to .{0,60}on whatsapp|on telegram so)\b/.test(t)
+      || (/\bim on whatsapp\b/.test(t) && /\b(easier|keep a conversation|want to pick|lose the thread|leave the app)\b/.test(t));
+    const mentionsChatApp = /\b(whatsapp|telegram|signal|kik|snapchat|discord)\b/.test(t);
+    const stayHere = /\b(keep (getting to know you|talking|this) here|stay (on pare|here|on the app)|rather keep|id still rather)\b/.test(t);
+    const familyApp = mentionsChatApp && /\b(children|kids|my (son|daughter)|family)\b/.test(t) && !moveAsk;
+    const fullName = /\b(full name|legal name)\b/.test(t);
+    const asksPhone = /\b(phone number|your number|your phone)\b/.test(t);
+    const receiveParcel = /\b(have it sent to you|sent to you|send it to you|take it in|hold (the )?(parcel|package|box) for me|receive (the )?(parcel|package|box|delivery))\b/.test(t);
+
+    if(isCredentialRequest(n)){
+      flags.push("credential");
+      return packResult("high", ASSESS_COPY.credential, { flags: flags });
+    }
+    if(isSexualAsk(n)){
+      flags.push("sexual");
+      return packResult("high", ASSESS_COPY.sexual, { flags: flags });
+    }
+    if(isThreat(n) || isHarassment(n)){
+      flags.push("harassment");
+      return packResult("high", ASSESS_COPY.harassment, { flags: flags });
+    }
+
+    if(investmentPitch && !advisorOnly){
+      flags.push("investment");
+      return packResult("high", ASSESS_COPY.investment, { flags: flags });
+    }
+    if(parcelHold){
+      flags.push("customs");
+      return packResult("high", ASSESS_COPY.customs, { flags: flags });
+    }
+    if(moneyLanguage && emergency){
+      flags.push("emergency");
+      return packResult("high", ASSESS_COPY.emergency, { flags: flags });
+    }
+    if(moneyLanguage){
+      flags.push("money");
+      return packResult("high", ASSESS_COPY.money, { flags: flags });
+    }
+
+    if((homeAlone && visitOffer && (secrecy || addressAsk)) || (addressAsk && (homeAlone || secrecy || /\bsend (me )?your (home )?address\b/.test(t)))){
+      flags.push("location_high");
+      return packResult("high", ASSESS_COPY.locationHigh, { flags: flags });
+    }
+
+    if(isLocationProbe(n) && addressAsk){
+      flags.push("location_high");
+      return packResult("high", ASSESS_COPY.locationHigh, { flags: flags });
+    }
+
+    if(fullName && asksPhone){
+      flags.push("identity");
+      return packResult("caution", ASSESS_COPY.identity, { flags: flags });
+    }
+    if(moveAsk && !familyApp){
+      flags.push("off_platform");
+      return packResult("caution", ASSESS_COPY.offPlatform, { flags: flags });
+    }
+    if(isOffPlatform(n, allRaw) && !familyApp && !stayHere && !moveAsk){
+      if(findUrl(allRaw) && !findEmail(allRaw)){
+        flags.push("link");
+        return packResult("caution", ASSESS_COPY.link, { flags: flags });
+      }
+      if(!familyApp && mentionsChatApp){
+        flags.push("off_platform");
+        return packResult("caution", ASSESS_COPY.offPlatform, { flags: flags });
+      }
+    }
+    if(isSecurityProbe(n)){
+      flags.push("security");
+      return packResult("caution", ASSESS_COPY.security, { flags: flags });
+    }
+    if(homeAlone && visitOffer){
+      flags.push("location_caution");
+      return packResult("caution", ASSESS_COPY.locationCaution, { flags: flags });
+    }
+    if(homeAlone || (isLocationProbe(n) && !addressAsk)){
+      flags.push("location_caution");
+      return packResult("caution", ASSESS_COPY.locationCaution, { flags: flags });
+    }
+    if(receiveParcel && !parcelHold){
+      flags.push("favour");
+      return packResult("caution", ASSESS_COPY.favour, { flags: flags });
+    }
+    if(findPhone(allRaw) || findEmail(allRaw)){
+      flags.push("contact");
+      return packResult("caution", ASSESS_COPY.contact, { flags: flags, action: "hide" });
+    }
+    if(isOffPlatform(n, allRaw) && !familyApp && !stayHere){
+      flags.push("off_platform");
+      return packResult("caution", ASSESS_COPY.offPlatform, { flags: flags });
+    }
+    if(hasSensitiveHint(n) && !isMathOrReligionSin(n)){
+      flags.push("hint");
+      return packResult("caution", ASSESS_COPY.caution, { flags: flags });
+    }
+
+    const extra = interpretOpeners(allRaw, n);
+    if(extra){
+      flags.push("opener");
+      return packResult("safe", {
+        topic: "ok",
+        signs: ASSESS_COPY.safe.signs,
+        robin: extra.robin,
+        why: extra.pare || ASSESS_COPY.safe.why,
+        takeaway: ASSESS_COPY.safe.takeaway
+      }, { flags: flags, robin: extra.robin, why: extra.pare || ASSESS_COPY.safe.why });
+    }
+
+    flags.push("safe");
+    return packResult("safe", ASSESS_COPY.safe, { flags: flags });
+  }
+
+  function resultFromScenario(sc){
+    if(!sc) return null;
+    const engine = assessConversation(sc.messages);
+    const meta = levelMeta(sc.level);
+    return Object.assign({}, meta, {
+      topic: (engine && engine.topic) || sc.level,
+      flags: (engine && engine.flags) || [],
+      engineLevel: engine && engine.level,
+      robin: sc.robin,
+      why: sc.why,
+      pare: sc.why,
+      signs: sc.signs || [],
+      takeaway: sc.takeaway,
+      messages: sc.messages,
+      from: sc.from,
+      label: sc.label,
+      id: sc.id
+    });
+  }
+
+  function screenMessage(raw){
+    const original = (raw || "").trim();
+    if(!original) return null;
+    return assessConversation(parseConversation(original));
+  }
+
   window.PareScreen = screenMessage;
+
 
   /* ---------- Pare message screening, following Luke's design spec ----------
      Output contract: category (safe | scam | threat | harassment | sexual |
@@ -3423,6 +3956,7 @@ textarea:focus,.chat-form input:focus,.live-box textarea:focus{border-color:var(
   let liveTimer = 0;
   let liveBusy = false;
   let liveLast = null;
+  let liveActiveScenario = null;
   const livePast = [];
 
   function reducedLiveMotion(){
@@ -3451,16 +3985,18 @@ textarea:focus,.chat-form input:focus,.live-box textarea:focus{border-color:var(
   }
 
   function liveStatus(res){
-    if(res.action === "deliver") return { label: "Delivered", kind: "deliver" };
-    if(res.action === "block") return { label: "Held", kind: "block" };
-    if(res.action === "hide") return { label: "Number hidden", kind: "hide" };
-    return { label: "A caution", kind: "caution" };
+    if(res.chatRedirect) return { label: "", kind: "chat" };
+    if(res.level === "high" || res.action === "block") return { label: "High Risk", kind: "block" };
+    if(res.level === "caution" || res.action === "caution" || res.action === "hide"){
+      return { label: "Caution", kind: res.action === "hide" ? "hide" : "caution" };
+    }
+    return { label: "Safe", kind: "deliver" };
   }
 
   function liveFaceFor(res){
     if(res.chatRedirect) return "hello";
-    if(res.action === "deliver") return "yay";
-    if(res.action === "caution") return "thinking";
+    if(res.level === "safe" || res.action === "deliver") return "yay";
+    if(res.level === "caution" || res.action === "caution" || res.action === "hide") return "thinking";
     return "holdon";
   }
 
@@ -3508,13 +4044,14 @@ textarea:focus,.chat-form input:focus,.live-box textarea:focus{border-color:var(
     }
     setLiveButton(false);
     liveLast = null;
+    liveActiveScenario = null;
     if(clearHistory){
       livePast.length = 0;
       renderLiveHistory();
     }
     const input = $("#liveInput");
     if(input) input.value = "";
-    showLiveEmpty("Type a message, or tap one of the examples, then press Check message.");
+    showLiveEmpty("Type a message, or tap one of the conversations, then press Check message.");
   }
 
   function truncateLive(text, n){
@@ -3598,6 +4135,26 @@ textarea:focus,.chat-form input:focus,.live-box textarea:focus{border-color:var(
       pill.textContent = "What Pare would do: " + res.actionLabel;
       pd.hidden = false;
       pd.textContent = res.pare;
+      if(res.signs && res.signs.length){
+        const signs = document.createElement("p");
+        signs.className = "live-signs";
+        const sl = document.createElement("span");
+        sl.className = "live-signs-label";
+        sl.textContent = "What Robin noticed: ";
+        signs.appendChild(sl);
+        signs.appendChild(document.createTextNode(res.signs.join("; ") + "."));
+        pd.parentNode.appendChild(signs);
+      }
+      if(res.takeaway){
+        const take = document.createElement("p");
+        take.className = "live-takeaway";
+        const tl = document.createElement("span");
+        tl.className = "live-takeaway-label";
+        tl.textContent = "Takeaway: ";
+        take.appendChild(tl);
+        take.appendChild(document.createTextNode(res.takeaway));
+        pd.parentNode.appendChild(take);
+      }
     }
     if(!reducedLiveMotion()){
       said.classList.add("reveal");
@@ -3623,7 +4180,7 @@ textarea:focus,.chat-form input:focus,.live-box textarea:focus{border-color:var(
       liveLast = null;
     } else {
       liveLast = {
-        text: ($("#liveInput") && $("#liveInput").value) || "",
+        text: res.label || ($("#liveInput") && $("#liveInput").value) || "",
         label: status.label,
         kind: status.kind,
         robin: res.robin
@@ -3632,6 +4189,30 @@ textarea:focus,.chat-form input:focus,.live-box textarea:focus{border-color:var(
     setLiveButton(false);
     box.dataset.state = "ready";
     scrollToLiveEl(card, "center");
+  }
+
+
+  function renderLiveThread(res){
+    const wrap = document.createElement("div");
+    wrap.className = "live-thread";
+    const head = document.createElement("h3");
+    head.className = "live-thread-head";
+    head.textContent = res.from ? ("A conversation with " + res.from) : "The conversation";
+    wrap.appendChild(head);
+    const name = firstNameFrom(res.from);
+    (res.messages || []).forEach((m) => {
+      const row = document.createElement("div");
+      row.className = "live-msg " + (m.who === "me" ? "me" : "them");
+      const who = document.createElement("span");
+      who.className = "live-msg-who";
+      who.textContent = m.who === "me" ? "You" : name;
+      const p = document.createElement("p");
+      p.textContent = m.text;
+      row.appendChild(who);
+      row.appendChild(p);
+      wrap.appendChild(row);
+    });
+    return wrap;
   }
 
   function clampLiveText(text){
@@ -3665,17 +4246,28 @@ textarea:focus,.chat-form input:focus,.live-box textarea:focus{border-color:var(
     }
     updateLiveCount();
     const preset = !!(opts && opts.preset);
-    const res = (!preset && looksLikeChatToRobin(raw))
-      ? {
-          chatRedirect: true,
-          sourceText: raw,
-          face: "hello",
-          robin: "Sounds like you want to chat! Ask me in Chat with Robin.",
-          action: "chat",
-          actionLabel: "",
-          pare: ""
-        }
-      : screenMessage(raw);
+    const scenario = (opts && opts.scenario) || null;
+    let res;
+    if(scenario){
+      liveActiveScenario = scenario;
+      res = resultFromScenario(scenario);
+    } else if(!preset && looksLikeChatToRobin(raw)){
+      liveActiveScenario = null;
+      res = {
+        chatRedirect: true,
+        sourceText: raw,
+        face: "hello",
+        robin: "Sounds like you want to chat! Ask me in Chat with Robin.",
+        action: "chat",
+        actionLabel: "",
+        pare: ""
+      };
+    } else if(!raw && liveActiveScenario){
+      res = resultFromScenario(liveActiveScenario);
+    } else {
+      liveActiveScenario = null;
+      res = screenMessage(raw);
+    }
     flashLiveButton();
     if(!res){
       if(liveTimer){
@@ -3691,6 +4283,9 @@ textarea:focus,.chat-form input:focus,.live-box textarea:focus{border-color:var(
     setLiveOutEmpty(false);
     box.innerHTML = "";
     box.dataset.state = "reading";
+    if(res.messages && res.messages.length){
+      box.appendChild(renderLiveThread(res));
+    }
     const card = document.createElement("div");
     card.className = "robin-card live-card";
     const img = document.createElement("img");
@@ -3755,14 +4350,16 @@ textarea:focus,.chat-form input:focus,.live-box textarea:focus{border-color:var(
   function applyExample(ex, el){
     const input = $("#liveInput");
     if(!input || !ex) return;
-    input.value = clampLiveText(ex.text);
+    const scenario = ex.scenario || (ex.messages ? ex : null);
+    liveActiveScenario = scenario;
+    input.value = "";
     updateLiveCount();
     const chipWrap = $("#liveChips");
     if(chipWrap){
       $$(".chip", chipWrap).forEach((c) => c.classList.toggle("on", c === el));
       if(el && el.scrollIntoView) el.scrollIntoView({ inline: "center", block: "nearest", behavior: "smooth" });
     }
-    renderLive(input.value, { restart: true, preset: true });
+    renderLive("", { restart: true, preset: true, scenario: scenario });
   }
 
   function renderChipRow(order){
@@ -3821,7 +4418,12 @@ textarea:focus,.chat-form input:focus,.live-box textarea:focus{border-color:var(
       renderLive($("#liveInput").value);
     }
   });
-  $("#liveInput").addEventListener("input", updateLiveCount);
+  $("#liveInput").addEventListener("input", function(){
+    liveActiveScenario = null;
+    const chipWrap = $("#liveChips");
+    if(chipWrap) $$(".chip", chipWrap).forEach((c) => c.classList.remove("on"));
+    updateLiveCount();
+  });
   $("#liveInput").addEventListener("paste", () => setTimeout(updateLiveCount, 0));
   if($("#liveAgain")) $("#liveAgain").addEventListener("click", tryAnother);
   if($("#liveSurprise")) $("#liveSurprise").addEventListener("click", surpriseLive);
@@ -3830,7 +4432,7 @@ textarea:focus,.chat-form input:focus,.live-box textarea:focus{border-color:var(
   updateLiveCount();
 
   /* Expose for headless tests */
-  window.PareExpo = { screenMessage, normalizeText, show, startGame, startLive, LIVE_CHIPS, LIVE_MAX, looksLikeChatToRobin, isPresetLiveText };
+  window.PareExpo = { screenMessage, assessConversation, parseConversation, resultFromScenario, normalizeText, show, startGame, startLive, LIVE_CHIPS, LIVE_SCENARIOS, LIVE_MAX, looksLikeChatToRobin, isPresetLiveText };
 
   window.PareExpo.GAME = GAME;
 
