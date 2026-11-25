@@ -4875,9 +4875,13 @@ textarea:focus,.chat-form input:focus,.live-box textarea:focus{border-color:var(
   // The finger snap in purple.mp4: the light starts at 7.84s and the clip
   // cuts to a different scene at 7.97s. Flash to white on the snap, hold
   // the light, then ease into the résumé so that other scene never shows.
+  // Gojo's on-screen snap: the orb bursts into sparks on the 7.717s frame.
+  // The snap sound, rings and punch fire one frame ahead (7.70s) so audio
+  // output latency lands the sound on that frame.
+  const CLIP_SNAP_SECONDS = 7.70;
   const CLIP_FLASH_SECONDS = 7.80;
   const CLIP_CUT_SECONDS = 7.92;
-  const CLIP_HOLD_MS = 1080;
+  const CLIP_HOLD_MS = 600;
   const CLIP_CROSSFADE_MS = 800;
   const CLIP_FILES = ["purple.mp4?v=2"];
   const PURPLE_TIMING = {
@@ -5761,7 +5765,7 @@ textarea:focus,.chat-form input:focus,.live-box textarea:focus{border-color:var(
   let snapRaf = 0, snapFlashing = false, clipExiting = false, clipVolRaf = 0;
 
   /* ---------- The Gojo finger snap, right before the résumé ---------- */
-  const SNAP_IMPACT_MS = 110;
+  let snapFired = false;
   const snapFx = $("#snapFx");
   let snapCtx = null, snapBuf = null, snapEl = null, snapFxTimer = 0;
   // A finger snap built from scratch: a sharp filtered-noise crack, a short
@@ -5872,9 +5876,11 @@ textarea:focus,.chat-form input:focus,.live-box textarea:focus{border-color:var(
   function watchSnap(){
     cancelAnimationFrame(snapRaf);
     snapFlashing = false;
+    snapFired = false;
     const tick = () => {
       if(!purpleOn || purpleMode !== "clip" || lukeWrap.classList.contains("on") || clipExiting) return;
       const t = purpleVideo.currentTime || 0;
+      if(t >= CLIP_SNAP_SECONDS && !snapFired){ snapFired = true; gojoSnap(); }
       if(t >= CLIP_FLASH_SECONDS && !snapFlashing){
         snapFlashing = true;
         purpleFlash.style.transition = "opacity .25s ease-in";
@@ -5947,6 +5953,7 @@ textarea:focus,.chat-form input:focus,.live-box textarea:focus{border-color:var(
     clipExiting = true;
     if(clipCutTimer){ clearTimeout(clipCutTimer); clipCutTimer = 0; }
     cancelAnimationFrame(snapRaf);
+    if(!snapFired){ snapFired = true; gojoSnap(); }
     if(!snapFlashing){
       snapFlashing = true;
       purpleFlash.style.transition = "opacity .25s ease-in";
@@ -5957,14 +5964,7 @@ textarea:focus,.chat-form input:focus,.live-box textarea:focus{border-color:var(
     cardTimer = setTimeout(() => {
       cardTimer = 0;
       if(!purpleOn) return;
-      // The snap lands as the white peaks (about 9.0s), then the résumé eases in.
-      gojoSnap();
-      if(reducedMotion()){ fadeToResume(); return; }
-      cardTimer = setTimeout(() => {
-        cardTimer = 0;
-        if(!purpleOn) return;
-        fadeToResume();
-      }, SNAP_IMPACT_MS);
+      fadeToResume();
     }, hold);
   }
 
