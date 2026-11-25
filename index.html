@@ -2086,17 +2086,29 @@ textarea:focus,.chat-form input:focus,.live-box textarea:focus{border-color:var(
 .e2-six7.freeze::after{content:"";position:absolute;inset:0;pointer-events:none;background:radial-gradient(closest-side,transparent 55%,rgba(28,18,20,.45));}
 @keyframes s7Flash{from{opacity:.9}to{opacity:0}}
 
-/* 3. Vancouver shell jacket in the rain */
-.e2-shell{background:linear-gradient(180deg,#56626b 0%,#7d8a92 55%,#9aa5ab 100%);color:#fff;}
+/* 3. Vancouver: 5°C and every local switches to the same black shell */
+.e2-shell{background:linear-gradient(180deg,#8fa3b0 0%,#a9b8c0 55%,#b9c4c9 100%);color:#fff;transition:background 1s ease;}
+.e2-shell.cold{background:linear-gradient(180deg,#4f5c66 0%,#76838c 55%,#949fa5 100%);}
 .sh-mtn{position:absolute;left:0;right:0;bottom:30%;width:100%;height:auto;opacity:.55;}
 .sh-ground{position:absolute;left:0;right:0;bottom:0;height:31%;background:linear-gradient(#5d676d,#474f54);}
-.sh-fig{position:relative;z-index:2;width:min(40vw,170px);margin-top:4vh;animation:shIn .8s cubic-bezier(.16,1,.3,1) .1s both;}
+.sv-temp{position:relative;z-index:3;display:flex;align-items:baseline;justify-content:center;gap:2px;font-weight:800;font-variant-numeric:tabular-nums;
+  color:#1c1214;background:#fff;border-radius:var(--r-m,10px);padding:8px 16px;box-shadow:0 10px 26px rgba(0,0,0,.18);transition:color .3s,background .3s;}
+.sv-num{font-size:44px;line-height:1;min-width:1.2em;text-align:right;}
+.sv-deg{font-size:22px;}
+.sv-temp small{font-size:11px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;margin-left:10px;opacity:.6;}
+.e2-shell.cold .sv-temp{background:#dff1ff;color:#0b5c99;animation:svShiver .35s linear 2;}
+@keyframes svShiver{25%{transform:translateX(-4px)}75%{transform:translateX(4px)}}
+.sv-crowd{position:relative;z-index:2;display:flex;align-items:flex-end;justify-content:center;gap:2px;margin-top:22px;width:min(96vw,460px);}
+.sv-p{position:relative;flex:1;max-width:72px;animation:shIn .6s cubic-bezier(.16,1,.3,1) calc(var(--i) * 60ms) both;}
+.sv-p:nth-child(even){margin-bottom:10px;}
 @keyframes shIn{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:none}}
-.sh-fig svg{width:100%;height:auto;filter:drop-shadow(0 14px 16px rgba(0,0,0,.3));}
+.sv-p svg{display:block;width:100%;height:auto;}
+.sv-s{position:absolute;inset:0;opacity:0;transform:translateY(-14px) scale(1.04);}
+.e2-shell.cold .sv-s{opacity:1;transform:none;transition:opacity .18s ease calc(var(--i) * 80ms),transform .3s cubic-bezier(.3,1.5,.5,1) calc(var(--i) * 80ms);}
 .sh-txt{position:relative;z-index:3;margin-top:18px;padding:0 20px;}
-.sh-txt .e2-h{font-size:clamp(30px,9vw,46px);text-shadow:0 2px 18px rgba(0,0,0,.25);}
-.sh-txt .e2-s{margin:8px auto 0;opacity:.92;}
-.sh-tag{display:inline-block;margin-top:12px;padding:5px 10px;border-radius:var(--r-s,6px);background:rgba(20,26,30,.55);font-size:12px;font-weight:600;letter-spacing:.02em;}
+.sv-h,.sv-sub{opacity:0;}
+.e2-shell.cold .sv-h{font-size:clamp(28px,8.4vw,44px);text-shadow:0 2px 18px rgba(0,0,0,.25);animation:e2Up .55s cubic-bezier(.16,1,.3,1) .7s both;}
+.e2-shell.cold .sv-sub{margin:8px auto 0;opacity:.92;animation:e2Up .55s cubic-bezier(.16,1,.3,1) 1.2s both;}
 
 /* 4. Flying Roadster reveal */
 .e2-roadster{background:radial-gradient(90% 60% at 50% 80%,#2a2f45 0%,#0b0d16 70%);color:#f1f5f9;}
@@ -2165,6 +2177,7 @@ textarea:focus,.chat-form input:focus,.live-box textarea:focus{border-color:var(
 .rc-sign{display:inline-flex;align-items:center;gap:8px;padding:6px 12px;border-radius:5px;background:#1f6b45;color:#fff;font-weight:800;font-size:15px;
   border:2px solid #fff;box-shadow:0 0 0 2px #1f6b45;}
 .rc-scene{position:relative;width:min(94vw,440px);height:360px;margin-top:46px;}
+.rc-scene.jolt{animation:rdQuake .4s linear both;}
 .rc-road{position:absolute;left:-30vw;right:-30vw;top:0;height:150px;background:#3a3d42;border-top:3px solid #f5f5f4;border-bottom:3px solid #f5f5f4;}
 .rc-road::after{content:"";position:absolute;left:0;right:0;top:50%;height:3px;margin-top:-1.5px;
   background:repeating-linear-gradient(90deg,#f5f5f4 0 22px,transparent 22px 40px);}
@@ -2174,61 +2187,64 @@ textarea:focus,.chat-form input:focus,.live-box textarea:focus{border-color:var(
 @keyframes rcA{0%{left:-30%;top:38px;transform:none}42%{left:38%;top:38px;transform:none}52%{left:56%;top:76px;transform:rotate(22deg)}
   60%{left:68%;top:112px;transform:none}100%{left:140%;top:112px;transform:none}}
 .rc-b{top:112px;animation:rcB 2.3s linear .25s both;}
-@keyframes rcB{0%{left:-20%}44%{left:40%}54%{left:45%;transform:translateX(0) scale(.97)}74%{left:46%;transform:none}100%{left:125%}}
+@keyframes rcB{0%{left:-20%}44%{left:40%}54%{left:45%;transform:scale(.97)}74%{left:46%;transform:none}100%{left:135%}}
 .rc-b .tl{filter:drop-shadow(0 0 4px rgba(255,43,43,.9));animation:rcBrake 2.3s linear .25s both;}
 @keyframes rcBrake{0%,46%{fill:#7f1d1d}48%,74%{fill:#ff2b2b}76%,100%{fill:#7f1d1d}}
-.rc-skid{position:absolute;top:100px;left:28%;width:18%;height:24px;opacity:0;animation:rcSkid 3s ease 1.3s both;
+.rc-skid{position:absolute;top:100px;left:28%;width:18%;height:24px;opacity:0;animation:rcSkidIn 2.2s ease 1.3s both;
   background:linear-gradient(#141416 0 4px,transparent 4px 20px,#141416 20px 24px);border-radius:2px;}
-@keyframes rcSkid{0%{opacity:0}8%,100%{opacity:.55}}
+@keyframes rcSkidIn{0%{opacity:0}10%,80%{opacity:.55}100%{opacity:0}}
+.rc-h{top:38px;animation:rcH 1.5s cubic-bezier(.2,.7,.3,1) 2.3s both;}
+@keyframes rcH{0%{left:-30%}60%,100%{left:46%}}
+.rc-h .bl{animation:rcBlink .5s steps(1) infinite;}
+.rc-u{top:38px;animation:rcU 2.1s cubic-bezier(.45,0,.55,1) 2.7s both;}
+@keyframes rcU{0%{left:-30%;top:38px;transform:none}22%,42%{left:22%;top:38px;transform:none}58%{left:40%;top:110px;transform:rotate(28deg)}
+  72%{left:62%;top:40px;transform:rotate(-30deg)}82%{left:76%;top:38px;transform:none}100%{left:140%;top:38px;transform:none}}
+.rc-honk{position:absolute;top:-8px;left:20%;padding:3px 8px;border-radius:4px;background:#ffd23f;color:#1c1214;font-weight:900;font-size:13px;letter-spacing:.04em;
+  opacity:0;transform:rotate(-8deg);}
+.rc-honk.h1{animation:rcPop .7s cubic-bezier(.3,1.6,.5,1) 3.15s both;}
+.rc-honk.h2{left:auto;right:30%;top:4px;transform:rotate(6deg);animation:rcPop .8s cubic-bezier(.3,1.6,.5,1) 3.5s both;}
+@keyframes rcPop{0%{opacity:0;scale:.3}25%{opacity:1;scale:1.15}40%,85%{opacity:1;scale:1}100%{opacity:0;scale:1}}
 .rc-lot{position:absolute;left:0;right:0;top:186px;height:170px;}
-.rc-stall{position:absolute;bottom:0;width:27%;height:100px;border-left:3px solid #fff;}
+.rc-stall{position:absolute;bottom:0;width:19%;height:100px;border-left:3px solid #fff;}
 .rc-stall:last-child{border-right:3px solid #fff;}
-.rc-m{left:8%;top:30px;margin:-21px 0 0 -42px;animation:rcPark 2.7s cubic-bezier(.45,0,.55,1) 2.4s both;transform-origin:50% 50%;}
+.rc-m{left:-30%;top:30px;animation:rcPark 1.7s cubic-bezier(.45,0,.55,1) 4.1s both;transform-origin:50% 50%;}
 @keyframes rcPark{
-  0%{left:-6%;top:30px;transform:none}
-  20%{left:40%;top:30px;transform:none}
-  32%{left:46%;top:80px;transform:rotate(62deg)}
-  42%{left:40%;top:32px;transform:rotate(10deg)}
-  56%{left:50%;top:96px;transform:rotate(112deg)}
-  66%{left:42%;top:34px;transform:rotate(18deg)}
-  100%{left:47%;top:112px;transform:rotate(52deg)}}
+  0%{left:-30%;top:30px;transform:none}
+  32%{left:40%;top:30px;transform:none}
+  50%{left:47%;top:84px;transform:rotate(72deg)}
+  66%{left:42%;top:36px;transform:rotate(20deg)}
+  100%{left:52%;top:96px;transform:rotate(5deg)}}
 .rc-m .bl{animation:rcBlink .5s steps(1) infinite;}
 @keyframes rcBlink{50%{opacity:0}}
-.rc-say{position:absolute;padding:4px 9px;border-radius:5px;background:#1c1214;color:#fff;font-size:12px;font-weight:700;white-space:nowrap;opacity:0;}
-.rc-say.s1{top:-34px;left:50%;transform:translateX(-50%);animation:rcSay 1.4s ease 1.15s both;}
-.rc-say.s2{top:160px;left:50%;transform:translateX(-50%);animation:rcSay 1.8s ease 2.9s both;}
+.rc-say{position:absolute;padding:4px 9px;border-radius:5px;background:#1c1214;color:#fff;font-size:12px;font-weight:700;white-space:nowrap;opacity:0;left:50%;transform:translateX(-50%);}
+.rc-say.s1{top:-34px;animation:rcSay 1.3s ease 1.15s both;}
+.rc-say.s3{top:-34px;animation:rcSay 1.5s ease 2.7s both;}
+.rc-say.s2{top:160px;animation:rcSay 1.6s ease 4.3s both;}
 @keyframes rcSay{0%{opacity:0}12%,80%{opacity:1}100%{opacity:0}}
 .rc-end{margin-top:10px;font-size:15px;font-weight:700;}
 .rc-end small{display:block;font-weight:500;font-size:13px;opacity:.7;margin-top:2px;}
 
+/* Real meme GIFs (GIPHY), full screen with a caption */
+.e2-gif{background:#0b0b0c;color:#fff;padding:0 16px;}
+.e2-gif video{width:min(100%,520px);max-height:62vh;border-radius:var(--r-m,10px);background:#000;object-fit:contain;animation:e2Up .4s ease both;}
+.e2-gif .gf-cap{margin-top:16px;font-size:clamp(24px,7vw,38px);}
+.e2-gif .gf-sub{margin-top:6px;}
+.e2-gif .gf-src{position:absolute;right:12px;top:calc(env(safe-area-inset-top,0px) + 12px);font-size:10px;letter-spacing:.12em;text-transform:uppercase;opacity:.45;}
+
 @media (prefers-reduced-motion: reduce){
   .egg2 *,.egg2 *::before,.egg2 *::after{animation-duration:.01ms !important;animation-delay:0s !important;animation-iteration-count:1 !important;}
 }
-/* LinkedIn and Instagram links on the résumé and thank-you cards */
-.socials{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 10px !important;}
-.hire-done .socials{justify-content:center;margin:4px 0 14px !important;}
-.socials a{display:inline-flex;align-items:center;gap:6px;min-height:36px;padding:6px 12px;border:1px solid var(--line,#e5ded4);border-radius:var(--r-s,6px);
-  background:#fff;color:var(--ink,#1c1214);font-size:13px;font-weight:600;text-decoration:none;}
-.socials a:hover{border-color:var(--ink,#1c1214);}
-.socials svg{width:16px;height:16px;flex:none;}
-.socials a:first-child svg{color:#0a66c2;}
-.socials a:last-child svg{color:#c13584;}
-/* The photo on the thank-you page opens Luke's Instagram */
-.ig-badge{position:absolute;right:-16px;top:-16px;z-index:2;width:52px;height:52px;cursor:pointer;-webkit-tap-highlight-color:transparent;border-radius:50%;display:grid;place-items:center;color:#fff;
-  background:radial-gradient(circle at 30% 107%,#fdf497 0%,#fd5949 45%,#d6249f 60%,#285aeb 90%);box-shadow:0 6px 16px rgba(214,36,159,.4);
-  animation:igPulse 2s ease-in-out infinite;}
-.ig-badge svg{width:28px;height:28px;}
-.ig-badge:active{transform:scale(.92);}
-@keyframes igPulse{0%,100%{transform:scale(1)}50%{transform:scale(1.1)}}
-@media (prefers-reduced-motion: reduce){.ig-badge{animation:none;}}
-/* Robin reacts live: less to read */
-#view-live .live-count{display:none;}
-#view-live #liveInput{min-height:88px;}
-/* "Say hi" links to Luke */
-.luke-plug{margin:14px 0 0 !important;font-size:14px;color:var(--muted,#6b6266);}
-.luke-plug .text-link{font-weight:700;color:var(--acc,#7d1426);text-decoration:underline;text-underline-offset:2px;background:none;border:0;padding:0;font:inherit;cursor:pointer;}
-.bub-cta{display:flex;align-items:center;justify-content:center;margin-top:10px;min-height:40px;padding:8px 14px;border-radius:var(--r-s,6px);
-  background:var(--acc,#7d1426);color:#fff;font-weight:700;font-size:14px;border:0;cursor:pointer;width:100%;}
+/* Phones: full-width section title, a compact chat button, and no duplicate while the hero's Chat with Robin button is on screen */
+@media (max-width:759px){
+  body:has(#view-home.on) #demos .sec-head{padding-right:0;}
+  .chat-fab{padding:6px !important;gap:0;}
+  .chat-fab .fab-text{display:none;}
+  .fab-av{width:48px;height:48px;}
+  .fab-av img{width:44px;height:44px;}
+  .fab-dot{left:auto !important;right:2px;top:2px;}
+}
+.chat-fab{transition:transform .25s ease,opacity .25s ease;}
+.chat-fab.fab-away{animation:none !important;opacity:0;transform:translateY(24px) scale(.9);pointer-events:none;}
 </style>
 </head>
 <body>
@@ -7155,7 +7171,7 @@ window.PARE_LIVE = window.PARE_LIVE || {
     {k:/leather jacket|the more you buy|more you buy,? the more you save|jensen|nvidia|accelerated computing|\brtx\b|graphics cards?|\bgpus?\b/i, fx:"jensen",
      r:"Thank you, thank you. Keynote's over. Good news: unlike a graphics card, a great first message is free. Want help writing one?"},
     {k:/arc'?\s?teryx|gore-?tex|shell jacket/i, n:/\b(it'?s )?rain(ing|y)\b|\bvancouver weather\b/i, fx:"shell",
-     r:"Rain? What rain? For a rainy Vancouver date, try a cozy café, the aquarium or a bookstore. A good jacket helps, but it's not a personality."},
+     r:"5°C and the shells come out. For a rainy Vancouver date, try a cozy café, the aquarium or a bookstore. A good jacket helps, but it's not a personality."},
     {k:/\btesla\b|roadster|flying cars?|cybertruck|\belon\b/i, fx:"roadster",
      r:"That Roadster ships next year, every year. For a first date, I'd still pick something with wheels and a busy public spot."},
     {k:/\bgta\b|grand theft auto|vice city/i, n:/\b(a|the|whole|full|one|two)\s+(week|weeks)\s+off\b|\btime off\b|\bdays? off\b|\bvacation\b|\bannual leave\b|\bout of (the )?office\b|\bpto\b|\b(i'?m|i am|i'?ll be|i will be)\s+(unavailable|away all week|off all week)\b/i, fx:"gta",
@@ -7782,6 +7798,13 @@ window.PARE_LIVE = window.PARE_LIVE || {
   if(heroChat) heroChat.addEventListener("click", function(){ if(window.PareExpo && window.PareExpo.openView) window.PareExpo.openView("chat"); });
   var fab = document.getElementById("chatFab");
   if(!fab) return;
+  /* Hide the floating button while the hero's own Chat with Robin button is visible */
+  var heroChat = document.getElementById("heroChat");
+  if(heroChat && "IntersectionObserver" in window){
+    new IntersectionObserver(function(es){
+      es.forEach(function(e){ fab.classList.toggle("fab-away", e.isIntersecting); });
+    }).observe(heroChat);
+  }
   fab.addEventListener("click", function(){
     if(window.PareExpo && window.PareExpo.openView) window.PareExpo.openView("chat");
     setTimeout(function(){ var i = document.getElementById("chatInput"); if(i && window.matchMedia("(hover:hover)").matches) i.focus(); }, 500);
@@ -7898,26 +7921,6 @@ window.PARE_LIVE = window.PARE_LIVE || {
     "<path d='M42 36 Q60 31 78 36' stroke='#d9a27a' stroke-width='1.6' fill='none' stroke-linecap='round'/>" +
     "</svg>";
 
-  var SHELL_GUY =
-    "<svg viewBox='0 0 160 262' aria-hidden='true'><defs>" +
-    "<linearGradient id='shJ' x1='0' y1='0' x2='1' y2='0'><stop offset='0' stop-color='#c8401c'/><stop offset='.5' stop-color='#ef6a32'/><stop offset='1' stop-color='#b93a19'/></linearGradient></defs>" +
-    "<rect x='52' y='172' width='24' height='76' rx='8' fill='#22272b'/><rect x='84' y='172' width='24' height='76' rx='8' fill='#22272b'/>" +
-    "<rect x='46' y='242' width='34' height='14' rx='7' fill='#111'/><rect x='82' y='242' width='34' height='14' rx='7' fill='#111'/>" +
-    "<path d='M38 92 Q40 72 62 66 L98 66 Q120 72 122 92 L126 186 Q80 196 34 186Z' fill='url(#shJ)'/>" +
-    "<path d='M38 96 Q28 136 30 168' stroke='#d14a20' stroke-width='18' stroke-linecap='round' fill='none'/>" +
-    "<path d='M122 96 Q130 120 112 134' stroke='#d14a20' stroke-width='18' stroke-linecap='round' fill='none'/>" +
-    "<rect x='94' y='118' width='16' height='22' rx='3' fill='#f3efe6'/><rect x='93' y='116' width='18' height='5' rx='2' fill='#6b4a35'/>" +
-    "<path d='M80 70 L80 188' stroke='#7a240e' stroke-width='3'/><rect x='77' y='78' width='6' height='10' rx='2' fill='#2b2b2b'/>" +
-    "<path d='M90 96 L108 88' stroke='#7a240e' stroke-width='2.5' stroke-linecap='round'/>" +
-    "<path d='M44 104 Q60 100 72 104 M88 150 Q104 148 118 152' stroke='rgba(255,255,255,.22)' stroke-width='1.5' fill='none'/>" +
-    "<path d='M46 70 Q42 14 80 10 Q118 14 114 70 Q98 80 80 80 Q62 80 46 70Z' fill='url(#shJ)'/>" +
-    "<ellipse cx='80' cy='50' rx='21' ry='24' fill='#3a2a22'/>" +
-    "<ellipse cx='80' cy='54' rx='16' ry='19' fill='" + SKIN + "'/>" +
-    "<path d='M72 50 h5 M84 50 h5' stroke='#2b1a12' stroke-width='2.4' stroke-linecap='round'/>" +
-    "<path d='M74 61 Q81 66 88 60' stroke='#8a3f2b' stroke-width='2.2' fill='none' stroke-linecap='round'/>" +
-    "<path d='M58 22 Q80 8 102 22' stroke='rgba(255,255,255,.25)' stroke-width='2' fill='none'/>" +
-    "</svg>";
-
   var MOUNTAINS = "<svg class='sh-mtn' viewBox='0 0 400 90' preserveAspectRatio='none' aria-hidden='true'>" +
     "<path d='M0 90 L0 60 L40 38 L70 52 L110 20 L150 46 L190 28 L230 50 L270 18 L310 44 L350 30 L400 52 L400 90Z' fill='#3d474d'/></svg>";
 
@@ -7946,6 +7949,7 @@ window.PARE_LIVE = window.PARE_LIVE || {
       "<rect x='57' y='4' width='4' height='5' rx='1.5' fill='#fff7c2'/><rect x='57' y='22' width='4' height='5' rx='1.5' fill='#fff7c2'/>" +
       "<rect class='tl' x='1' y='4' width='3' height='5' fill='#7f1d1d'/><rect class='tl' x='1' y='22' width='3' height='5' fill='#7f1d1d'/>" +
       (blink ? "<circle class='bl' cx='55' cy='2.5' r='3' fill='#f59e0b'/><circle class='bl' cx='5' cy='2.5' r='3' fill='#f59e0b'/>" : "") +
+      (blink === "haz" ? "<circle class='bl' cx='55' cy='28.5' r='3' fill='#f59e0b'/><circle class='bl' cx='5' cy='28.5' r='3' fill='#f59e0b'/>" : "") +
       "</svg>";
   }
 
@@ -7973,31 +7977,74 @@ window.PARE_LIVE = window.PARE_LIVE || {
       function(el){ return later(el, 1550, function(){ el.classList.add("freeze"); if(navigator.vibrate) try { navigator.vibrate(30); } catch(e){} }); });
   };
 
+  /* A Vancouver local: casual clothes underneath, the black shell drops on top at 5°C */
+  function local(i){
+    var tops = ["#e8a33d", "#5b8bd6", "#d66a8a", "#6bb38a", "#c9b18a", "#8a7bd6"];
+    var skins = ["#efc39d", "#d9a37e", "#f3d2b5", "#b97d55", "#e6b48e", "#c98e66"];
+    var hair = ["#2b2118", "#5a3b22", "#1b1b1b", "#8a6a3a", "#3a2a1e", "#151515"];
+    var c = tops[i % 6], sk = skins[i % 6], hr = hair[i % 6];
+    var legs = "<rect x='18' y='92' width='10' height='42' rx='4' fill='#2d3a4f'/><rect x='32' y='92' width='10' height='42' rx='4' fill='#2d3a4f'/>" +
+      "<rect x='15' y='130' width='14' height='8' rx='4' fill='#f2f2f2'/><rect x='31' y='130' width='14' height='8' rx='4' fill='#f2f2f2'/>";
+    var casual = "<svg class='sv-c' viewBox='0 0 60 140' aria-hidden='true'>" + legs +
+      "<path d='M14 50 Q16 40 30 40 Q44 40 46 50 L46 96 L14 96Z' fill='" + c + "'/>" +
+      "<rect x='8' y='48' width='9' height='34' rx='4.5' fill='" + c + "'/><rect x='43' y='48' width='9' height='34' rx='4.5' fill='" + c + "'/>" +
+      "<circle cx='12.5' cy='84' r='4' fill='" + sk + "'/><circle cx='47.5' cy='84' r='4' fill='" + sk + "'/>" +
+      "<circle cx='30' cy='26' r='12' fill='" + sk + "'/><path d='M18 24 Q19 12 30 12 Q42 12 42 24 Q36 18 30 18 Q24 18 18 24Z' fill='" + hr + "'/>" +
+      "<path d='M26 30 Q30 33 34 30' stroke='#7a3b2a' stroke-width='1.6' fill='none' stroke-linecap='round'/></svg>";
+    var shell = "<svg class='sv-s' viewBox='0 0 60 140' aria-hidden='true'>" +
+      "<path d='M12 50 Q14 38 30 38 Q46 38 48 50 L49 100 Q30 104 11 100Z' fill='#16181b'/>" +
+      "<rect x='6' y='48' width='10' height='38' rx='5' fill='#16181b'/><rect x='44' y='48' width='10' height='38' rx='5' fill='#16181b'/>" +
+      "<path d='M30 42 L30 100' stroke='#3a3f45' stroke-width='1.4'/><path d='M34 56 L42 52' stroke='#3a3f45' stroke-width='1.4' stroke-linecap='round'/>" +
+      "<path d='M15 26 Q15 6 30 6 Q45 6 45 26 Q45 40 30 42 Q15 40 15 26Z' fill='#16181b'/>" +
+      "<ellipse cx='30' cy='27' rx='9.5' ry='11' fill='" + sk + "'/><path d='M21 22 Q30 15 39 22' stroke='#16181b' stroke-width='4' fill='none'/>" +
+      "<path d='M26.5 31 Q30 33 33.5 31' stroke='#7a3b2a' stroke-width='1.6' fill='none' stroke-linecap='round'/>" +
+      "<path d='M20 12 Q30 7 40 12' stroke='rgba(255,255,255,.16)' stroke-width='1.4' fill='none'/></svg>";
+    return "<div class='sv-p' style='--i:" + i + "'>" + casual + shell + "</div>";
+  }
+
   FX.shell = function(){
-    return stage("shell", "Rain? What rain?",
+    var crowd = "";
+    for(var i = 0; i < 6; i++) crowd += local(i);
+    return stage("shell", "5 degrees in Vancouver",
       MOUNTAINS + "<div class='sh-ground'></div>" +
-      "<div class='sh-fig'>" + SHELL_GUY + "</div>" +
-      "<div class='sh-txt'><div class='e2-h e2-up' style='--d:1.3s'>Rain? What rain?</div>" +
-      "<p class='e2-s e2-up' style='--d:1.8s'>Vancouver dress code: a $900 shell, a $7 oat latte, and zero hikes planned.</p>" +
-      "<span class='sh-tag e2-up' style='--d:2.4s'>Waterproof to 28,000 mm · Worn mostly to brunch</span></div>",
-      5200,
+      "<div class='sv-temp'><span class='sv-num'>12</span><span class='sv-deg'>°C</span><small>Vancouver</small></div>" +
+      "<div class='sv-crowd'>" + crowd + "</div>" +
+      "<div class='sh-txt'><div class='e2-h sv-h'>5°C. Shell season is open.</div>" +
+      "<p class='e2-s sv-sub'>Black, hood up, $900. Hikes planned: zero.</p></div>",
+      5800,
       function(el){
-        var fig = el.querySelector(".sh-fig"), drops = [], beads = [];
-        return canvasLoop(el, function(ctx, W, H, t){
-          var want = Math.min(140, Math.floor(t * 120));
-          while(drops.length < want) drops.push({x: Math.random() * W * 1.3, y: -Math.random() * H * .5, v: 10 + Math.random() * 7, l: 12 + Math.random() * 14});
-          var r = fig.getBoundingClientRect();
-          var cx = r.left + r.width / 2, top = r.top + r.height * .03, bot = r.top + r.height * .72;
+        var num = el.querySelector(".sv-num"), t = 12, stops = [];
+        var tick = setInterval(function(){
+          t -= 1; num.textContent = t;
+          if(t <= 5){
+            clearInterval(tick);
+            el.classList.add("cold");
+            if(navigator.vibrate) try { navigator.vibrate(25); } catch(e){}
+          }
+        }, reduce ? 0 : 190);
+        stops.push(function(){ clearInterval(tick); });
+        if(reduce){ el.classList.add("cold"); num.textContent = 5; }
+        var people = el.querySelectorAll(".sv-p"), drops = [], beads = [];
+        var loop = canvasLoop(el, function(ctx, W, H, s){
           ctx.clearRect(0, 0, W, H);
+          if(!el.classList.contains("cold")) return;
+          var want = Math.min(130, drops.length + 4);
+          while(drops.length < want) drops.push({x: Math.random() * W * 1.3, y: -Math.random() * H * .4, v: 10 + Math.random() * 7, l: 12 + Math.random() * 14});
+          var rects = [];
+          for(var k = 0; k < people.length; k++) rects.push(people[k].getBoundingClientRect());
           ctx.strokeStyle = "rgba(225,238,246,.6)"; ctx.lineWidth = 1.2; ctx.beginPath();
           for(var i = 0; i < drops.length; i++){
             var d = drops[i];
             d.y += d.v; d.x -= d.v * .16;
-            var spread = r.width * (.26 + .22 * Math.min(1, Math.max(0, (d.y - top) / (r.height * .3))));
-            if(d.y > top && d.y < bot && Math.abs(d.x - cx) < spread){
-              if(beads.length < 160){
-                var side = d.x < cx ? -1 : 1;
-                beads.push({x: d.x, y: d.y, vx: side * (1 + Math.random() * 2.4), vy: -(1.6 + Math.random() * 2.6), life: 1, s: 1.6 + Math.random() * 1.6});
+            var hit = null;
+            for(var r = 0; r < rects.length; r++){
+              var q = rects[r];
+              if(d.x > q.left + q.width * .1 && d.x < q.right - q.width * .1 && d.y > q.top && d.y < q.top + q.height * .7){ hit = q; break; }
+            }
+            if(hit){
+              if(beads.length < 180){
+                var side = d.x < hit.left + hit.width / 2 ? -1 : 1;
+                beads.push({x: d.x, y: d.y, vx: side * (.8 + Math.random() * 2), vy: -(1.4 + Math.random() * 2.2), life: 1, s: 1.4 + Math.random() * 1.4});
               }
               d.y = -20 - Math.random() * 60; d.x = Math.random() * W * 1.3; continue;
             }
@@ -8009,12 +8056,13 @@ window.PARE_LIVE = window.PARE_LIVE || {
             var b = beads[j];
             b.vy += .22; b.x += b.vx; b.y += b.vy; b.life -= .03;
             if(b.life <= 0){ beads.splice(j, 1); continue; }
-            ctx.globalAlpha = b.life;
-            ctx.fillStyle = "#eaf6ff"; ctx.beginPath(); ctx.arc(b.x, b.y, b.s, 0, 6.2832); ctx.fill();
-            ctx.fillStyle = "#fff"; ctx.beginPath(); ctx.arc(b.x - b.s * .35, b.y - b.s * .35, b.s * .35, 0, 6.2832); ctx.fill();
+            ctx.globalAlpha = b.life; ctx.fillStyle = "#eaf6ff";
+            ctx.beginPath(); ctx.arc(b.x, b.y, b.s, 0, 6.2832); ctx.fill();
           }
           ctx.globalAlpha = 1;
         });
+        if(loop) stops.push(loop);
+        return function(){ stops.forEach(function(f){ f(); }); };
       });
   };
 
@@ -8067,19 +8115,87 @@ window.PARE_LIVE = window.PARE_LIVE || {
 
   FX.richmond = function(){
     return stage("richmond", "Richmond drivers",
-      "<span class='rc-sign e2-up'>No. 3 Rd</span>" +
+      "<span class='rc-sign e2-up'>No. 3 Rd · 5:01 PM</span>" +
       "<div class='rc-scene'>" +
         "<div class='rc-road'></div><div class='rc-skid'></div>" +
         "<div class='rc-car rc-b'>" + car("#c81e3a") + "</div>" +
         "<div class='rc-car rc-a'>" + car("#f4f4f5") + "</div>" +
-        "<div class='rc-say s1'>Lane change. Zero signal.</div>" +
-        "<div class='rc-lot'><div class='rc-stall' style='left:8%'></div><div class='rc-stall' style='left:31%'></div><div class='rc-stall' style='left:54%'></div>" +
+        "<div class='rc-car rc-h'>" + car("#8b95a1", "haz") + "</div>" +
+        "<div class='rc-car rc-u'>" + car("#2f6fb3") + "</div>" +
+        "<div class='rc-honk h1'>HONK</div><div class='rc-honk h2'>HONK HONK</div>" +
+        "<div class='rc-say s1'>Signal? Never heard of her.</div>" +
+        "<div class='rc-say s3'>Hazards on. Mid-lane. Vibes.</div>" +
+        "<div class='rc-lot'><div class='rc-stall' style='left:4%'></div><div class='rc-stall' style='left:23%'></div><div class='rc-stall' style='left:42%'></div>" +
+          "<div class='rc-stall' style='left:61%'></div><div class='rc-stall' style='left:80%'></div>" +
           "<div class='rc-car rc-m'>" + car("#f2c230", true) + "</div></div>" +
         "<div class='rc-say s2'>Left signal on. Turning right.</div>" +
       "</div>" +
-      "<div class='rc-end e2-up' style='--d:5.1s'>Parked. Across two spots.<small>Shoulder check, everyone.</small></div>",
-      6500);
+      "<div class='rc-end e2-up' style='--d:5.6s'>Parked. Across three spots.<small>Shoulder check, everyone.</small></div>",
+      7000,
+      function(el){
+        var scene = el.querySelector(".rc-scene");
+        var a = later(el, 1050, function(){ scene.classList.add("jolt"); });
+        var b = later(el, 2900, function(){ scene.classList.remove("jolt"); void scene.offsetWidth; scene.classList.add("jolt"); });
+        return function(){ a(); b(); };
+      });
   };
+
+  /* ---------- Real meme GIFs ----------
+     Paste a GIPHY link (or just its id) next to an egg to show that GIF full
+     screen instead of the drawn animation. GIPHY hosts it. If it can't load
+     quickly (weak Wi-Fi, offline), the drawn animation plays instead. */
+  var GIFS = {
+    jensen:   {src: "", cap: "The more you buy, the more you save."},
+    six7:     {src: "", cap: "6 7"},
+    shell:    {src: "", cap: "5°C in Vancouver.", sub: "Shell season is open."},
+    roadster: {src: "", cap: "Deliveries start next year.", sub: "Every year."},
+    gta:      {src: "", cap: "Out of office.", sub: "Vice City needs me."},
+    richmond: {src: "", cap: "Meanwhile, on No. 3 Road."}
+  };
+  function giphyId(v){
+    v = String(v || "").trim();
+    if(/^[A-Za-z0-9]{6,}$/.test(v)) return v;
+    var m = v.match(/giphy\.com\/media\/(?:v1\.[^\/]+\/)?([A-Za-z0-9]+)\//) ||
+            v.match(/giphy\.com\/(?:gifs|clips|stickers|embed)\/(?:[^\/?#]*-)?([A-Za-z0-9]+)(?:[\/?#]|$)/) ||
+            v.match(/gph\.is\/g\/([A-Za-z0-9]+)/);
+    return m ? m[1] : "";
+  }
+  function esc(s){ return String(s).replace(/[&<>"']/g, function(c){ return {"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[c]; }); }
+  /* Resolves with a ready <video>, or null if it didn't load in time */
+  function loadGif(id){
+    return new Promise(function(done){
+      if(!id || !navigator.onLine) return done(null);
+      var v = document.createElement("video");
+      v.muted = true; v.loop = true; v.playsInline = true; v.autoplay = true;
+      v.setAttribute("muted", ""); v.setAttribute("playsinline", "");
+      var t = setTimeout(function(){ finish(null); }, 2200), ok = false;
+      function finish(x){ if(ok) return; ok = true; clearTimeout(t); done(x); }
+      v.addEventListener("canplay", function(){ finish(v); });
+      v.addEventListener("error", function(){ finish(null); });
+      v.src = "https://media.giphy.com/media/" + id + "/giphy.mp4";
+      v.load();
+    });
+  }
+  function withGif(kind, drawn){
+    return function(){
+      var g = GIFS[kind], id = g && giphyId(g.src);
+      if(!id || active) return drawn();
+      return loadGif(id).then(function(v){
+        if(!v) return drawn();
+        return stage("gif", g.cap, "<div class='gf-src'>via GIPHY</div><div class='gf-slot'></div>" +
+          "<div class='gf-cap e2-h e2-up' style='--d:.5s'>" + esc(g.cap) + "</div>" +
+          (g.sub ? "<p class='gf-sub e2-s e2-up' style='--d:.9s'>" + esc(g.sub) + "</p>" : ""),
+          5200,
+          function(el){
+            el.querySelector(".gf-slot").appendChild(v);
+            try { var pr = v.play(); if(pr && pr.catch) pr.catch(function(){}); } catch(e){}
+            return function(){ try { v.pause(); } catch(e){} };
+          });
+      });
+    };
+  }
+  Object.keys(GIFS).forEach(function(k){ if(FX[k]) FX[k] = withGif(k, FX[k]); });
+  FX.gifs = GIFS;
 
   window.PareEggFx = FX;
 })();</script>
