@@ -2219,6 +2219,15 @@ textarea:focus,.chat-form input:focus,.live-box textarea:focus{border-color:var(
 /* ---------- Meet Luke journey ---------- */
 .luke-plug-btn{border:0;font-family:inherit;}
 .vote-done .luke-plug{margin:18px 0 4px !important;padding:14px 12px;border-radius:var(--r-m,10px);background:var(--alt,#f6f2ec);border:1px solid var(--line,#e5ded4);}
+/* The thank-you clip: plays with sound on the vote tap, muted on a return visit */
+.vd-clip{margin:14px auto 4px;max-width:280px;}
+.vd-clip figcaption{margin:0 0 8px;font-size:14px;font-weight:600;color:var(--ink,#1c1214);}
+.vd-frame{position:relative;aspect-ratio:480/352;border-radius:var(--r-m,14px);overflow:hidden;background:#1c1214;box-shadow:0 10px 28px rgba(60,20,30,.18);}
+.vd-frame video{display:block;width:100%;height:100%;object-fit:cover;}
+.vd-sound{position:absolute;right:8px;bottom:8px;border:0;border-radius:999px;padding:7px 12px;font:700 12px/1 Inter,sans-serif;background:rgba(255,255,255,.92);color:#1c1214;
+  box-shadow:0 4px 12px rgba(0,0,0,.25);cursor:pointer;transition:transform .15s ease,background .15s ease;}
+.vd-sound:hover{background:#fff;}
+.vd-sound:active{transform:scale(.94);}
 .vote-done .luke-plug-intro{font-size:14px;color:var(--ink,#1c1214);font-weight:600;}
 .vote-done .luke-plug-btn,.quiz-result .luke-plug-btn{min-height:44px;padding:8px 22px;font-size:15px;}
 .bub-cta{display:flex;align-items:center;justify-content:center;margin-top:10px;min-height:40px;padding:8px 14px;border-radius:999px;
@@ -2663,6 +2672,13 @@ textarea:focus,.chat-form input:focus,.live-box textarea:focus{border-color:var(
           </div>
           <div class="vote-done" id="voteDone" hidden>
             <h3>Thanks for voting!</h3>
+            <figure class="vd-clip" id="voteClip">
+              <figcaption>Pare Dating when your vote comes in:</figcaption>
+              <div class="vd-frame">
+                <video id="voteClipVid" muted playsinline webkit-playsinline loop preload="none" poster="memes/thanks.jpg"><source src="memes/thanks.webm" type="video/webm"><source src="memes/thanks.mp4" type="video/mp4"></video>
+                <button type="button" class="vd-sound" id="voteClipSound">Tap for sound</button>
+              </div>
+            </figure>
             <p id="voteDoneText"></p>
             <div class="mini-results" id="miniResults"></div>
             <p class="luke-plug"><span class="luke-plug-intro">Curious who designed this?</span><button type="button" class="luke-plug-btn" data-meet-luke>Meet Luke &rarr;</button></p>
@@ -7559,12 +7575,54 @@ window.PARE_LIVE = window.PARE_LIVE || {
       var c = {robin: 0, darcy: 0, rumi: 0}; if(mine) c[mine] = 1; renderMini(c);
     });
   }
-  function showVoted(p){
+  /* Thank-you clip. With sound when it starts from the vote tap itself; otherwise
+     muted on a loop with a Tap for sound button. Pauses when scrolled away. */
+  var vClip = $("#voteClipVid"), vBtn = $("#voteClipSound"), vLoud = false;
+  function clipMode(loud){
+    if(!vClip) return;
+    vLoud = loud;
+    vClip.preload = "auto";
+    vClip.loop = !loud; vClip.muted = !loud;
+    if(vBtn) vBtn.textContent = loud ? "Mute" : "Tap for sound";
+    var pr = null;
+    try { pr = vClip.play(); } catch(e){}
+    if(pr && pr.catch) pr.catch(function(){ if(loud) clipMode(false); });
+  }
+  if(vClip){
+    vClip.addEventListener("ended", function(){ if(vLoud) clipMode(false); });
+    if(vBtn) vBtn.addEventListener("click", function(){
+      if(vLoud) clipMode(false);
+      else { try { vClip.currentTime = 0; } catch(e){} clipMode(true); }
+    });
+    var vSeen = false;
+    if("IntersectionObserver" in window) new IntersectionObserver(function(es){
+      es.forEach(function(e){
+        if(e.isIntersecting){ vSeen = true; if(!$("#voteDone").hidden && vClip.paused) clipMode(false); }
+        else if(vSeen){
+          /* Scrolled away or left the page: stop, and come back muted */
+          vSeen = false;
+          try { vClip.pause(); } catch(_){}
+          vLoud = false; vClip.muted = true; vClip.loop = true;
+          if(vBtn) vBtn.textContent = "Tap for sound";
+        }
+      });
+    }).observe(vClip);
+  }
+  function showVoted(p, fromTap){
     $$(".vote-card").forEach(function(c){ c.classList.toggle("picked", c.dataset.vote === p); c.disabled = true; });
     $("#voteCards").classList.add("locked");
     $("#voteDone").hidden = false;
     $("#voteDoneText").textContent = "You voted for " + NAMES[p] + ". Here's how it's going:";
     var sk = $("#view-sidekicks"); if(sk) sk.classList.add("voted");
+    if(vClip){
+      try { vClip.currentTime = 0; } catch(e){}
+      clipMode(!!fromTap);
+      /* Bring the reaction clip on screen after a vote */
+      if(fromTap) setTimeout(function(){
+        var r = vClip.getBoundingClientRect();
+        if(r.bottom > window.innerHeight - 90 || r.top < 0) vClip.scrollIntoView({block: "center", behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth"});
+      }, 250);
+    }
     refreshMini();
   }
   function startVote(){
@@ -7579,7 +7637,7 @@ window.PARE_LIVE = window.PARE_LIVE || {
       store("pareVote", p);
       store("pareVotePending", p);
       if(navigator.vibrate) try{ navigator.vibrate(15); }catch(e){}
-      showVoted(p);
+      showVoted(p, true);
       flushVote();
     });
   });
