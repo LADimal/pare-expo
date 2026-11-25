@@ -697,7 +697,7 @@ h3 + .luke-job-title{margin-top:0 !important;}
 }
 .hire-brand-logo{height:22px;width:auto;display:block;filter:brightness(0) saturate(100%);opacity:.92;}
 .hire-vote-line{font-size:17px;color:var(--soft);line-height:1.35;margin:0 auto 2px;max-width:22em;}
-.luke-tools a.btn{min-width:160px;text-decoration:none;}
+.luke-tools a.btn,.hire-done-btns a.btn{min-width:160px;text-decoration:none;}
 .luke-grade-hint{font-size:13px;color:var(--soft);margin:0;line-height:1.35;text-align:center;flex:none;}
 #hireYes{
   z-index:5;transform-origin:center center;
@@ -2227,6 +2227,7 @@ textarea:focus,.chat-form input:focus,.live-box textarea:focus{border-color:var(
 /* Robin reacts live: less to read */
 #view-live .live-count{display:none;}
 #view-live #liveInput{min-height:88px;}
+.hire-done .luke-grade-hint{margin:10px 0 0;}
 </style>
 </head>
 <body>
@@ -2576,9 +2577,10 @@ textarea:focus,.chat-form input:focus,.live-box textarea:focus{border-color:var(
         <p class="hire-meta"><a href="mailto:lukedimal@outlook.com">lukedimal@outlook.com</a></p>
         <p class="socials"><a href="https://www.linkedin.com/in/luke-dimal-105457133/" target="_blank" rel="noopener" aria-label="Luke on LinkedIn"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="2" width="20" height="20" rx="4" fill="currentColor"/><path d="M7 10v7M7 7v.01M11 17v-7M11 13.2c0-2 1.2-3.2 2.8-3.2S16.5 11 16.5 13v4" stroke="#fff" stroke-width="2" stroke-linecap="round" fill="none"/></svg>LinkedIn</a><a href="https://www.instagram.com/lukes_maxing/" target="_blank" rel="noopener" aria-label="Luke on Instagram"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5" stroke="currentColor" stroke-width="2" fill="none"/><circle cx="12" cy="12" r="4" stroke="currentColor" stroke-width="2" fill="none"/><circle cx="17.2" cy="6.8" r="1.2" fill="currentColor"/></svg>Instagram</a></p>
         <div class="btn-row hire-done-btns">
-          <button type="button" class="btn" id="hireWork">See my work</button>
+          <a class="btn" id="lukeGrade" href="https://forms.gle/xrMetQxjRrob7h4b6" target="_blank" rel="noopener noreferrer">Grade our project</a>
           <button type="button" class="btn ghost" id="hireHome">Back to home</button>
         </div>
+        <p class="luke-grade-hint">Remember your A00# in Other Comments.</p>
       </div>
       <div class="hire-fest" id="hireFest" aria-hidden="true"></div>
     </section>
@@ -2797,11 +2799,9 @@ textarea:focus,.chat-form input:focus,.live-box textarea:focus{border-color:var(
       </div>
     </article>
     <div class="luke-tools">
-      <a class="btn" id="lukeGrade" href="https://forms.gle/xrMetQxjRrob7h4b6" target="_blank" rel="noopener noreferrer">Grade our project</a>
       <button type="button" class="btn" id="lukeHire">One last thing &rarr;</button>
-      <button type="button" class="btn ghost" id="lukeClose">Close</button>
+      <button type="button" class="btn ghost" id="lukeClose">Home</button>
     </div>
-    <p class="luke-grade-hint">Remember your A00# in Other Comments.</p>
   </div>
 </div>
 <script>(function(){
@@ -5957,6 +5957,8 @@ textarea:focus,.chat-form input:focus,.live-box textarea:focus{border-color:var(
   $("#lukeClose").addEventListener("click", (e) => {
     e.stopPropagation();
     closePurple();
+    show("home");
+    window.scrollTo(0, 0);
   });
   purpleMute.addEventListener("click", (e) => {
     e.stopPropagation();
@@ -6729,7 +6731,6 @@ textarea:focus,.chat-form input:focus,.live-box textarea:focus{border-color:var(
     startHire();
   });
   $("#meetHire").addEventListener("click", startHire);
-  $("#hireWork").addEventListener("click", showLukeWork);
   $("#hireHome").addEventListener("click", () => {
     stopHireShyLoop();
     hideHireCaption();
