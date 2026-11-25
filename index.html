@@ -1430,6 +1430,51 @@ button.persona .tile-go{margin-top:2px;}
 .pp-nav{display:flex;gap:10px;flex-wrap:wrap;}
 .pp-nav .btn{flex:1 1 200px;justify-content:center;}
 @media (max-width:480px){ .vote-cta{flex-direction:column;align-items:stretch;text-align:left;} .vote-cta-btn{text-align:center;} }
+
+/* Four-tile home + Meet the sidekicks page */
+@media (min-width:801px){ .demo-tiles{grid-template-columns:repeat(2,1fr);} }
+.t-sk .tile-preview{background:linear-gradient(135deg,#F4E9C8,#F7DCD6);flex-direction:row;align-items:center;justify-content:center;gap:0;}
+.sk-preview .p-av{width:74px;height:74px;font-size:32px;border:3px solid #fff;box-shadow:0 6px 16px rgba(0,0,0,.15);margin:0 -8px;animation:faceHop 3.2s ease-in-out infinite;}
+.sk-preview .p-av:nth-child(2){animation-delay:.25s;}.sk-preview .p-av:nth-child(3){animation-delay:.5s;}
+.sk-preview .p-av.robin img{width:66px;height:66px;}
+.t-quiz .tile-preview{background:linear-gradient(135deg,#24405f,#3E7C5A);}
+.qp-q{color:#fff;font-family:"Playfair Display",Georgia,serif;font-size:17px;line-height:1.25;}
+.qp-opts{display:flex;gap:6px;flex-wrap:wrap;}
+.qp-opts span{font-size:12.5px;font-weight:700;padding:6px 11px;border-radius:999px;background:rgba(255,255,255,.16);color:#fff;border:1px solid rgba(255,255,255,.25);}
+.qp-opts span.on{background:var(--gold);color:var(--dark);border-color:var(--gold);animation:hotPulse 2s ease-in-out infinite;}
+
+.sk-wrap,.quiz-page{max-width:1000px;margin:0 auto;width:100%;display:flex;flex-direction:column;gap:26px;}
+.quiz-page{max-width:680px;}
+.sk-head{text-align:center;margin-bottom:0;}
+.sk-head p{margin-left:auto;margin-right:auto;}
+.sk-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;padding-top:12px;}
+.sk-card{position:relative;background:var(--white);border:1.5px solid var(--line);border-top:5px solid var(--acc);border-radius:20px;padding:22px 18px 18px;display:flex;flex-direction:column;gap:12px;}
+.sk-card.darcy{border-top-color:var(--darcy);}.sk-card.rumi{border-top-color:var(--rumi);}
+.sk-card .rec-badge{top:-14px;}
+.sk-top{display:flex;align-items:center;gap:12px;}
+.sk-top .p-av{width:60px;height:60px;font-size:28px;}
+.sk-top .p-av.robin img{width:54px;height:54px;}
+.sk-card h3{font-family:"Playfair Display",Georgia,serif;font-size:26px;line-height:1;}
+.sk-card .role{font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--soft);margin-top:4px;}
+.sk-card blockquote{font-family:"Playfair Display",Georgia,serif;font-style:italic;font-size:18px;line-height:1.3;}
+.sk-traits{display:flex;flex-wrap:wrap;gap:6px;}
+.sk-traits span{font-size:13px;font-weight:600;padding:5px 10px;border-radius:999px;background:var(--alt);border:1px solid var(--line);}
+.sk-who{font-size:15px;line-height:1.45;color:var(--dark);}
+.sk-best{font-size:14.5px;line-height:1.4;color:var(--soft);border-top:1px solid var(--line);padding-top:10px;margin-top:auto;}
+.sk-best b{display:block;font-size:11.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--dark);margin-bottom:2px;}
+.sk-swipe{display:none;text-align:center;font-size:13px;font-weight:600;color:var(--soft);margin-top:-14px;}
+.sk-voices{box-shadow:none;}
+.sk-voices h2,.sk-vote h2{font-size:26px;text-align:center;}
+.sk-sub{text-align:center;color:var(--soft);font-size:15px;margin:4px 0 14px;}
+.sk-voices .seg{justify-content:center;}
+.sk-vote{max-width:620px;margin:0 auto;width:100%;}
+@media (max-width:860px){
+  .sk-cards{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;gap:12px;
+    margin:0 -12px;padding:14px 12px 6px;scrollbar-width:none;}
+  .sk-cards::-webkit-scrollbar{display:none;}
+  .sk-card{flex:0 0 84%;scroll-snap-align:center;}
+  .sk-swipe{display:block;}
+}
 </style>
 </head>
 <body>
@@ -1462,7 +1507,7 @@ button.persona .tile-go{margin-top:2px;}
       <section class="sec" id="demos">
         <div class="sec-head reveal">
           <span class="eyebrow">Try it yourself</span>
-          <h2>Three demos to try</h2>
+          <h2>Four things to try</h2>
           <p>A minute or two each, on your phone.</p>
         </div>
         <div class="tiles demo-tiles">
@@ -1490,15 +1535,27 @@ button.persona .tile-go{margin-top:2px;}
               <span class="tile-go">Try it <i aria-hidden="true">→</i></span>
             </div>
           </button>
-          <button type="button" class="tile demo-tile t-meet reveal" data-mode="meet">
-            <div class="tile-preview faces" aria-hidden="true">
-              <img data-face="0" alt=""><img data-face="1" alt=""><img data-face="2" alt=""><img data-face="3" alt="">
+          <button type="button" class="tile demo-tile t-sk reveal" data-mode="sidekicks">
+            <div class="tile-preview sk-preview" aria-hidden="true">
+              <span class="p-av robin"><img data-robin alt=""></span><span class="p-av darcy">D</span><span class="p-av rumi">R</span>
             </div>
             <div class="tile-body">
-              <span class="tile-kicker">Tour · 1 minute</span>
-              <h2>Meet Robin</h2>
-              <p>How Robin talks, and what Robin will and won't do.</p>
-              <span class="tile-go">Take the tour <i aria-hidden="true">→</i></span>
+              <span class="tile-kicker">Compare · then vote</span>
+              <h2>Meet the sidekicks</h2>
+              <p>Robin, Darcy and Rumi side by side. Then pick your favourite.</p>
+              <span class="tile-go">Meet them <i aria-hidden="true">→</i></span>
+            </div>
+          </button>
+          <button type="button" class="tile demo-tile t-quiz reveal" data-mode="quiz">
+            <div class="tile-preview quiz-preview" aria-hidden="true">
+              <div class="qp-q">After a so-so date, what helps most?</div>
+              <div class="qp-opts"><span>A laugh</span><span class="on">Next one</span><span>Reflect</span></div>
+            </div>
+            <div class="tile-body">
+              <span class="tile-kicker">Quiz · 5 questions</span>
+              <h2>Which sidekick suits you?</h2>
+              <p>Answer five quick questions and find your match.</p>
+              <span class="tile-go">Take the quiz <i aria-hidden="true">→</i></span>
             </div>
           </button>
         </div>
@@ -1506,44 +1563,7 @@ button.persona .tile-go{margin-top:2px;}
 
 
 
-      <section class="sec" id="personas">
-        <div class="sec-head reveal">
-          <span class="eyebrow">The sidekicks</span>
-          <h2>Robin, and two friends</h2>
-          <p>Robin launches first. Darcy and Rumi are ready for members who'd like a different style. Tap one to meet them.</p>
-        </div>
-        <div class="personas">
-          <button type="button" class="persona rec reveal" data-persona="robin">
-            <span class="rec-badge">Recommended</span>
-            <div class="p-top"><div class="p-av robin"><img data-robin alt=""></div><div><h3>Robin</h3><div class="role">The Trusted Friend</div></div></div>
-            <blockquote>"You've got this, and I'm right here."</blockquote>
-            <span class="tile-go">Meet Robin <i aria-hidden="true">→</i></span>
-          </button>
-          <button type="button" class="persona darcy-c reveal" data-persona="darcy">
-            <div class="p-top"><div class="p-av darcy" aria-hidden="true">D</div><div><h3>Darcy</h3><div class="role">The Personal Concierge</div></div></div>
-            <blockquote>"Leave it with me."</blockquote>
-            <span class="tile-go">Meet Darcy <i aria-hidden="true">→</i></span>
-          </button>
-          <button type="button" class="persona rumi-c reveal" data-persona="rumi">
-            <div class="p-top"><div class="p-av rumi" aria-hidden="true">R</div><div><h3>Rumi</h3><div class="role">The Thoughtful Guide</div></div></div>
-            <blockquote>"What matters most to you here?"</blockquote>
-            <span class="tile-go">Meet Rumi <i aria-hidden="true">→</i></span>
-          </button>
-        </div>
-        <button type="button" class="vote-cta reveal" data-mode="vote">
-          <span><b>Met all three?</b> Vote for the one you'd want as your sidekick.</span>
-          <span class="vote-cta-btn">Vote <i aria-hidden="true">→</i></span>
-        </button>
-      </section>
 
-      <section class="sec" id="quiz">
-        <div class="sec-head reveal">
-          <span class="eyebrow">Your turn</span>
-          <h2>Which sidekick suits you?</h2>
-          <p>Five quick questions. Find the sidekick that fits you.</p>
-        </div>
-        <div class="card quiz reveal" id="quizCard" aria-live="polite"></div>
-      </section>
 
 
       <div class="home-end"></div>
@@ -1820,18 +1840,29 @@ button.persona .tile-go{margin-top:2px;}
     </section>
 
 
-    <section class="view" id="view-persona">
-      <button type="button" class="back-link" data-back>← Back</button>
-      <div class="pp-wrap" id="ppWrap"></div>
-    </section>
 
-    <section class="view" id="view-vote">
+
+    <section class="view" id="view-sidekicks">
       <button type="button" class="back-link" data-back>← Back</button>
-      <div class="vote-wrap">
-        <div class="mode-head vote-head">
-          <h1>Vote for your favourite sidekick</h1>
-          <p>One vote per phone. Not sure yet? Meet <button type="button" class="inline-link" data-persona="robin">Robin</button>, <button type="button" class="inline-link" data-persona="darcy">Darcy</button> or <button type="button" class="inline-link" data-persona="rumi">Rumi</button> first.</p>
+      <div class="sk-wrap">
+        <div class="mode-head sk-head">
+          <h1>Meet the sidekicks</h1>
+          <p>Three personalities for Pare's AI. Same safety rules, different style.</p>
         </div>
+        <div class="sk-cards" id="skCards"></div>
+        <p class="sk-swipe" aria-hidden="true">Swipe to see all three →</p>
+
+        <div class="card sk-voices">
+          <h2>Same moment, three voices</h2>
+          <p class="sk-sub">Tap a moment to compare how each one answers.</p>
+          <div class="seg" role="group" aria-label="Choose a moment" id="skSeg"></div>
+          <div id="skOut" aria-live="polite"></div>
+          <p class="voice-note" id="skNote">Notice the safety answer is nearly the same in all three. Personality can soften the wording, never the warning.</p>
+        </div>
+
+        <div class="sk-vote" id="skVote">
+          <h2>Who would you pick?</h2>
+          <p class="sk-sub">One vote per phone.</p>
         <div class="vote-cards" id="voteCards">
           <button type="button" class="vote-card" data-vote="robin">
             <span class="p-av robin"><img data-robin alt=""></span>
@@ -1854,6 +1885,18 @@ button.persona .tile-go{margin-top:2px;}
           <p id="voteDoneText"></p>
           <div class="mini-results" id="miniResults"></div>
         </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="view" id="view-quiz">
+      <button type="button" class="back-link" data-back>← Back</button>
+      <div class="quiz-page">
+        <div class="mode-head sk-head">
+          <h1>Which sidekick suits you?</h1>
+          <p>Five quick questions. Find the sidekick that fits you.</p>
+        </div>
+        <div class="card quiz" id="quizCard" aria-live="polite"></div>
       </div>
     </section>
 
@@ -5439,6 +5482,7 @@ window.PARE_LIVE = window.PARE_LIVE || {
     refreshMini();
   }
   function startVote(){ var mine = store("pareVote"); if(mine) showVoted(mine); }
+  startVote();
   $$(".vote-card").forEach(function(c){
     c.addEventListener("click", function(){
       if(store("pareVote")) return;
@@ -5489,85 +5533,92 @@ window.PARE_LIVE = window.PARE_LIVE || {
   var $$ = function(s, r){ return Array.prototype.slice.call((r || document).querySelectorAll(s)); };
   function esc(t){ return String(t).replace(/[&<>"']/g, function(c){ return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]; }); }
   var robinSrc = ($("#view-home .hero-art") || {}).src || "";
+  $$("img[data-robin]").forEach(function(i){ if(!i.getAttribute("src")) i.src = robinSrc; });
 
-  /* Remember where the visitor was on the home page, so Back returns there */
+  /* Navigation: Back returns to the same spot on the home page */
   var homeY = 0;
   document.addEventListener("click", function(e){
-    if($("#view-home.on") && e.target.closest(".tile, [data-persona], .vote-cta")) homeY = window.scrollY;
+    if($("#view-home.on") && e.target.closest(".tile")) homeY = window.scrollY;
   }, true);
   function goHome(){
     var hb = $("#homeBtn"); if(hb) hb.click();
     requestAnimationFrame(function(){ window.scrollTo(0, homeY); });
   }
   $$("[data-back]").forEach(function(b){ b.addEventListener("click", goHome); });
-
   function open(id){
-    if(window.PareExpo && window.PareExpo.openView) return window.PareExpo.openView(id);
     $$(".view").forEach(function(v){ v.classList.toggle("on", v.id === "view-" + id); });
     var hb = $("#homeBtn"); if(hb) hb.classList.remove("hidden");
     window.scrollTo(0, 0);
   }
-  $$(".vote-cta").forEach(function(b){ b.addEventListener("click", function(){ open("vote"); }); });
+  $$('.tile[data-mode="sidekicks"], .tile[data-mode="quiz"]').forEach(function(t){
+    t.addEventListener("click", function(){ open(t.dataset.mode); });
+  });
 
+  /* Sidekick data, from Luke's proposal */
   var ORDER = ["robin", "darcy", "rumi"];
   var P = {
     robin: {name:"Robin", role:"The Trusted Friend", line:"You've got this, and I'm right here.",
-      traits:["Warm","Honest","A little wry","Unshockable"],
-      who:"The friend who got back into dating a few years before you did, made the mistakes, laughed about most of them, and is happy to talk it through over coffee. Robin is on your side, and that's exactly why Robin tells you the truth.",
-      best:"Members who feel nervous or out of practice, or who are coming back after a divorce or a loss.",
-      says:{first:"Hi Dana, I'm Robin. Let's build your profile together, no forms, just a chat. First, what city do you call home?",
-        nervous:"Totally normal, and honestly a good sign: it means you care. Want to run through a couple of easy openers?",
-        money:"Please don't send it. That's a very common scam, and it isn't your fault. Can I get someone from the team to look at this right now?"}},
+      traits:["Warm","Honest","A little wry"],
+      who:"The friend who got back into dating a few years before you, and tells you the truth because they're on your side.",
+      best:"Nervous or out of practice, or coming back after a divorce or a loss."},
     darcy: {name:"Darcy", role:"The Personal Concierge", line:"Leave it with me.",
-      traits:["Polished","Discreet","Efficient","Quietly warm"],
-      who:"An experienced personal concierge, like the person at a boutique hotel who already knows your name. Darcy anticipates, organises and follows through, and never wastes your time.",
-      best:"Busy professionals and decisive members who want things handled, quickly and well.",
-      says:{first:"Welcome, Dana. I'm Darcy. I'll ask ten short questions and turn your answers into your profile. To begin: which city do you live in?",
-        nervous:"Let's make Saturday easy. It's 14 degrees and dry, so the patio works. Want three conversation starters?",
-        money:"Please don't send any money. Requests like this are a known scam pattern. I'm escalating this to our team as urgent."}},
+      traits:["Polished","Discreet","Efficient"],
+      who:"Like the person at a boutique hotel who already knows your name. Anticipates, organises, never wastes your time.",
+      best:"Busy professionals who want things handled, quickly and well."},
     rumi: {name:"Rumi", role:"The Thoughtful Guide", line:"What matters most to you here?",
-      traits:["Calm","Reflective","Curious","Patient"],
-      who:"A wise, curious listener, a bit like a favourite mentor. Rumi is interested in what you want and why, notices patterns, and asks the question that makes you think, without ever lecturing.",
-      best:"Members who want to get it right this time, and people looking for companionship or deep friendship.",
-      says:{first:"Hello Dana, I'm Rumi. I'd like to get to know you a little so your profile sounds like you. Let's start simply: where do you live?",
-        nervous:"That makes sense. What part feels most uncertain: the first few minutes, or what to talk about?",
-        money:"I'd stop here and not send anything. A request for money, especially with urgency, is the clearest sign of a scam. Shall I bring in our team now?"}}
+      traits:["Calm","Reflective","Curious"],
+      who:"A wise, curious listener, like a favourite mentor. Notices patterns and asks the question that makes you think.",
+      best:"People who want to get it right this time, or are looking for deep friendship."}
   };
   var MOMENTS = [
-    ["first", "Saying hello", "Hi, I just joined."],
-    ["nervous", "Before a first date", "I'm nervous about Saturday."],
-    ["money", "When something's wrong", "My match is stuck overseas and needs $500 in gift cards."]
+    {k:"hello", label:"Saying hello", msg:"Hi, I just joined.",
+      robin:"Hi Dana, I'm Robin. Let's build your profile together, no forms, just a chat. First, what city do you call home?",
+      darcy:"Welcome, Dana. I'm Darcy. I'll ask ten short questions and turn your answers into your profile. To begin: which city do you live in?",
+      rumi:"Hello Dana, I'm Rumi. I'd like to get to know you a little so your profile sounds like you. Let's start simply: where do you live?"},
+    {k:"nervous", label:"Nervous before a date", msg:"I'm nervous about Saturday.",
+      robin:"Totally normal, and honestly a good sign: it means you care. Want to run through a couple of easy openers?",
+      darcy:"Let's make Saturday easy. It's 14 degrees and dry, so the patio works. Want three conversation starters?",
+      rumi:"That makes sense. What part feels most uncertain: the first few minutes, or what to talk about?"},
+    {k:"money", label:"A match asks for money", msg:"My match is stuck overseas and needs $500 in gift cards.", note:true,
+      robin:"Please don't send it. That's a very common scam, and it isn't your fault. Can I get someone from the team to look at this right now?",
+      darcy:"Please don't send any money. Requests like this are a known scam pattern. I'm escalating this to our team as urgent.",
+      rumi:"I'd stop here and not send anything. A request for money, especially with urgency, is the clearest sign of a scam. Shall I bring in our team now?"},
+    {k:"hard", label:"A hard day", msg:"Having a hard day today.",
+      robin:"I'm sorry it's a hard day. I'm here if you want to talk, and I can connect you with a real person too.",
+      darcy:"Thank you for telling me. I'm here whenever you'd like to talk, and our team can reach out personally.",
+      rumi:"Thank you for being honest about that. I'm here to listen whenever you want, and someone from our team can follow up too."}
   ];
   function avatar(id){
-    return id === "robin" ? '<div class="p-av robin"><img src="' + robinSrc + '" alt=""></div>'
-      : '<div class="p-av ' + id + '" aria-hidden="true">' + P[id].name[0] + '</div>';
+    return id === "robin" ? '<span class="p-av robin"><img src="' + robinSrc + '" alt=""></span>'
+      : '<span class="p-av ' + id + '" aria-hidden="true">' + P[id].name[0] + '</span>';
   }
-  function render(id){
-    var p = P[id], i = ORDER.indexOf(id), next = ORDER[(i + 1) % 3];
-    var html = '<div class="pp-hero ' + id + '">' + avatar(id) +
-      '<div class="pp-role">' + esc(p.role) + '</div><h1>' + esc(p.name) + '</h1>' +
-      '<p class="pp-line">"' + esc(p.line) + '"</p>' +
-      '<div class="pp-traits">' + p.traits.map(function(t){ return '<span>' + esc(t) + '</span>'; }).join("") + '</div></div>' +
-      '<div class="pp-block"><h2>Who ' + esc(p.name) + ' is</h2><p>' + esc(p.who) + '</p></div>' +
-      '<div class="pp-for"><b>Best for</b><p>' + esc(p.best) + '</p></div>' +
-      '<div class="pp-block"><h2>How ' + esc(p.name) + ' sounds</h2><div class="pp-moments">' +
-      MOMENTS.map(function(m){
-        return '<div class="pp-moment"><span class="lab">' + esc(m[1]) + '</span><div class="me">' + esc(m[2]) + '</div><div class="them ' + id + '">' + esc(p.says[m[0]]) + '</div></div>';
-      }).join("") + '</div></div>' +
-      '<div class="pp-nav"><button type="button" class="btn ghost" data-persona="' + next + '">Meet ' + esc(P[next].name) + ' →</button>' +
-      '<button type="button" class="btn" data-go-vote>Vote for your favourite</button></div>';
-    $("#ppWrap").innerHTML = html;
+  var cards = $("#skCards");
+  if(cards){
+    cards.innerHTML = ORDER.map(function(id){
+      var p = P[id];
+      return '<article class="sk-card ' + id + '">' + (id === "robin" ? '<span class="rec-badge">Recommended</span>' : '') +
+        '<div class="sk-top">' + avatar(id) + '<div><h3>' + esc(p.name) + '</h3><div class="role">' + esc(p.role) + '</div></div></div>' +
+        '<blockquote>"' + esc(p.line) + '"</blockquote>' +
+        '<div class="sk-traits">' + p.traits.map(function(t){ return '<span>' + esc(t) + '</span>'; }).join("") + '</div>' +
+        '<p class="sk-who">' + esc(p.who) + '</p>' +
+        '<p class="sk-best"><b>Best for</b>' + esc(p.best) + '</p></article>';
+    }).join("");
   }
-  function openPersona(id){
-    if(!P[id]) return;
-    render(id);
-    open("persona");
+  var seg = $("#skSeg"), out = $("#skOut"), note = $("#skNote");
+  function showMoment(i){
+    var m = MOMENTS[i];
+    $$("button", seg).forEach(function(b, j){ b.setAttribute("aria-pressed", j === i ? "true" : "false"); });
+    out.innerHTML = '<div class="fade-swap"><div class="member-msg">' + esc(m.msg) + '</div><div class="replies">' +
+      ORDER.map(function(id){
+        return '<div class="reply ' + ({robin:"r", darcy:"d", rumi:"u"})[id] + '"><div class="who">' + esc(P[id].name) + '</div><p>' + esc(m[id]) + '</p></div>';
+      }).join("") + '</div></div>';
+    note.classList.toggle("on", !!m.note);
   }
-  document.addEventListener("click", function(e){
-    var b = e.target.closest("[data-persona]");
-    if(b){ e.preventDefault(); openPersona(b.dataset.persona); return; }
-    if(e.target.closest("[data-go-vote]")) open("vote");
-  });
+  if(seg){
+    seg.innerHTML = MOMENTS.map(function(m, i){ return '<button type="button" aria-pressed="false" data-i="' + i + '">' + esc(m.label) + '</button>'; }).join("");
+    $$("button", seg).forEach(function(b){ b.addEventListener("click", function(){ showMoment(+b.dataset.i); }); });
+    showMoment(1);
+  }
 })();</script>
 </body>
 </html>
