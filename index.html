@@ -530,6 +530,10 @@ html.rippling,body.rippling{overflow:hidden;}
   transition:none;
 }
 .purple-flash.on{opacity:1;}
+.purple-overlay.card-fade .purple-flash{
+  opacity:0;
+  transition:opacity .8s cubic-bezier(.22,1,.28,1);
+}
 .purple-skip{
   position:absolute;left:0;right:0;bottom:18px;
   text-align:center;z-index:4;
@@ -553,8 +557,22 @@ html.rippling,body.rippling{overflow:hidden;}
   flex-direction:column;gap:16px;
   padding:28px 20px 20px;
   background:#E4E4E4;
+  opacity:0;
+  filter:blur(16px);
+  transform:scale(1.035);
 }
 .luke-wrap.on{display:flex;}
+.luke-wrap.on.enter{
+  opacity:1;
+  filter:blur(0);
+  transform:scale(1);
+  transition:opacity .8s cubic-bezier(.22,1,.28,1), filter .8s cubic-bezier(.22,1,.28,1), transform .8s cubic-bezier(.22,1,.28,1);
+}
+.luke-wrap.on.shown{
+  opacity:1;
+  filter:none;
+  transform:none;
+}
 .luke-card{
   width:min(720px,100%);
   max-height:calc(100% - 120px);
@@ -605,6 +623,7 @@ h3 + .luke-job-title{margin-top:0 !important;}
 }
 @media (prefers-reduced-motion:reduce){
   .luke-card.settle{animation:none;transform:scale(1);}
+  .luke-wrap.on.enter,.purple-overlay.card-fade .purple-flash{transition:none;}
 }
 
 /* Hire me finale */
@@ -4751,11 +4770,13 @@ textarea:focus,.chat-form input:focus,.live-box textarea:focus{border-color:var(
   // Set CLIP_CUT_SECONDS to a number (for example 11) to cut to the white
   // flash early. Leave it as null to wait until the clip ends.
   // The finger snap in purple.mp4: the light starts at 7.84s and the clip
-  // cuts to a different scene at 7.97s. Flash to white on the snap, then
-  // go straight to the résumé, so that other scene never shows.
+  // cuts to a different scene at 7.97s. Flash to white on the snap, hold
+  // the light, then ease into the résumé so that other scene never shows.
   const CLIP_FLASH_SECONDS = 7.80;
   const CLIP_CUT_SECONDS = 7.92;
-  const CLIP_FILES = ["purple.mp4", "purple.webm"];
+  const CLIP_HOLD_MS = 1080;
+  const CLIP_CROSSFADE_MS = 800;
+  const CLIP_FILES = ["purple.mp4?v=2"];
   const PURPLE_TIMING = {
     ripple: 1000,
     orbsEnd: 4500,
@@ -5368,13 +5389,14 @@ textarea:focus,.chat-form input:focus,.live-box textarea:focus{border-color:var(
   }
 
   function setFlash(on, instant){
-    purpleFlash.style.transition = "none";
+    purpleFlash.style.transition = instant ? "none" : "opacity .25s ease-in";
+    if(instant) void purpleFlash.offsetWidth;
     purpleFlash.classList.toggle("on", !!on);
   }
 
   function hideLukeCard(){
-    lukeWrap.classList.remove("on");
-    purpleOverlay.classList.remove("card-on");
+    lukeWrap.classList.remove("on", "enter", "shown");
+    purpleOverlay.classList.remove("card-on", "card-fade");
     if(lukeCard){
       lukeCard.classList.remove("settle", "settled");
     }
@@ -5388,7 +5410,8 @@ textarea:focus,.chat-form input:focus,.live-box textarea:focus{border-color:var(
     purpleOverlay.classList.add("on", "card-on");
     purpleOverlay.classList.remove("clip", "rippling");
     purpleOverlay.setAttribute("aria-hidden", "false");
-    lukeWrap.classList.add("on");
+    lukeWrap.classList.add("on", "shown");
+    lukeWrap.classList.remove("enter");
     if(purpleSkipHint) purpleSkipHint.style.display = "none";
     if(lukeCard){
       lukeCard.classList.remove("settle", "settled");
@@ -5544,10 +5567,12 @@ textarea:focus,.chat-form input:focus,.live-box textarea:focus{border-color:var(
     clearRipple();
     if(hideOverlay){
       purpleOn = false;
-      purpleOverlay.classList.remove("on", "clip", "card-on", "rippling");
+      purpleOverlay.classList.remove("on", "clip", "card-on", "card-fade", "rippling");
       purpleOverlay.setAttribute("aria-hidden", "true");
       hideLukeCard();
       setFlash(false, true);
+      clipExiting = false;
+      try{ purpleVideo.volume = 1; }catch(e){}
       pctx.setTransform(1,0,0,1,0,0);
       pctx.clearRect(0, 0, purpleCanvas.width, purpleCanvas.height);
     }
@@ -5561,6 +5586,26 @@ textarea:focus,.chat-form input:focus,.live-box textarea:focus{border-color:var(
   function skipToCard(){
     if(!purpleOn) return;
     if(lukeWrap.classList.contains("on")) return;
+    if(purpleMode === "clip"){
+      if(clipExiting && cardTimer){
+        clearTimeout(cardTimer);
+        cardTimer = 0;
+        fadeClipVolume(reducedMotion() ? 0 : CLIP_CROSSFADE_MS);
+        fadeToResume();
+        return;
+      }
+      snapFlashing = true;
+      setFlash(true, false);
+      clipExiting = true;
+      fadeClipVolume(reducedMotion() ? 0 : CLIP_CROSSFADE_MS);
+      if(cardTimer) clearTimeout(cardTimer);
+      cardTimer = setTimeout(() => {
+        cardTimer = 0;
+        if(!purpleOn) return;
+        fadeToResume();
+      }, reducedMotion() ? 0 : 200);
+      return;
+    }
     if(cardTimer){
       clearTimeout(cardTimer);
       cardTimer = 0;
@@ -5608,16 +5653,16 @@ textarea:focus,.chat-form input:focus,.live-box textarea:focus{border-color:var(
     purpleRaf = requestAnimationFrame(tickPurple);
   }
 
-  let snapRaf = 0, snapFlashing = false;
+  let snapRaf = 0, snapFlashing = false, clipExiting = false, clipVolRaf = 0;
   function watchSnap(){
     cancelAnimationFrame(snapRaf);
     snapFlashing = false;
     const tick = () => {
-      if(!purpleOn || purpleMode !== "clip" || lukeWrap.classList.contains("on")) return;
+      if(!purpleOn || purpleMode !== "clip" || lukeWrap.classList.contains("on") || clipExiting) return;
       const t = purpleVideo.currentTime || 0;
       if(t >= CLIP_FLASH_SECONDS && !snapFlashing){
         snapFlashing = true;
-        purpleFlash.style.transition = "opacity .11s ease-in";
+        purpleFlash.style.transition = "opacity .25s ease-in";
         purpleFlash.classList.add("on");
       }
       if(t >= CLIP_CUT_SECONDS){ finishClip(); return; }
@@ -5626,13 +5671,79 @@ textarea:focus,.chat-form input:focus,.live-box textarea:focus{border-color:var(
     snapRaf = requestAnimationFrame(tick);
   }
 
+  function fadeClipVolume(ms){
+    cancelAnimationFrame(clipVolRaf);
+    if(!purpleVideo || purpleVideo.muted || ms <= 0){
+      try{ purpleVideo.pause(); }catch(e){}
+      return;
+    }
+    const start = purpleVideo.volume;
+    const t0 = performance.now();
+    const tick = (now) => {
+      const u = Math.min(1, (now - t0) / ms);
+      try{ purpleVideo.volume = start * (1 - u); }catch(e){}
+      if(u < 1 && purpleOn){
+        clipVolRaf = requestAnimationFrame(tick);
+      } else {
+        try{ purpleVideo.pause(); }catch(e){}
+        try{ purpleVideo.volume = 1; }catch(e){}
+      }
+    };
+    clipVolRaf = requestAnimationFrame(tick);
+  }
+
+  function fadeToResume(){
+    if(!purpleOn) return;
+    if(lukeWrap.classList.contains("on")) return;
+    purpleOverlay.classList.add("on", "card-on", "card-fade");
+    lukeWrap.classList.remove("shown");
+    lukeWrap.classList.add("on");
+    if(purpleSkipHint) purpleSkipHint.style.display = "none";
+    if(lukeCard){
+      lukeCard.classList.remove("settle", "settled");
+      if(!reducedMotion()){
+        void lukeCard.offsetWidth;
+        lukeCard.classList.add("settle");
+      } else {
+        lukeCard.classList.add("settled");
+      }
+    }
+    void lukeWrap.offsetWidth;
+    lukeWrap.classList.add("enter");
+    const fade = reducedMotion() ? 0 : CLIP_CROSSFADE_MS;
+    if(cardTimer) clearTimeout(cardTimer);
+    cardTimer = setTimeout(() => {
+      cardTimer = 0;
+      try{ purpleVideo.pause(); }catch(e){}
+      try{ purpleVideo.volume = 1; }catch(e){}
+      stopAudio();
+      stopGojoCropLoop();
+      setFlash(false, true);
+      purpleOverlay.classList.remove("clip", "card-fade");
+      lukeWrap.classList.add("shown");
+      lukeWrap.classList.remove("enter");
+      if(lukeCard) lukeCard.classList.add("settled");
+    }, fade);
+  }
+
   function finishClip(){
     if(!purpleOn || purpleMode !== "clip") return;
+    if(clipExiting || lukeWrap.classList.contains("on")) return;
+    clipExiting = true;
     if(clipCutTimer){ clearTimeout(clipCutTimer); clipCutTimer = 0; }
     cancelAnimationFrame(snapRaf);
-    try{ purpleVideo.pause(); }catch(e){}
-    stopAudio();
-    showLukeCard(true);
+    if(!snapFlashing){
+      snapFlashing = true;
+      purpleFlash.style.transition = "opacity .25s ease-in";
+      purpleFlash.classList.add("on");
+    }
+    const hold = reducedMotion() ? 0 : CLIP_HOLD_MS;
+    if(cardTimer) clearTimeout(cardTimer);
+    cardTimer = setTimeout(() => {
+      cardTimer = 0;
+      if(!purpleOn) return;
+      fadeToResume();
+    }, hold);
   }
 
   function bindClipHandlers(){
@@ -5807,9 +5918,12 @@ textarea:focus,.chat-form input:focus,.live-box textarea:focus{border-color:var(
     stopAudio();
     purpleMode = "clip";
     purpleOverlay.classList.add("on", "clip");
-    purpleOverlay.classList.remove("card-on", "rippling");
+    purpleOverlay.classList.remove("card-on", "card-fade", "rippling");
     hideLukeCard();
     setFlash(false, true);
+    clipExiting = false;
+    cancelAnimationFrame(clipVolRaf);
+    try{ purpleVideo.volume = 1; }catch(e){}
     if(!userSetMute) soundOn = true;
     purpleVideo.muted = !soundOn;
     updateMuteLabel();
