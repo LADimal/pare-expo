@@ -1125,14 +1125,14 @@ html,body{overflow-x:hidden;overflow-y:auto;}
 .quiz-score{display:flex;justify-content:center;gap:8px;flex-wrap:wrap;margin-bottom:14px;}
 .quiz-score span{font-size:13px;background:var(--alt);border:1px solid var(--line);border-radius:999px;padding:5px 10px;}
 .quiz-fine{font-size:13px;color:var(--soft);margin-top:12px;line-height:1.4;}
-.quiz-result .luke-plug{
+.luke-plug{
   margin:16px 0 2px;
   display:flex;flex-direction:column;align-items:center;gap:8px;
 }
-.quiz-result .luke-plug-intro{
+.luke-plug-intro{
   font-size:13px;line-height:1.4;color:var(--soft);margin:0;font-weight:500;
 }
-.quiz-result .luke-plug-btn{
+.luke-plug-btn{
   display:inline-flex;align-items:center;justify-content:center;
   background:var(--acc);color:var(--cream);
   font-weight:700;font-size:14px;letter-spacing:.01em;
@@ -1141,18 +1141,18 @@ html,body{overflow-x:hidden;overflow-y:auto;}
   cursor:pointer;
   transition:background .2s ease, box-shadow .2s ease, transform .15s ease;
 }
-.quiz-result .luke-plug-btn:hover{
+.luke-plug-btn:hover{
   background:var(--acc2);
   box-shadow:0 1px 0 rgba(255,255,255,.14) inset, 0 5px 14px rgba(128,19,35,.28);
 }
-.quiz-result .luke-plug-btn:active{transform:scale(.97);background:var(--acc2);}
+.luke-plug-btn:active{transform:scale(.97);background:var(--acc2);}
 @media (hover:hover){
-  .quiz-result .luke-plug-btn:hover{transform:translateY(-1px);}
+  .luke-plug-btn:hover{transform:translateY(-1px);}
 }
 @media (prefers-reduced-motion:reduce){
-  .quiz-result .luke-plug-btn,
-  .quiz-result .luke-plug-btn:hover,
-  .quiz-result .luke-plug-btn:active{transition:none;transform:none;}
+  .luke-plug-btn,
+  .luke-plug-btn:hover,
+  .luke-plug-btn:active{transition:none;transform:none;}
 }
 .quiz .btn-row{justify-content:center;}
 
@@ -2198,6 +2198,35 @@ textarea:focus,.chat-form input:focus,.live-box textarea:focus{border-color:var(
 }
 .chat-fab{transition:transform .25s ease,opacity .25s ease;}
 .chat-fab.fab-away{animation:none !important;opacity:0;transform:translateY(24px) scale(.9);pointer-events:none;}
+
+/* ---------- Meet Luke journey ---------- */
+.luke-plug-btn{border:0;font-family:inherit;}
+.vote-done .luke-plug{margin:18px 0 4px !important;padding:14px 12px;border-radius:var(--r-m,10px);background:var(--alt,#f6f2ec);border:1px solid var(--line,#e5ded4);}
+.vote-done .luke-plug-intro{font-size:14px;color:var(--ink,#1c1214);font-weight:600;}
+.vote-done .luke-plug-btn,.quiz-result .luke-plug-btn{min-height:44px;padding:8px 22px;font-size:15px;}
+.bub-cta{display:flex;align-items:center;justify-content:center;margin-top:10px;min-height:40px;padding:8px 14px;border-radius:999px;
+  background:var(--acc,#7d1426);color:#fff;font-weight:700;font-size:14px;border:0;cursor:pointer;width:100%;font-family:inherit;}
+/* LinkedIn and Instagram on the thank-you page */
+.socials{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 10px !important;}
+.hire-done .socials{justify-content:center;margin:4px 0 14px !important;}
+.socials a{display:inline-flex;align-items:center;gap:6px;min-height:36px;padding:6px 14px;border:1px solid var(--line,#e5ded4);border-radius:999px;
+  background:#fff;color:var(--ink,#1c1214);font-size:13px;font-weight:600;text-decoration:none;line-height:1;}
+.socials a:hover{border-color:var(--ink,#1c1214);}
+.socials svg{width:16px;height:16px;flex:none;display:block;}
+.socials a:first-child svg{color:#0a66c2;}
+.socials a:last-child svg{color:#c13584;}
+/* Instagram badge on the thank-you photo */
+.hire-polaroid{position:relative;}
+.ig-badge{position:absolute;right:-12px;top:-12px;z-index:2;width:40px;height:40px;cursor:pointer;-webkit-tap-highlight-color:transparent;border-radius:50%;display:grid;place-items:center;color:#fff;
+  background:radial-gradient(circle at 30% 107%,#fdf497 0%,#fd5949 45%,#d6249f 60%,#285aeb 90%);box-shadow:0 4px 12px rgba(214,36,159,.35);
+  animation:igPulse 2s ease-in-out infinite;}
+.ig-badge svg{width:22px;height:22px;display:block;}
+.ig-badge:active{transform:scale(.92);}
+@keyframes igPulse{0%,100%{transform:scale(1)}50%{transform:scale(1.08)}}
+@media (prefers-reduced-motion: reduce){.ig-badge{animation:none;}}
+/* Robin reacts live: less to read */
+#view-live .live-count{display:none;}
+#view-live #liveInput{min-height:88px;}
 </style>
 </head>
 <body>
@@ -2617,7 +2646,7 @@ textarea:focus,.chat-form input:focus,.live-box textarea:focus{border-color:var(
             <h3>Thanks for voting!</h3>
             <p id="voteDoneText"></p>
             <div class="mini-results" id="miniResults"></div>
-            <p class="luke-plug">Built by Luke Dimal. <button type="button" class="text-link" data-meet-luke>Say hi</button></p>
+            <p class="luke-plug"><span class="luke-plug-intro">Curious who designed this?</span><button type="button" class="luke-plug-btn" data-meet-luke>Meet Luke &rarr;</button></p>
           </div>
         </section>
       </div>
@@ -2769,7 +2798,7 @@ textarea:focus,.chat-form input:focus,.live-box textarea:focus{border-color:var(
     </article>
     <div class="luke-tools">
       <a class="btn" id="lukeGrade" href="https://forms.gle/xrMetQxjRrob7h4b6" target="_blank" rel="noopener noreferrer">Grade our project</a>
-      <button type="button" class="btn ghost" id="lukeHire">One last thing</button>
+      <button type="button" class="btn" id="lukeHire">One last thing &rarr;</button>
       <button type="button" class="btn ghost" id="lukeClose">Close</button>
     </div>
     <p class="luke-grade-hint">Remember your A00# in Other Comments.</p>
@@ -6668,7 +6697,7 @@ textarea:focus,.chat-form input:focus,.live-box textarea:focus{border-color:var(
   var logo = document.querySelector(".hire-brand-logo");
   var brand = document.querySelector(".brand-logo");
   if(logo && brand && brand.src) logo.src = brand.src;
-  hireYes.addEventListener("click", openLukeReveal);
+  hireYes.addEventListener("click", acceptHire);
   hireNo.addEventListener("pointerenter", (e) => {
     if(!hireAskOpen()) return;
     if(e.pointerType === "touch") return;
@@ -6925,7 +6954,7 @@ textarea:focus,.chat-form input:focus,.live-box textarea:focus{border-color:var(
       (p.id !== "robin" ? '<p class="ph-note">Placeholder character</p>' : '')+
       '<div class="btn-row"><button type="button" class="btn" id="quizMeet">Meet all three</button><button type="button" class="btn ghost" id="quizAgain">Take it again</button></div>'+
       '<p class="quiz-fine">You can switch sidekicks any time.</p>'+
-      '<p class="luke-plug"><span class="luke-plug-intro">Curious who designed this?</span><button type="button" class="luke-plug-btn" data-meet-luke>Meet Luke</button></p></div>';
+      '<p class="luke-plug"><span class="luke-plug-intro">Curious who designed this?</span><button type="button" class="luke-plug-btn" data-meet-luke>Meet Luke &rarr;</button></p></div>';
     document.getElementById("quizAgain").addEventListener("click", function(){ step=0; score=[0,0,0]; renderQ(); });
     document.getElementById("quizMeet").addEventListener("click", function(){ var t = document.querySelector('.tile[data-mode="sidekicks"]'); if(t) t.click(); });
     setTimeout(function(){ var av = card.querySelector(".p-av"); if(av && window.PareExpo && window.PareExpo.confetti){ var r = av.getBoundingClientRect();
