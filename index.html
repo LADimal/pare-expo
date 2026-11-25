@@ -237,8 +237,22 @@ img{max-width:100%;display:block;}
 }
 #liveCheck.busy,#liveCheck:disabled{opacity:.72;cursor:wait;}
 #liveCheck.is-pressed{transform:scale(.97);}
-.live-out{scroll-margin-top:88px;min-height:160px;}
+.live-out{scroll-margin-top:88px;min-height:0;}
+.live-out.is-empty{display:none;}
 .result-empty{color:var(--soft);font-size:17px;padding:12px 0;}
+.chip-row,.chat-sugs{position:relative;}
+@media (max-width:980px){
+  .chip-row{
+    -webkit-mask-image:linear-gradient(to right, #000 0, #000 calc(100% - 28px), transparent 100%);
+    mask-image:linear-gradient(to right, #000 0, #000 calc(100% - 28px), transparent 100%);
+  }
+  .chips{padding-right:36px !important;}
+}
+.chat-sugs{
+  -webkit-mask-image:linear-gradient(to right, #000 0, #000 calc(100% - 24px), transparent 100%);
+  mask-image:linear-gradient(to right, #000 0, #000 calc(100% - 24px), transparent 100%);
+}
+.chat-sugs button:last-child{margin-right:28px;}
 .live-card{position:relative;}
 .live-card .face{transform-origin:center bottom;}
 .live-card .face.pop{animation:livePop .35s ease;}
@@ -3469,8 +3483,14 @@ textarea:focus,.chat-form input:focus,.live-box textarea:focus{border-color:var(
     });
   }
 
+  function setLiveOutEmpty(empty){
+    const out = $("#liveOut");
+    if(out) out.classList.toggle("is-empty", !!empty);
+  }
+
   function showLiveEmpty(msg){
     const box = $("#liveResult");
+    setLiveOutEmpty(true);
     box.innerHTML = "";
     box.dataset.state = "empty";
     const e = document.createElement("div");
@@ -3668,6 +3688,7 @@ textarea:focus,.chat-form input:focus,.live-box textarea:focus{border-color:var(
     }
     archiveLiveResult();
     setLiveButton(true);
+    setLiveOutEmpty(false);
     box.innerHTML = "";
     box.dataset.state = "reading";
     const card = document.createElement("div");
