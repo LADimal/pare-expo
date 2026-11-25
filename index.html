@@ -300,18 +300,32 @@ img{max-width:100%;display:block;}
 .live-history .hist-meta{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
 .live-history .status-chip{margin-top:0;font-size:12px;padding:4px 9px;}
 .live-history .hist-robin{font-size:13px;color:var(--soft);margin:6px 0 0;line-height:1.35;}
-.live-thread{display:flex;flex-direction:column;gap:8px;margin:0 0 16px;}
+.live-thread{display:flex;flex-direction:column;gap:10px;margin:0 0 20px;}
 .live-thread-head{font-family:Inter,sans-serif;font-size:13px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--soft);margin:0 0 4px;}
-.live-msg{max-width:92%;padding:8px 12px;border-radius:16px;font-size:15px;line-height:1.35;background:#fff;border:1px solid var(--line);}
-.live-msg.them{align-self:flex-start;border-bottom-left-radius:4px;}
-.live-msg.me{align-self:flex-end;background:var(--cream);border-color:transparent;border-bottom-right-radius:4px;}
+.live-msg{max-width:86%;padding:9px 13px;border-radius:18px;font-size:15.5px;line-height:1.4;background:#fff;border:1px solid var(--line);box-shadow:0 1px 2px rgba(43,5,8,.05);}
+.live-msg.them{align-self:flex-start;border-bottom-left-radius:5px;}
+.live-msg.me{align-self:flex-end;background:var(--cream);border-color:transparent;border-bottom-right-radius:5px;}
 .live-msg-who{display:block;font-size:12px;font-weight:700;color:var(--soft);margin:0 0 2px;}
 .live-msg p{margin:0;}
+.live-msg.in{animation:liveFade .28s ease both;}
 .live-signs,.live-takeaway{margin:10px 0 0;font-size:14px;line-height:1.45;color:var(--dark);}
 .live-signs{color:var(--dark);}
 .live-takeaway{color:var(--soft);}
 .live-signs-label,.live-takeaway-label{font-weight:700;color:var(--dark);}
 .live-card .status-chip,.live-card .action-pill{display:block;width:fit-content;}
+.live-who-row{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;flex-wrap:wrap;}
+.live-who-row .who{margin:0;}
+.live-who-row .status-chip{margin-top:2px;}
+.live-why{margin-top:12px;border-top:1px solid var(--line);padding-top:4px;}
+.live-why summary{
+  cursor:pointer;font-size:14.5px;font-weight:700;color:var(--acc);
+  list-style:none;padding:8px 0;user-select:none;
+  text-decoration:underline;text-underline-offset:3px;
+}
+.live-why[open] summary{text-decoration:none;}
+.live-why summary::-webkit-details-marker,.live-why summary::marker{display:none;content:"";}
+.live-why .pare-do{margin-top:4px;}
+.live-why summary:active{transform:scale(.97);}
 
 @keyframes livePop{
   from{opacity:0;transform:scale(.86) translateY(8px);}
@@ -334,7 +348,7 @@ img{max-width:100%;display:block;}
 }
 @media (prefers-reduced-motion:reduce){
   .live-card .face.pop,.said.reveal,.pare-do.reveal,.action-pill.reveal,
-  .live-card.shake,.live-card.sparkle .spark{animation:none;}
+  .live-card.shake,.live-card.sparkle .spark,.live-msg.in{animation:none;}
 }
 
 /* Meet */
@@ -1328,8 +1342,8 @@ html.ri-lock #view-home .hero-art{visibility:hidden;}
 .robin-intro.play .ri-sub{opacity:1;letter-spacing:.28em !important;}
 .ri-skip{
   position:absolute;left:0;right:0;z-index:8;bottom:max(22px, calc(env(safe-area-inset-bottom, 0px) + 16px));
-  text-align:center;font-size:11px;font-weight:600;letter-spacing:.2em;text-transform:uppercase;color:rgba(246,239,230,.4);
-  opacity:0;transition:opacity .8s ease 1.2s;
+  text-align:center;font-size:13px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:rgba(246,239,230,.78);
+  opacity:0;transition:opacity .6s ease .6s;
 }
 .robin-intro.play .ri-skip{opacity:1;}
 /* Exit: everything but Robin dissolves while Robin flies to the home page */
@@ -1687,8 +1701,8 @@ button.persona .tile-go{margin-top:2px;}
 .vote-done h3{font-family:"Playfair Display",Georgia,serif;font-size:26px;}
 
 /* ===== Site-wide polish ===== */
-.view.on{animation:viewIn .42s cubic-bezier(.2,.8,.2,1);}
-@keyframes viewIn{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+.view.on{animation:viewIn .32s cubic-bezier(.2,.8,.2,1);}
+@keyframes viewIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
 .btn,.tile,.back-link,.vote-card,.sk-scen button,.quiz-opts button,.sk-steps button,.sk-arrow,.seg button,.chip{position:relative;overflow:hidden;}
 .btn{transition:transform .15s ease, box-shadow .2s ease, background .2s ease;}
 .btn:active{transform:scale(.96);}
@@ -1796,9 +1810,12 @@ h1,h2,h3{letter-spacing:-.015em;font-variant-numeric:lining-nums;}
   .sec-head p{text-align:right;max-width:340px;}
 }
 /* Leave room for the Chat with Robin button so it doesn't sit on the title */
-body:has(#view-home.on) #demos .sec-head{padding-right:170px;}
+body:has(#view-home.on) #demos .sec-head{padding-right:220px;}
+@media (max-width:420px){
+  body:has(#view-home.on) #demos .sec-head h2{font-size:26px;}
+}
 @media (min-width:760px){
-  body:has(#view-home.on) #demos .sec-head{grid-template-columns:1fr;padding-right:200px;}
+  body:has(#view-home.on) #demos .sec-head{grid-template-columns:1fr;padding-right:230px;}
   body:has(#view-home.on) #demos .sec-head p{text-align:left;max-width:none;}
 }
 
@@ -1914,7 +1931,8 @@ textarea:focus,.chat-form input:focus,.live-box textarea:focus{border-color:var(
   .robin-card img.face{width:64px !important;grid-column:1;grid-row:1;}
   .robin-card > div{display:contents;}
   .robin-card > div > *{grid-column:1 / -1;}
-  .robin-card > div > .who{grid-column:2;grid-row:1;}
+  .robin-card > div > .who,
+  .robin-card > div > .live-who-row{grid-column:2;grid-row:1;}
   .robin-card .said{margin-top:0 !important;}
 }
 
@@ -1951,6 +1969,13 @@ textarea:focus,.chat-form input:focus,.live-box textarea:focus{border-color:var(
 /* ---------- Motion: quieter, consistent ---------- */
 .js-reveal .reveal{transition:opacity .7s var(--ease), transform .7s var(--ease) !important;}
 @media (hover:none){ #demos .demo-tile:hover{transform:none;box-shadow:var(--shadow);} }
+
+/* Shared tap feedback, after theme overrides so it wins */
+.btn:active,.btn.ghost:active,#liveCheck.is-pressed{transform:scale(.97) !important;}
+.tile:active,.chip:active,.back-link:active,.vote-card:active,
+.sk-scen button:active,.quiz-opts button:active,.sk-steps button:active,
+.sk-arrow:active,.home-btn:active,.chat-send:active,.chat-fab:active,
+.seg button:active,.text-link:active{transform:scale(.97);}
 </style>
 </head>
 <body>
@@ -2048,7 +2073,7 @@ textarea:focus,.chat-form input:focus,.live-box textarea:focus{border-color:var(
 
 
       <div class="home-end"></div>
-      <p class="fine">Fictional examples for the expo. Work by Luke Dimal for Pare Dating, a dating app for people over 40.</p>
+      <p class="fine">Fictional examples for the expo. Robin designed by Luke Dimal for Pare Dating, a dating app for people over 40.</p>
       <p class="made-by">
         <span class="made-stack">
           <button type="button" id="madeByLuke">Made by Luke</button>
@@ -3953,11 +3978,22 @@ textarea:focus,.chat-form input:focus,.live-box textarea:focus{border-color:var(
   }
 
   const LIVE_READ_MS = 850;
+  const LIVE_STAGGER_MS = 150;
   let liveTimer = 0;
+  let liveStagger = [];
   let liveBusy = false;
   let liveLast = null;
   let liveActiveScenario = null;
   const livePast = [];
+
+  function clearLiveTimers(){
+    if(liveTimer){
+      clearTimeout(liveTimer);
+      liveTimer = 0;
+    }
+    liveStagger.forEach(clearTimeout);
+    liveStagger = [];
+  }
 
   function reducedLiveMotion(){
     return !!(window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches);
@@ -4038,10 +4074,7 @@ textarea:focus,.chat-form input:focus,.live-box textarea:focus{border-color:var(
   }
 
   function resetLivePanel(clearHistory){
-    if(liveTimer){
-      clearTimeout(liveTimer);
-      liveTimer = 0;
-    }
+    clearLiveTimers();
     setLiveButton(false);
     liveLast = null;
     liveActiveScenario = null;
@@ -4135,6 +4168,12 @@ textarea:focus,.chat-form input:focus,.live-box textarea:focus{border-color:var(
       pill.textContent = "What Pare would do: " + res.actionLabel;
       pd.hidden = false;
       pd.textContent = res.pare;
+      const why = document.createElement("details");
+      why.className = "live-why";
+      const sum = document.createElement("summary");
+      sum.textContent = "Why this rating";
+      why.appendChild(sum);
+      why.appendChild(pd);
       if(res.signs && res.signs.length){
         const signs = document.createElement("p");
         signs.className = "live-signs";
@@ -4143,7 +4182,7 @@ textarea:focus,.chat-form input:focus,.live-box textarea:focus{border-color:var(
         sl.textContent = "What Robin noticed: ";
         signs.appendChild(sl);
         signs.appendChild(document.createTextNode(res.signs.join("; ") + "."));
-        pd.parentNode.appendChild(signs);
+        why.appendChild(signs);
       }
       if(res.takeaway){
         const take = document.createElement("p");
@@ -4153,8 +4192,9 @@ textarea:focus,.chat-form input:focus,.live-box textarea:focus{border-color:var(
         tl.textContent = "Takeaway: ";
         take.appendChild(tl);
         take.appendChild(document.createTextNode(res.takeaway));
-        pd.parentNode.appendChild(take);
+        why.appendChild(take);
       }
+      (said.parentNode || card).appendChild(why);
     }
     if(!reducedLiveMotion()){
       said.classList.add("reveal");
@@ -4192,7 +4232,21 @@ textarea:focus,.chat-form input:focus,.live-box textarea:focus{border-color:var(
   }
 
 
-  function renderLiveThread(res){
+  function appendLiveMsg(wrap, m, name, animate){
+    const row = document.createElement("div");
+    row.className = "live-msg " + (m.who === "me" ? "me" : "them") + (animate ? " in" : "");
+    const who = document.createElement("span");
+    who.className = "live-msg-who";
+    who.textContent = m.who === "me" ? "You" : name;
+    const p = document.createElement("p");
+    p.textContent = m.text;
+    row.appendChild(who);
+    row.appendChild(p);
+    wrap.appendChild(row);
+    return row;
+  }
+
+  function renderLiveThread(res, opts){
     const wrap = document.createElement("div");
     wrap.className = "live-thread";
     const head = document.createElement("h3");
@@ -4200,18 +4254,10 @@ textarea:focus,.chat-form input:focus,.live-box textarea:focus{border-color:var(
     head.textContent = res.from ? ("A conversation with " + res.from) : "The conversation";
     wrap.appendChild(head);
     const name = firstNameFrom(res.from);
-    (res.messages || []).forEach((m) => {
-      const row = document.createElement("div");
-      row.className = "live-msg " + (m.who === "me" ? "me" : "them");
-      const who = document.createElement("span");
-      who.className = "live-msg-who";
-      who.textContent = m.who === "me" ? "You" : name;
-      const p = document.createElement("p");
-      p.textContent = m.text;
-      row.appendChild(who);
-      row.appendChild(p);
-      wrap.appendChild(row);
-    });
+    const skip = !!(opts && opts.empty);
+    if(!skip){
+      (res.messages || []).forEach((m) => appendLiveMsg(wrap, m, name, false));
+    }
     return wrap;
   }
 
@@ -4233,10 +4279,7 @@ textarea:focus,.chat-form input:focus,.live-box textarea:focus{border-color:var(
     const restart = !!(opts && opts.restart);
     if(liveBusy && !restart) return;
     if(liveBusy && restart){
-      if(liveTimer){
-        clearTimeout(liveTimer);
-        liveTimer = 0;
-      }
+      clearLiveTimers();
       liveBusy = false;
     }
     const box = $("#liveResult");
@@ -4270,10 +4313,7 @@ textarea:focus,.chat-form input:focus,.live-box textarea:focus{border-color:var(
     }
     flashLiveButton();
     if(!res){
-      if(liveTimer){
-        clearTimeout(liveTimer);
-        liveTimer = 0;
-      }
+      clearLiveTimers();
       setLiveButton(false);
       showLiveEmpty("Type a message first, then press Check message.");
       return;
@@ -4283,8 +4323,11 @@ textarea:focus,.chat-form input:focus,.live-box textarea:focus{border-color:var(
     setLiveOutEmpty(false);
     box.innerHTML = "";
     box.dataset.state = "reading";
-    if(res.messages && res.messages.length){
-      box.appendChild(renderLiveThread(res));
+    const msgs = (res.messages && res.messages.length) ? res.messages : null;
+    let thread = null;
+    if(msgs){
+      thread = renderLiveThread(res, { empty: true });
+      box.appendChild(thread);
     }
     const card = document.createElement("div");
     card.className = "robin-card live-card";
@@ -4293,12 +4336,19 @@ textarea:focus,.chat-form input:focus,.live-box textarea:focus{border-color:var(
     img.src = FACES.thinking;
     img.alt = "Robin thinking";
     const col = document.createElement("div");
+    const whoRow = document.createElement("div");
+    whoRow.className = "live-who-row";
     const who = document.createElement("div");
     who.className = "who";
     who.textContent = "Robin";
     const sm = document.createElement("small");
     sm.textContent = "Pare's AI assistant";
     who.appendChild(sm);
+    const chip = document.createElement("div");
+    chip.className = "status-chip";
+    chip.hidden = true;
+    whoRow.appendChild(who);
+    whoRow.appendChild(chip);
     const reading = document.createElement("div");
     reading.className = "live-reading";
     const dots = document.createElement("div");
@@ -4311,27 +4361,36 @@ textarea:focus,.chat-form input:focus,.live-box textarea:focus{border-color:var(
     const said = document.createElement("div");
     said.className = "said";
     said.hidden = true;
-    const chip = document.createElement("div");
-    chip.className = "status-chip";
-    chip.hidden = true;
     const pill = document.createElement("div");
     pill.className = "action-pill";
     pill.hidden = true;
     const pd = document.createElement("div");
     pd.className = "pare-do";
     pd.hidden = true;
-    col.appendChild(who);
+    col.appendChild(whoRow);
     col.appendChild(reading);
     col.appendChild(said);
-    col.appendChild(chip);
     col.appendChild(pill);
     col.appendChild(pd);
     card.appendChild(img);
     card.appendChild(col);
     box.appendChild(card);
-    scrollToLiveEl($("#liveOut") || box, "center");
-    const delay = reducedLiveMotion() ? 0 : LIVE_READ_MS;
-    if(liveTimer) clearTimeout(liveTimer);
+    const reduce = reducedLiveMotion();
+    const stagger = (msgs && !reduce) ? LIVE_STAGGER_MS : 0;
+    const name = firstNameFrom(res.from);
+    clearLiveTimers();
+    if(msgs && stagger){
+      msgs.forEach((m, i) => {
+        liveStagger.push(setTimeout(() => {
+          const row = appendLiveMsg(thread, m, name, true);
+          if(row && row.scrollIntoView) row.scrollIntoView({ block: "nearest", behavior: "smooth" });
+        }, 40 + i * stagger));
+      });
+    } else if(msgs){
+      msgs.forEach((m) => appendLiveMsg(thread, m, name, false));
+    }
+    const delay = (msgs ? msgs.length * stagger : 0) + (reduce ? 0 : LIVE_READ_MS);
+    scrollToLiveEl($("#liveOut") || box, "start");
     liveTimer = setTimeout(() => {
       liveTimer = 0;
       revealLiveReply(card, img, res);
@@ -7166,8 +7225,11 @@ window.PARE_LIVE = window.PARE_LIVE || {
     if($("#view-home.on") && e.target.closest(".tile")) homeY = window.scrollY;
   }, true);
   function goHome(){
+    var y = homeY;
     var hb = $("#homeBtn"); if(hb) hb.click();
-    requestAnimationFrame(function(){ window.scrollTo(0, homeY); });
+    function pin(){ window.scrollTo(0, y); }
+    requestAnimationFrame(function(){ requestAnimationFrame(pin); });
+    setTimeout(pin, 60);
   }
   $$("[data-back]").forEach(function(b){ b.addEventListener("click", goHome); });
   function open(id){
