@@ -1604,6 +1604,27 @@ button.persona .tile-go{margin-top:2px;}
   .view.on,.bird.on img,.bird.hop img,.sk-chips span,.stage-bg::after{animation:none;opacity:1;transform:none;}
   .bird,.stage-spot{transition:none;}
 }
+
+/* Floating "Chat with Robin" button, home page only */
+.chat-fab{display:none;position:fixed;z-index:40;right:max(16px, calc(env(safe-area-inset-right, 0px) + 12px));
+  bottom:calc(env(safe-area-inset-bottom, 0px) + 16px);align-items:center;gap:10px;padding:6px 16px 6px 6px;border-radius:999px;
+  background:var(--acc);color:var(--cream);box-shadow:0 12px 30px rgba(128,19,35,.35);text-align:left;
+  animation:fabIn .6s cubic-bezier(.3,1.5,.5,1) 1s both;transition:transform .15s ease;}
+body:has(#view-home.on) .chat-fab{display:flex;}
+html.ri-lock .chat-fab,html.results-mode .chat-fab{display:none !important;}
+.chat-fab:active{transform:scale(.95);}
+.fab-av{width:44px;height:44px;border-radius:50%;background:var(--cream);display:flex;align-items:center;justify-content:center;overflow:hidden;flex:none;}
+.fab-av img{width:40px;height:40px;object-fit:contain;}
+.fab-text{display:flex;flex-direction:column;line-height:1.15;}
+.fab-text b{font-size:15px;}
+.fab-text small{font-size:12px;opacity:.8;}
+.fab-dot{position:absolute;top:6px;left:40px;width:12px;height:12px;border-radius:50%;background:#7ee2a8;border:2px solid var(--acc);}
+.fab-dot::after{content:"";position:absolute;inset:-4px;border-radius:50%;border:2px solid #7ee2a8;animation:fabPing 2s ease-out infinite;}
+@keyframes fabIn{from{opacity:0;transform:translateY(30px) scale(.8)}to{opacity:1;transform:none}}
+@keyframes fabPing{0%{opacity:.8;transform:scale(.6)}100%{opacity:0;transform:scale(1.6)}}
+#view-home{padding-bottom:70px;}
+#view-chat .chat-shell{height:calc(100dvh - 180px);}
+@media (prefers-reduced-motion: reduce){ .chat-fab,.fab-dot::after{animation:none;} }
 </style>
 </head>
 <body>
@@ -2037,6 +2058,33 @@ button.persona .tile-go{margin-top:2px;}
       </div>
     </section>
 
+    <section class="view" id="view-chat">
+      <button type="button" class="back-link" data-back>← Back</button>
+      <div class="chat-shell">
+        <div class="chat-head">
+          <img class="chat-av" data-face="0" alt="">
+          <div>
+            <div class="chat-name">Robin</div>
+            <div class="chat-status"><i></i>Pare's AI sidekick</div>
+          </div>
+        </div>
+        <div class="chat-log" id="chatLog" aria-live="polite"></div>
+        <div class="chat-sugs" id="chatSugs">
+          <button type="button" data-say="I'm nervous about my first date in years.">Nervous about a first date</button>
+          <button type="button" data-say="How do I write a good first message?">Help with a first message</button>
+          <button type="button" data-say="Are you a real person?">Are you a real person?</button>
+        </div>
+        <form class="chat-form" id="chatForm" autocomplete="off">
+          <label for="chatInput" class="sr-only">Message Robin</label>
+          <input id="chatInput" type="text" maxlength="300" placeholder="Message Robin" enterkeyhint="send">
+          <button type="submit" class="chat-send" id="chatSend" aria-label="Send">
+            <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M3 11.5 20 4l-7.5 17-2.2-7.3L3 11.5Z" fill="currentColor"/></svg>
+          </button>
+        </form>
+        <p class="chat-fine">Robin is an AI. This is a demo, so please don't share personal details.</p>
+      </div>
+    </section>
+
     <section class="view" id="view-quiz">
       <button type="button" class="back-link" data-back>← Back</button>
       <div class="quiz-page">
@@ -2067,6 +2115,11 @@ button.persona .tile-go{margin-top:2px;}
   </div>
 </div>
 
+<button type="button" class="chat-fab" id="chatFab" aria-label="Chat with Robin">
+  <span class="fab-av"><img data-face="0" alt=""></span>
+  <span class="fab-text"><b>Chat with Robin</b><small>Ask anything</small></span>
+  <span class="fab-dot" aria-hidden="true"></span>
+</button>
 <div id="robinIntro" class="robin-intro" role="dialog" aria-label="Opening animation. Tap to skip.">
   <canvas id="riCanvas" aria-hidden="true"></canvas>
   <div class="ri-ring" aria-hidden="true"></div>
@@ -5934,5 +5987,13 @@ window.PARE_LIVE = window.PARE_LIVE || {
   }
 })();</script>
 
+<script>(function(){
+  var fab = document.getElementById("chatFab");
+  if(!fab) return;
+  fab.addEventListener("click", function(){
+    if(window.PareExpo && window.PareExpo.openView) window.PareExpo.openView("chat");
+    setTimeout(function(){ var i = document.getElementById("chatInput"); if(i && window.matchMedia("(hover:hover)").matches) i.focus(); }, 500);
+  });
+})();</script>
 </body>
 </html>

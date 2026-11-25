@@ -26,6 +26,18 @@ Demo limits:
 - Stay on dating, friendship, first dates, profiles and online safety. Gently steer anything else back.
 - If asked who made you: Luke designed Robin's name, personality and safety rules for his BCIT practicum with Pare.`;
 
+// Daily cap on AI replies (per running copy of the function). Past it, the
+// website quietly switches to Robin's built-in replies. Each reply costs well
+// under a cent, so 1,500 a day stays far below a $5 budget.
+const DAILY_LIMIT = 1500;
+let day = new Date().toISOString().slice(0, 10);
+let usedToday = 0;
+function overDailyCap(): boolean {
+  const today = new Date().toISOString().slice(0, 10);
+  if (today !== day) { day = today; usedToday = 0; }
+  return ++usedToday > DAILY_LIMIT;
+}
+
 // Light per-visitor rate limit so one phone can't burn the budget.
 const hits = new Map<string, number[]>();
 function limited(ip: string): boolean {
@@ -53,6 +65,7 @@ Deno.serve(async (req) => {
 
   const ip = req.headers.get("x-forwarded-for")?.split(",")[0].trim() || "unknown";
   if (limited(ip)) return new Response(JSON.stringify({ error: "slow down" }), { status: 429, headers });
+  if (overDailyCap()) return new Response(JSON.stringify({ error: "daily cap reached" }), { status: 429, headers });
 
   let messages: { role: string; content: string }[] = [];
   try {

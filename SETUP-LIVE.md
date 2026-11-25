@@ -27,3 +27,14 @@ In **Project Settings > API**, copy the **Project URL** and the **anon public** 
 - Big screen: open `https://ladimal.github.io/pare-expo/#results` on the laptop or projector. It updates every 2 seconds.
 - Reset the vote before you start: in SQL Editor run `truncate public.votes;`
 - If the Wi-Fi drops, Robin switches to built-in replies and votes are sent when phones reconnect.
+
+# Talk to Robin (AI chat) setup
+
+Until this is done, the chat uses Robin's built-in replies. Nothing breaks.
+
+1. **AI key.** At console.anthropic.com: sign up, add $5 of credit under Billing, then set a monthly spend limit (Settings > Limits). Create a key under API Keys and copy it. Never paste it into chat or the website.
+2. **Store the key in Supabase.** Edge Functions > Secrets > Add new secret. Name: `ANTHROPIC_API_KEY`. Value: the key.
+3. **Create the function.** Edge Functions > Deploy a new function > Via editor. Name it `robin-chat`, replace the sample with all of `supabase/functions/robin-chat/index.ts`, and deploy.
+4. **Let visitors reach it.** In the function's Details/Settings, turn **off** "Verify JWT" (Enforce JWT verification), and save.
+
+Safety limits built in: replies are short (max 220 tokens), one phone can send 12 messages a minute, the function stops calling the AI after 1,500 replies a day, and the console spend limit caps the bill. If anything fails, the site falls back to built-in replies.
