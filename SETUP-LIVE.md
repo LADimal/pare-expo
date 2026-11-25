@@ -1,4 +1,8 @@
-# Switching on Talk to Robin and the live vote
+# Live vote setup
+
+Status (2026-11-25): done. The site is connected to Luke's Supabase project `pare-expo` (Canada Central, Free plan). The Talk to Robin chat was dropped, so steps 2 and 3 below are not needed.
+
+## Original guide
 
 The site works without any of this: Robin answers with built-in replies and votes stay on each phone. These steps make Robin use real AI and make votes appear live on the big screen. Allow about 20 minutes.
 
