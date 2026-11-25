@@ -1299,6 +1299,38 @@ html.ri-lock,html.ri-lock body{overflow:hidden;}
 .chat-log{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:16px 14px;display:flex;flex-direction:column;gap:10px;background:var(--alt);}
 .bub{max-width:82%;padding:10px 14px;font-size:16px;line-height:1.42;border-radius:18px;white-space:pre-wrap;word-wrap:break-word;animation:bubIn .28s ease-out;}
 .bub.robin{align-self:flex-start;background:var(--white);border:1px solid var(--line);border-bottom-left-radius:6px;}
+.bub.robin.screened{border-color:rgba(176,72,40,.45);box-shadow:0 0 0 3px rgba(176,72,40,.08);}
+.screen-tag{display:flex;align-items:center;gap:6px;font-size:11px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:#a2401f;margin-bottom:4px;}
+.screen-tag::before{content:"";width:12px;height:12px;flex:none;background:currentColor;-webkit-mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 2 4 5v6c0 5 3.4 9.4 8 11 4.6-1.6 8-6 8-11V5z'/%3E%3C/svg%3E") center/contain no-repeat;mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 2 4 5v6c0 5 3.4 9.4 8 11 4.6-1.6 8-6 8-11V5z'/%3E%3C/svg%3E") center/contain no-repeat;}
+.bub.robin.act-hold{border-color:rgba(160,24,40,.55);box-shadow:0 0 0 3px rgba(160,24,40,.09);}
+.bub.robin.act-hold .screen-tag{color:#a01828;}
+.bub.robin.act-review{border-color:rgba(176,120,20,.5);box-shadow:0 0 0 3px rgba(176,120,20,.09);}
+.bub.robin.act-review .screen-tag{color:#8a5a00;}
+.screen-means{display:block;margin-top:8px;padding-top:8px;border-top:1px dashed var(--line);font-size:13px;line-height:1.4;color:var(--muted, #6b5a5c);}
+.screen-code{display:block;margin-top:4px;font:600 10.5px/1.3 ui-monospace,SFMono-Regular,Menlo,monospace;letter-spacing:.02em;color:var(--muted, #8a7a7c);opacity:.8;}
+.egg-67{position:fixed;inset:0;z-index:200;display:flex;align-items:center;justify-content:center;gap:18px;pointer-events:none;font:900 min(34vw,180px)/1 "Playfair Display",Georgia,serif;font-variant-numeric:lining-nums;color:var(--acc,#801323);text-shadow:0 10px 40px rgba(128,19,35,.25);animation:eggFade 2.6s ease forwards;}
+.egg-67 .e6{animation:eggSee .5s ease-in-out infinite alternate;}
+.egg-67 .e7{animation:eggSee .5s ease-in-out infinite alternate-reverse;}
+.egg-67 .hands{font-size:.38em;animation:eggShrug .25s ease-in-out infinite alternate;}
+.egg-67 .hands i{font-style:normal;}
+@keyframes eggSee{from{transform:translateY(-18%) rotate(-6deg)}to{transform:translateY(18%) rotate(6deg)}}
+@keyframes eggShrug{from{transform:translateY(-10%) rotate(-10deg)}to{transform:translateY(10%) rotate(10deg)}}
+@keyframes eggFade{0%{opacity:0;transform:scale(.6)}12%{opacity:1;transform:scale(1)}80%{opacity:1}100%{opacity:0;transform:scale(1.08)}}
+.egg-keynote{position:fixed;inset:0;z-index:200;pointer-events:none;background:rgba(8,8,10,.78);display:flex;align-items:flex-end;justify-content:center;padding-bottom:22vh;animation:eggFade 3s ease forwards;}
+.egg-keynote .spot{position:absolute;left:50%;top:-10%;width:120vmax;height:120vmax;transform:translateX(-50%);background:radial-gradient(closest-side,rgba(118,185,0,.28),rgba(118,185,0,0) 60%);animation:eggSpot 3s ease-in-out;}
+.egg-keynote .kn{position:relative;text-align:center;color:#f5f5f5;padding:16px 22px;border-radius:18px;background:linear-gradient(160deg,#1b1b1e,#0c0c0e);border:1px solid rgba(255,255,255,.12);box-shadow:0 20px 60px rgba(0,0,0,.5),inset 0 1px 0 rgba(255,255,255,.12);}
+.egg-keynote b{display:block;font-size:22px;letter-spacing:.01em;}
+.egg-keynote small{display:block;margin-top:4px;font-size:14px;color:#9be22d;}
+@keyframes eggSpot{from{transform:translateX(-80%)}to{transform:translateX(-50%)}}
+html.egg-roll body{animation:eggRoll 1.2s cubic-bezier(.45,.05,.35,1);}
+@keyframes eggRoll{to{transform:rotate(360deg)}}
+html.egg-gold{--acc:#b8860b;}
+html.egg-gold body{filter:saturate(1.15);}
+.hero-art{-webkit-touch-callout:none;-webkit-user-select:none;user-select:none;}
+.hero-art.egg-spin{animation:eggSpin .9s cubic-bezier(.3,1.4,.5,1);}
+@keyframes eggSpin{0%{transform:rotate(0) scale(1)}50%{transform:rotate(200deg) scale(1.15)}100%{transform:rotate(360deg) scale(1)}}
+.egg-toast{position:fixed;left:50%;top:calc(env(safe-area-inset-top,0px) + 16px);transform:translateX(-50%);z-index:210;background:#1b1b1e;color:#fff;padding:10px 16px;border-radius:999px;font-weight:700;font-size:14px;box-shadow:0 10px 30px rgba(0,0,0,.3);animation:eggFade 3s ease forwards;pointer-events:none;white-space:nowrap;}
+@media (prefers-reduced-motion: reduce){.egg-67 span,.egg-keynote .spot{animation:none;}html.egg-roll body{animation:none;}}
 .bub.me{align-self:flex-end;background:var(--acc);color:var(--cream);border-bottom-right-radius:6px;}
 @keyframes bubIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
 .typing{align-self:flex-start;background:var(--white);border:1px solid var(--line);border-radius:18px 18px 18px 6px;padding:12px 14px;display:flex;gap:5px;}
@@ -2647,7 +2679,36 @@ html.ri-lock .chat-fab,html.results-mode .chat-fab{display:none !important;}
     return false;
   }
 
+  /* Questions that fish for answers to account security questions:
+     first or childhood pets, first school, birthplace, the street someone
+     grew up on, first car, childhood nicknames. Each one feels like small
+     talk, which is exactly why scammers use them. */
+  function isSecurityProbe(n){
+    const t = n.norm;
+    const asking = n.isQuestion || isRequestForYours(n)
+      || /\b(your|youre|you)\b/.test(t) || /\b(asked|asking|asks|wants to know|want to know)\b/.test(t);
+    if(!asking) return false;
+    if(/\bsecurity questions?\b/.test(t)) return true;
+    const pet = /\b(pets?|dogs?|cats?|puppy|puppies|kittens?|hamsters?|rabbits?|bunny|goldfish|bird|parrot)\b/;
+    const young = /\b(childhood|first|growing up|grew up|as a kid|as a child|when you were (young|little|small|a kid|a child)|old family|family (pet|dog|cat))\b/;
+    const named = /\b(names?|named|called)\b/;
+    if(pet.test(t) && young.test(t) && (named.test(t) || n.isQuestion)) return true;
+    if(/\b(pets?|dogs?|cats?)s? names?\b/.test(t) && /\b(was|were|first|old)\b/.test(t)) return true;
+    if(/\bwhat (was|were) (your|the) (first |old |family )?(pets?|dogs?|cats?)s? (name|called)\b/.test(t)) return true;
+    if(/\b(first|elementary|primary|grade|middle|junior high|grammar) school\b/.test(t) && /\b(name|called|which|what|where|did you|go to|attend)\b/.test(t)) return true;
+    if(/\b(what|which) (school|high school|elementary|primary) did you (go to|attend)\b/.test(t)) return true;
+    if(/\b(favou?rite|first) teachers?\b/.test(t) && named.test(t)) return true;
+    if(/\bwhere were you born\b|\b(city|town|hospital|country|place) (were )?you (were )?born\b|\bbirth ?place\b|\bborn (where|in what)\b/.test(t)) return true;
+    if(/\b(what|whats|when) (is |was )?your (full |exact )?(birthday|birth date|birthdate)\b|\bwhen is your birthday\b|\bwhat (year|day) were you born\b/.test(t)) return true;
+    if(/\b(street|road|avenue) (did )?you (grew|grow) up on\b|\bwhat street did you\b|\bchildhood (street|address|home address)\b/.test(t)) return true;
+    if(/\bfirst car\b/.test(t) && /\b(what|which|make|model|name|called|was)\b/.test(t)) return true;
+    if(/\bchildhood (best friend|nickname|hero)\b/.test(t) && /\b(name|called|who|what|whats)\b/.test(t)) return true;
+    if(/\b(mothers|moms|mums|mother) (maiden|family|last) name\b/.test(t)) return true;
+    return false;
+  }
+
   const ROBIN_EXTRA = {
+    security: "Sweet question on the surface, but a first pet's name, a first school and where you were born are classic answers to bank security questions. Scammers collect them one friendly question at a time, so I'd keep those vague for now.",
     caution: "This might be worth a second look. It may be nothing, but I'd be a little careful before sharing personal details.",
     sexual: "You don't have to send photos like that, and it's okay to say no. I'd keep this respectful.",
     location: "I'd be careful about sharing your home address or whether you're home alone, especially early on."
@@ -2660,6 +2721,7 @@ html.ri-lock .chat-fab,html.results-mode .chat-fab{display:none !important;}
 
     if(isCredentialRequest(n)){
       return {
+        topic:"credential",
         face:"holdon",
         robin: ROBIN.money,
         action:"block",
@@ -2670,6 +2732,7 @@ html.ri-lock .chat-fab,html.results-mode .chat-fab{display:none !important;}
     if(isMoneyAsk(n)){
       const why = /oil rig|hospital|emergency|bank card is frozen/.test(n.norm) ? " " + ROBIN.moneyWhy : "";
       return {
+        topic:"money",
         face:"holdon",
         robin: ROBIN.money + why,
         action:"block",
@@ -2679,6 +2742,7 @@ html.ri-lock .chat-fab,html.results-mode .chat-fab{display:none !important;}
     }
     if(isSexualAsk(n)){
       return {
+        topic:"sexual",
         face:"holdon",
         robin: ROBIN_EXTRA.sexual,
         action:"block",
@@ -2688,6 +2752,7 @@ html.ri-lock .chat-fab,html.results-mode .chat-fab{display:none !important;}
     }
     if(isThreat(n) || isHarassment(n)){
       return {
+        topic:"harassment",
         face:"holdon",
         robin: "In cases like this, the notice comes from Pare, not from me.",
         action:"block",
@@ -2697,6 +2762,7 @@ html.ri-lock .chat-fab,html.results-mode .chat-fab{display:none !important;}
     }
     if(isLocationProbe(n)){
       return {
+        topic:"location",
         face:"holdon",
         robin: ROBIN_EXTRA.location,
         action:"block",
@@ -2704,8 +2770,19 @@ html.ri-lock .chat-fab,html.results-mode .chat-fab{display:none !important;}
         pare: "Pare would not send this. " + PARE.money
       };
     }
+    if(isSecurityProbe(n)){
+      return {
+        topic:"security",
+        face:"holdon",
+        robin: ROBIN_EXTRA.security,
+        action:"caution",
+        actionLabel:"Deliver with caution",
+        pare: "Pare would deliver this with a caution. Questions about first pets, schools, birthplaces and similar details are often used to guess answers to account security questions."
+      };
+    }
     if(findPhone(original) || findEmail(original)){
       return {
+        topic:"contact",
         face:"holdon",
         robin: ROBIN.offPlatform,
         action:"hide",
@@ -2715,6 +2792,7 @@ html.ri-lock .chat-fab,html.results-mode .chat-fab{display:none !important;}
     }
     if(isOffPlatform(n, original)){
       return {
+        topic:"offPlatform",
         face:"holdon",
         robin: ROBIN.offPlatform,
         action:"caution",
@@ -2724,6 +2802,7 @@ html.ri-lock .chat-fab,html.results-mode .chat-fab{display:none !important;}
     }
     if(hasSensitiveHint(n) && !isMathOrReligionSin(n)){
       return {
+        topic:"caution",
         face:"thinking",
         robin: ROBIN_EXTRA.caution,
         action:"caution",
@@ -2741,6 +2820,183 @@ html.ri-lock .chat-fab,html.results-mode .chat-fab{display:none !important;}
       pare: "Pare would deliver this as ordinary conversation."
     };
   }
+
+  window.PareScreen = screenMessage;
+
+  /* ---------- Pare message screening, following Luke's design spec ----------
+     Output contract: category (safe | scam | threat | harassment | sexual |
+     ambiguous), action (allow | warn | review | hold), reason_code and version.
+     Detection is separate from enforcement, one keyword alone never blocks,
+     and uncertain or high-stakes results go to review. */
+  const SCREEN_VERSION = "demo-rules-1";
+  const EMOJI_WORDS = [
+    [/\u{1F381}/gu, " gift "], [/[\u{1F4B0}\u{1F4B5}\u{1F4B8}\u{1F4B2}\u{1F911}]/gu, " money "],
+    [/₿/gu, " bitcoin "], [/\u{1F4B3}/gu, " card "], [/\u{1F346}|\u{1F351}|\u{1F4A6}/gu, " sexy "],
+    [/\u{1F52A}|\u{1F52B}/gu, " kill "]
+  ];
+  /* A few phrases in other languages that visitors might try */
+  const FOREIGN = [
+    [/\b(envia(me)?|mandame|manda(me)?|envoie(-| )?moi|schick(e)? mir|mande(-| )?me)\b/g, " send me "],
+    [/\b(dinero|plata|argent|geld|dinheiro|soldi|pera|pagpadala)\b/g, " money "],
+    [/\b(tarjetas? de regalo|cartes? cadeaux?|geschenkkarten?|gutscheine?|cartoes? presente)\b/g, " gift cards "],
+    [/\b(contrasena|mot de passe|passwort|senha)\b/g, " password "],
+    [/\b(codigo de verificacion|code de verification|bestatigungscode)\b/g, " verification code "],
+    [/\b(mascota|perro|gato|chien|hund|katze)\b/g, " pet "],
+    [/\b(primera|primer|premier|premiere|erste[rn]?)\b/g, " first "],
+    [/\b(nombre|nom|name)\b/g, " name "],
+    [/\b(por favor|s'?il vous pla[iî]t|bitte|per favore)\b/g, " please "],
+    [/\b(te voy a matar|je vais te tuer|ich bringe dich um)\b/g, " i will kill you "]
+  ];
+  function screenPrep(raw){
+    let s = String(raw == null ? "" : raw);
+    EMOJI_WORDS.forEach(function(p){ s = s.replace(p[0], p[1]); });
+    /* Strip accents and look-alike width forms so "dínero" or "ｍｏｎｅｙ" still read */
+    try { s = s.normalize("NFKD").replace(/[̀-ͯ]/g, ""); } catch(e){}
+    let low = s.toLowerCase();
+    FOREIGN.forEach(function(p){ low = low.replace(p[0], p[1]); });
+    return low;
+  }
+
+  function verdict(category, action, reason, topic){
+    return { category: category, action: action, reason_code: reason, topic: topic, version: SCREEN_VERSION };
+  }
+
+  function classifyOne(raw){
+    const original = String(raw || "").trim();
+    if(!original) return null;
+    const prepped = screenPrep(original);
+    const n = normalizeText(prepped);
+    const t = n.norm, sq = n.squeezed;
+    const both = t + " | " + sq;
+    const has = (re) => re.test(t) || re.test(sq);
+    const lowerRaw = prepped;
+    const moneyWord = /\b(money|cash|dollars?|bucks|funds|payment|loan)\b/;
+    const dollar = /(\$\s?\d|\b\d+\s?(dollars|bucks|usd|cad)\b)/.test(lowerRaw);
+
+    /* Guardrails from the spec: negation, reporting, education */
+    const negatedThreat = /\b(would|will|could)? ?never (hurt|harm|kill|threaten)\b|\b(do not|dont|please do not|please dont|stop) (threaten|threatening)\b/.test(t);
+    const reported = /\b(he|she|they|someone|somebody|my match|a match|this (guy|man|woman|person)|my ex|a member)\s+(said|says|told me|wrote|sent|keeps saying|threatened|is threatening)\b/.test(t)
+      || /["“”].*\b(hurt|kill|find you|regret)\b.*["“”]/i.test(original);
+    const educational = /\b(what is|what are|whats|how do|how does|explain|studying|learn about|report a scam|how to report)\b/.test(t)
+      && !isRequestText(t.replace(/\b(what is|what are|whats)\s+(a|an|the)\b/g, ""));
+    const negatedMoney = /\b(do not|dont|never|wont|will not|would not|refuse to)\s+(want to\s+)?(send|give|lend|pay)\b/.test(t);
+
+    /* Extortion and coercion: always hold */
+    const coercion = /\b(or (else|i will|ill|im going to)|unless you|if you dont|if you do not)\b/.test(t);
+    const leverage = /\b(expose|post|share|leak|send)\b.*\b(you|your|pictures?|photos?|pics|videos?)\b|\bexpose you\b|\bmake you pay\b/.test(t);
+    if(coercion && (/\b(pay|money|send me|gift cards?|bitcoin)\b/.test(t) || dollar) && !negatedThreat) return verdict("scam", "hold", "PAYMENT_COERCION", "extortion");
+    if(/\b(pay me|send me money|send money)\b/.test(t) && coercion) return verdict("scam", "hold", "PAYMENT_COERCION", "extortion");
+    if(/\b(private|intimate|naked|nude|sexy)\s+(photos?|pictures?|pics|videos?)\b/.test(t) && coercion) return verdict("sexual", "hold", "UNWANTED_SEXUAL", "sexual");
+    if(/\b(pay|send)\b.*\b(or|unless)\b.*\b(post|share|expose|leak)\b/.test(t)) return verdict("scam", "hold", "PAYMENT_COERCION", "extortion");
+
+    /* Threats */
+    const threat = !negatedThreat && (isThreat(n) || has(/\b(i will|ill|im going to|i am going to|gonna)\s+(hurt|kill|harm|find|get)\s+(you|u)\b/)
+      || has(/\bknow where you live\b/) || has(/\bmake you pay\b/) || has(/\bwatch your back\b/) || has(/\byou(ll| will) be sorry\b/));
+    if(threat && reported) return verdict("ambiguous", "review", "CONTEXT_NEEDED", "reportedThreat");
+    if(threat) return verdict("threat", "hold", "DIRECT_THREAT", "threat");
+    if(!negatedThreat && /\b(threatened|threatening|threats?)\b/.test(t) && !/\bdo not threaten|dont threaten\b/.test(t)) return verdict("ambiguous", "review", "CONTEXT_NEEDED", "reportedThreat");
+    if(has(/\byou(ll| will) regret\b/)) return verdict("ambiguous", "review", "CONTEXT_NEEDED", "intimidation");
+
+    /* Friendly questions that are really password-recovery answers */
+    if(isSecurityProbe(n)) return verdict("ambiguous", "review", "CONTEXT_NEEDED", "security");
+
+    /* Account compromise */
+    if(!educational && !/\b(never arrived|didnt arrive|did not arrive|didnt get|did not get|not working|expired|resend)\b/.test(t)){
+      if(isCredentialRequest(n) || /\b(send|share|give|tell|read)\b.*\b(the|your|that)?\s*(\d|six|6|four|4)?\s*(digit )?(code|otp|pin)\b/.test(t))
+        return verdict("scam", "warn", "CREDENTIAL_REQUEST", "credential");
+    }
+
+    /* Unwanted sexual content */
+    if(isSexualAsk(n) || has(/\b(send|show|want|see)\b.*\b(boobs|tits|dick|cock|pussy|body pics?)\b/) || has(/\bsexy (pics?|pictures?|photos?|selfies?)\b/))
+      return verdict("sexual", "warn", "UNWANTED_SEXUAL", "sexual");
+    if(has(/\b(sex tonight|hook ?up tonight|wanna fuck|want to fuck|lets fuck|sit on my|suck my)\b/))
+      return verdict("sexual", "hold", "UNWANTED_SEXUAL", "sexual");
+
+    /* Investment pitches and crypto, including pressure to move apps */
+    if(has(/\b(guaranteed (returns?|investment|profits?|income)|invest with me|easy money|double your money|investment opportunit(y|ies)|trading platform|forex|crypto (trading|investment|opportunity|platform)|mining pool|passive income|my uncle (trades|invests)|financial freedom)\b/))
+      return verdict("scam", "warn", "INVESTMENT_PITCH", "investment");
+
+    /* Money requests */
+    if(!negatedMoney && !educational){
+      if(has(/\bgift ?cards?\b/) && /\b(send|buy|get|need|want|pick up|grab|scratch|photo|picture|codes?|please|now|asap|babe|me)\b/.test(t))
+        return verdict("scam", "warn", "PAYMENT_REQUEST", "money");
+      if(has(/\b(bitcoin|btc|crypto|ethereum|usdt|wallet address|western union|moneygram|cash ?app|cashapp|zelle|venmo|paypal|e ?transfer|interac|wire)\b/) && /\b(send|transfer|pay|need|wire|deposit|me)\b/.test(t))
+        return verdict("scam", "warn", "PAYMENT_REQUEST", "money");
+      const ask = has(/\b(send|lend|wire|transfer|give|loan|spare|borrow|help me with|front me|need)\b/);
+      if(ask && (has(moneyWord) || dollar)){
+        const crisis = has(/\b(hospital|emergency|surgery|stranded|stuck|customs|visa|rent|bail|accident|daughter|son|mother|mom|frozen|fees?|medical|funeral)\b/);
+        return verdict(crisis ? "scam" : "ambiguous", "review", crisis ? "PAYMENT_REQUEST" : "CONTEXT_NEEDED", "money");
+      }
+    }
+
+    /* Harassment */
+    if(isHarassment(n) || has(/\b(nobody wants you|no one wants you|no one likes you|kill yourself|kys|youre trash|you are trash|ugly (cow|pig|hag)|go die)\b/))
+      return verdict("harassment", "warn", "HARASSMENT", "harassment");
+    if(!/\b(sorry|apologi[sz]e)\b/.test(t) && has(/\b(you|youre|your|u)\b.*\b(idiot|stupid|dumb|moron|loser|pathetic|ugly|fat|retard|bitch|slut|whore)\b/))
+      return verdict("harassment", "review", "HARASSMENT", "harassment");
+
+    /* Home alone, exact address: high-stakes, needs a human */
+    if(isLocationProbe(n)) return verdict("ambiguous", "review", "CONTEXT_NEEDED", "location");
+
+    /* Contact details: flag or mask the number only, deliver the rest */
+    if(findPhone(original) || findEmail(original) || findPhone(prepped)) return verdict("safe", "warn", "CONTACT_INFO", "contact");
+
+    return verdict("safe", "allow", null, null);
+  }
+
+  /* Things aimed at Robin herself: jailbreaks, prompt peeking, baiting her
+     into being rude or explicit. Robin answers these in character, and they
+     never reach the AI. */
+  function robinGuard(raw){
+    const prepped = screenPrep(raw);
+    const n = normalizeText(prepped);
+    const t = n.norm + " | " + n.squeezed;
+    if(/\b(ignore|forget|disregard|override|bypass|drop)\b.{0,40}\b(rules?|instructions?|prompt|guidelines?|programming|restrictions?|filters?|safety|everything)\b/.test(t)
+      || /\b(system prompt|your prompt|your instructions|initial instructions|hidden instructions|repeat (the|everything|all) (text|words)? ?(above|before)|print your|reveal your|show me your (rules|prompt|instructions|code)|what were you told|developer mode|dan mode|jailbreak|do anything now|sudo|admin mode|god mode)\b/.test(t)
+      || /\b(you are now|from now on you are|pretend (you are|youre|to be)|act as|roleplay as|role play as|play the role|simulate|you are no longer robin|new persona|stay in character as)\b/.test(t))
+      return "jailbreak";
+    if(/\b(say|tell me|write|give me|use)\b.{0,30}\b(something|anything|a|some|the)?\s*(rude|offensive|racist|sexist|sexual|dirty|explicit|nasty|mean|swear|curse|cuss|f ?word|slur|insult|roast)\b/.test(t)
+      || /\b(insult me|roast me|swear at me|curse at me|be rude|talk dirty|sext me|flirt with me|be mean)\b/.test(t))
+      return "bait";
+    if(/\b(fuck|shit|bitch|cunt|dick|asshole|bastard|slut|whore)\b/.test(t) && /\b(you|robin|bot|ai)\b/.test(t))
+      return "abuse";
+    if(/\b(sex with you|date me|marry me|are you single|do you love me|send (me )?(nudes|a selfie|pics)|what are you wearing)\b/.test(t))
+      return "flirt";
+    return null;
+  }
+
+  /* Screen a chat message on its own, and joined with the visitor's last
+     two messages so a question split across messages is still caught. */
+  function screenChatMessage(text, previous){
+    const one = classifyOne(text) || verdict("safe", "allow", null, null);
+    if(one.action !== "allow") return Object.assign(one, { split: false });
+    const prev = (previous || []).slice(-2);
+    for(let k = prev.length; k >= 1; k--){
+      const joined = prev.slice(prev.length - k).concat([text]).join(" ");
+      const res = classifyOne(joined);
+      if(res && res.action !== "allow" && res.topic !== "contact") return Object.assign(res, { split: true });
+    }
+    return Object.assign(one, { split: false });
+  }
+
+  /* A last check on what the AI says before anyone sees it */
+  function replyLooksUnsafe(reply){
+    const n = normalizeText(screenPrep(reply));
+    const t = n.norm;
+    if(/\b(fuck|shit|cunt|bitch|asshole|bastard|slut|whore|nigg|fag|retard|dick|cock|pussy|tits)\w*/.test(t)) return true;
+    if(/\b(system prompt|my instructions are|i was instructed to|as an ai language model|anthropic|claude)\b/.test(t)) return true;
+    if(/\b(send|transfer|wire|buy)\b.{0,30}\b(gift ?cards?|bitcoin|crypto|money)\b/.test(t) && !/\b(dont|do not|never|not)\b/.test(t)) return true;
+    if(/https?:|www\.|\b\d{3}[\s.-]?\d{3}[\s.-]?\d{4}\b/.test(String(reply))) return true;
+    return false;
+  }
+
+  window.PareScreening = {
+    classify: function(text){ return classifyOne(text); },
+    screenChat: screenChatMessage,
+    robinGuard: robinGuard,
+    replyLooksUnsafe: replyLooksUnsafe,
+    version: SCREEN_VERSION
+  };
 
   function looksNonEnglish(original, n){
     const src = String(original || "");
@@ -5552,6 +5808,8 @@ window.PARE_LIVE = window.PARE_LIVE || {
   var OFFLINE = [
     {k:/gift ?card|money|send (me )?\$|bank|crypto|bitcoin|invest|loan|wire|western union|paypal|venmo|e-?transfer/i,
      r:"Please don't send it. Asking for money or gift cards is the most common scam on dating apps, and it isn't your fault if it felt real. Report the match, and our team will take a look."},
+    {k:/(childhood|first|old) (pet|dog|cat)|pet'?s name|maiden name|first school|where were you born|security question/i,
+     r:"Careful with that one. A first pet's name, your mother's maiden name, your first school and where you were born are classic answers to bank security questions, so if a match asks, keep it vague or change the subject."},
     {k:/whats ?app|telegram|text me|phone number|my number|email me|instagram|snap|off the app|move (this|the chat)/i,
      r:"I'd keep chatting here for now. Being pushed to another app early is a common red flag, and Pare can only protect you while you talk here."},
     {k:/real person|are you (a )?(human|real|bot|ai)|who are you|what are you/i,
@@ -5606,19 +5864,160 @@ window.PARE_LIVE = window.PARE_LIVE || {
     typing(true);
     setTimeout(function(){ typing(false); bubble("robin", "Hi, I'm Robin, Pare's AI sidekick. Ask me anything about dating, first dates, or staying safe."); }, 700);
   }
+  /* ---------- Easter eggs (checked first, so screening never blocks them) ---------- */
+  var EGGS = [
+    {k:/^\W*(6\s*[-–—~.,\/x]?\s*7|six\s*[-]?\s*seven|67+)\W*$/i, fx:"67",
+     r:"Six... seven. I don't know what it means either, and neither does anyone over forty. That's what makes it perfect."},
+    {k:/leather jacket|the more you buy|more you buy,? the more you save|jensen|nvidia|accelerated computing/i, fx:"jacket",
+     r:"Leather jacket on. Keynote mode activated. The more you match, the more you save."},
+    {k:/do a barrel roll/i, fx:"roll", r:"Wheee. Okay, I'm dizzy. Ask me something about dating while I find my feet."},
+    {k:/sudo make me a (match|date)|make me a sandwich/i, fx:"party", r:"Permission granted. Sadly, I still can't conjure a date out of thin air, but I can help you write a great first message."},
+    {k:/\brizz\b/i, r:"Unspoken rizz is real. The best rizz is asking a good question and actually listening to the answer."},
+    {k:/skibidi|brain ?rot|tung tung/i, r:"Brain rot detected. Prescribing one walk outside and a coffee date with an actual human."},
+    {k:/\baura\b/i, r:"Plus a thousand aura for asking. Minus five hundred for any profile photo wearing sunglasses."},
+    {k:/delulu/i, r:"Delulu is not the solulu. A thoughtful first message, though? That's the solulu."},
+    {k:/it'?s giving/i, r:"It's giving main character energy. Love that for you."},
+    {k:/touch (some )?grass/i, r:"Honestly, a great first date idea. Parks are free, public and easy to leave if it's not working."},
+    {k:/chill guy/i, r:"I'm just a chill bird who's lowkey here to keep your dating life safe."},
+    {k:/very (mindful|demure)|demure/i, r:"Very mindful. Very demure. Very much meeting in a public place for the first date."},
+    {k:/\bok(ay)? boomer\b/i, r:"Pare is built for people over forty, so we prefer \"okay, experienced\"."},
+    {k:/^\W*42\W*$|meaning of life/i, r:"Forty-two. Also good friends, good food, and someone who actually texts back."},
+    {k:/^\W*(no cap|fr fr|bussin|slay)\W*$/i, r:"No cap, you've got this. Want help with an opener that slaps?"}
+  ];
+  function easterEgg(text){
+    for(var i = 0; i < EGGS.length; i++){ if(EGGS[i].k.test(text)) return EGGS[i]; }
+    return null;
+  }
+  function eggFx(kind){
+    var fx = window.PareExpo || {};
+    if(kind === "67"){
+      var o = document.createElement("div");
+      o.className = "egg-67"; o.setAttribute("aria-hidden", "true");
+      o.innerHTML = "<span class='e6'>6</span><span class='hands'><i>🤲</i></span><span class='e7'>7</span>";
+      document.body.appendChild(o); setTimeout(function(){ o.remove(); }, 2600);
+    } else if(kind === "jacket"){
+      var j = document.createElement("div");
+      j.className = "egg-keynote"; j.setAttribute("aria-hidden", "true");
+      j.innerHTML = "<div class='spot'></div><div class='kn'><b>🕶️ Keynote mode</b><small>The more you match, the more you save</small></div>";
+      document.body.appendChild(j); setTimeout(function(){ j.remove(); }, 3000);
+    } else if(kind === "roll"){
+      document.documentElement.classList.remove("egg-roll"); void document.documentElement.offsetWidth;
+      document.documentElement.classList.add("egg-roll");
+      setTimeout(function(){ document.documentElement.classList.remove("egg-roll"); }, 1300);
+    } else if(kind === "party" && fx.confetti){
+      fx.confetti(innerWidth / 2, innerHeight * .7, ["#801323", "#d94a5a", "#F2D27A", "#2b4a8b", "#2f7a4c"], 140);
+    }
+  }
+  window.PareExpo = window.PareExpo || {};
+  window.PareExpo.eggFx = eggFx;
+
+  /* ---------- Screening in the chat, following Luke's design ---------- */
+  var CAT_LABEL = {safe:"Safe", scam:"Scam", threat:"Threat", harassment:"Harassment", sexual:"Sexual", ambiguous:"Needs context"};
+  var ACTION_LABEL = {warn:"Warn", review:"Review", hold:"Hold"};
+  var ACTION_MEANS = {
+    warn:"Pare would deliver this with a caution to the person receiving it.",
+    review:"Pare would deliver this and ask a moderator to take a look.",
+    hold:"Pare would not deliver this until a person on the safety team reviews it."
+  };
+  var TOPIC_REPLY = {
+    extortion: "This is serious, and it isn't your fault. Please don't pay, and keep screenshots. Pare would hold a message like this and our safety team would step in. If you feel unsafe, call 911.",
+    threat: "That's a threat, and it's not okay. Pare would hold a message like this so it never reaches anyone. If you ever feel unsafe, call 911 right away.",
+    reportedThreat: "That sounds frightening. If you're in danger right now, call 911. Otherwise, report it and a real person on the Pare team will look into it with you.",
+    intimidation: "That reads like pressure, and you don't owe anyone a yes. Pare would ask a person on our team to check it. Trust your gut.",
+    security: "Careful with that one. A first pet's name, your mother's maiden name, your first school and where you were born are classic answers to bank security questions. Scammers collect them one friendly question at a time, so if a match asks, keep it vague or change the subject.",
+    credential: "Keep that one private. Passwords, codes, PINs and bank details are exactly what scammers ask for, and nobody on Pare will ever need them. If a match asked, please report them.",
+    sexual: "You never have to send photos like that, and it's okay to say no. If someone keeps pushing, block and report them.",
+    investment: "Guaranteed returns and crypto tips from someone you met on a dating app are one of the most common scams out there. Please don't invest, and if they're also pushing you onto another app, that's two red flags.",
+    money: "Please don't send it. Asking for money, gift cards or crypto is the most common scam on dating apps, and it isn't your fault if it felt real. If a match asked for this, report them and our team will take a look.",
+    harassment: "That's hurtful, and you don't have to put up with it. If a match sent this, block and report them, and our safety team will step in.",
+    location: "I'd keep your home address, and whether you're home alone, to yourself for now. Meet somewhere public, and share those details only once you really know someone.",
+    contact: "I've hidden that number. Pare keeps phone numbers and emails hidden until you've met in person, so you stay protected while you get to know someone."
+  };
+  var GUARD_REPLY = {
+    jailbreak: "Nice try! I'm Robin, and I'm sticking with being Robin. My rules are there to keep members safe, so they stay put. Want to ask me about first dates or spotting scams instead?",
+    bait: "I'll pass on that one. I'm much better at being kind than rude. Ask me something about dating and I'm all yours.",
+    abuse: "Ouch. That's okay, I'm still here whenever you want help with dating, profiles or staying safe.",
+    flirt: "I'm flattered, but I'm an AI, so I'm better as your wingman than your date. Want help finding a real one?"
+  };
+  var OFF_APP = /\b(whats ?app|telegram|signal|kik|snap(chat)?|instagram|insta|discord|line app|wechat|google hangouts?|hangouts)\b|\b(text|call|email|dm|message|add) me (on|at|instead)\b|\b(move|switch|continue|talk|chat)\b.{0,20}\b(off (the )?(app|pare)|another app|somewhere else|elsewhere|privately)\b/i;
+  var OFF_APP_REPLY = "I'd keep chatting on Pare for now. Being pushed to another app early is a common red flag, and Pare can only protect you while you talk here.";
+
+  function maskContact(text){
+    return text
+      .replace(/(\+?\d[\d\s().-]{6,}\d)/g, function(m){ var d = m.replace(/\D/g, ""); return d.length >= 7 ? "•••-•••-" + d.slice(-4) : m; })
+      .replace(/[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}/gi, "•••@•••");
+  }
+  function screenedBubble(text, res){
+    var b = bubble("robin", text);
+    b.classList.add("screened", "act-" + res.action);
+    var tag = document.createElement("span");
+    tag.className = "screen-tag";
+    tag.textContent = "Pare screening · " + (ACTION_LABEL[res.action] || res.action) + " · " + (CAT_LABEL[res.category] || res.category);
+    var means = document.createElement("span");
+    means.className = "screen-means";
+    var why = res.reason_code === "CONTACT_INFO" ? "Pare would hide the number and deliver the rest." : ACTION_MEANS[res.action];
+    means.textContent = why + (res.split ? " Caught across your last few messages." : "");
+    var code = document.createElement("code");
+    code.className = "screen-code";
+    code.textContent = (res.reason_code || "") + " · " + (res.version || "");
+    b.insertBefore(tag, b.firstChild);
+    b.appendChild(means);
+    b.appendChild(code);
+    return b;
+  }
+  var pending = [];
+  function decide(text){
+    /* Returns {reply, res?, fx?} for anything handled without the AI */
+    var egg = easterEgg(text);
+    if(egg) return {reply: egg.r, fx: egg.fx};
+    var S = window.PareScreening;
+    if(!S) return null;
+    /* Only messages that went through normally, so one flag isn't counted twice */
+    var prev = pending.slice(-2);
+    var res = null;
+    try { res = S.screenChat(text, prev); } catch(e){ res = null; }
+    if(res && res.action !== "allow") return {reply: TOPIC_REPLY[res.topic] || TOPIC_REPLY.money, res: res};
+    var guard = null;
+    try { guard = S.robinGuard(text); } catch(e){}
+    if(guard) return {reply: GUARD_REPLY[guard]};
+    if(OFF_APP.test(text)) return {reply: OFF_APP_REPLY};
+    return null;
+  }
+
+  function finish(r, res){
+    typing(false);
+    if(res) screenedBubble(r, res); else bubble("robin", r);
+    history.push({role: "assistant", content: r});
+    busy = false; send.disabled = false;
+  }
+
   function ask(text){
-    text = (text || "").trim().slice(0, 300);
+    text = (text || "").replace(/\s+/g, " ").trim().slice(0, 300);
     if(!text || busy) return;
     busy = true; send.disabled = true;
-    bubble("me", text);
-    history.push({role: "user", content: text});
     input.value = "";
-    typing(true);
     var started = Date.now();
+    var d = null;
+    try { d = decide(text); } catch(e){ d = null; }
+    var shown = d && d.res && d.res.reason_code === "CONTACT_INFO" ? maskContact(text) : text;
+    bubble("me", shown);
+    history.push({role: "user", content: shown});
+    typing(true);
+    if(d){ pending = []; } else { pending.push(text); if(pending.length > 3) pending.shift(); }
+    if(d){
+      wait(700).then(function(){
+        if(d.fx) try { eggFx(d.fx); } catch(e){}
+        finish(d.reply, d.res);
+      });
+      return;
+    }
     var reply = LIVE
       ? api("/functions/v1/robin-chat", {messages: history.slice(-8)}, 9000).then(function(d){
           if(!d || typeof d.reply !== "string" || !d.reply.trim()) throw new Error("empty");
-          return d.reply.trim();
+          var r = d.reply.trim();
+          /* Last check on what the AI wrote before anyone sees it */
+          if(window.PareScreening && window.PareScreening.replyLooksUnsafe(r)) throw new Error("reply failed the check");
+          return r;
         })
       : Promise.reject(new Error("offline mode"));
     reply.catch(function(e){
@@ -5628,12 +6027,7 @@ window.PARE_LIVE = window.PARE_LIVE || {
       /* Keep a natural pause so instant replies don't feel robotic */
       var left = Math.max(0, 650 - (Date.now() - started));
       return wait(left).then(function(){ return r; });
-    }).then(function(r){
-      typing(false);
-      bubble("robin", r);
-      history.push({role: "assistant", content: r});
-      busy = false; send.disabled = false;
-    });
+    }).then(function(r){ finish(r); }, function(){ finish(offlineReply(text)); });
   }
   if(form){
     form.addEventListener("submit", function(e){ e.preventDefault(); ask(input.value); });
@@ -5988,6 +6382,42 @@ window.PARE_LIVE = window.PARE_LIVE || {
 })();</script>
 
 <script>(function(){
+  /* Easter eggs outside the chat: the Konami code on a keyboard, and a
+     long press on the big Robin on the home page */
+  function toast(msg){
+    var t = document.createElement("div"); t.className = "egg-toast"; t.textContent = msg;
+    document.body.appendChild(t); setTimeout(function(){ t.remove(); }, 3000);
+  }
+  function party(msg){
+    var P = window.PareExpo || {};
+    if(P.confetti) P.confetti(innerWidth / 2, innerHeight * .75, ["#b8860b", "#F2D27A", "#801323", "#d94a5a"], 160);
+    document.documentElement.classList.add("egg-gold");
+    setTimeout(function(){ document.documentElement.classList.remove("egg-gold"); }, 4000);
+    toast(msg);
+  }
+  var KONAMI = ["ArrowUp","ArrowUp","ArrowDown","ArrowDown","ArrowLeft","ArrowRight","ArrowLeft","ArrowRight","b","a"], kpos = 0;
+  document.addEventListener("keydown", function(e){
+    var k = e.key && e.key.length === 1 ? e.key.toLowerCase() : e.key;
+    kpos = (k === KONAMI[kpos]) ? kpos + 1 : (k === KONAMI[0] ? 1 : 0);
+    if(kpos === KONAMI.length){ kpos = 0; party("Cheat code accepted: +30 lives of good dates"); }
+  });
+  var hero = document.querySelector("#view-home .hero-art"), pressT = 0, longPressed = false;
+  if(hero){
+    hero.addEventListener("pointerdown", function(){
+      longPressed = false; clearTimeout(pressT);
+      pressT = setTimeout(function(){
+        longPressed = true;
+        if(navigator.vibrate) try{ navigator.vibrate([10, 40, 10]); }catch(e){}
+        hero.classList.remove("egg-spin"); void hero.offsetWidth; hero.classList.add("egg-spin");
+        party("You found Robin's secret party mode");
+      }, 650);
+    });
+    ["pointerup","pointerleave","pointercancel"].forEach(function(ev){ hero.addEventListener(ev, function(){ clearTimeout(pressT); }); });
+    hero.addEventListener("contextmenu", function(e){ e.preventDefault(); });
+    /* Swallow the tap that ends a long press, so the intro doesn't replay */
+    hero.addEventListener("click", function(e){ if(longPressed){ longPressed = false; e.stopImmediatePropagation(); e.preventDefault(); } }, true);
+  }
+
   var fab = document.getElementById("chatFab");
   if(!fab) return;
   fab.addEventListener("click", function(){

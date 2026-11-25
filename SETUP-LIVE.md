@@ -38,3 +38,18 @@ Until this is done, the chat uses Robin's built-in replies. Nothing breaks.
 4. **Let visitors reach it.** In the function's Details/Settings, turn **off** "Verify JWT" (Enforce JWT verification), and save.
 
 Safety limits built in: replies are short (max 220 tokens), one phone can send 12 messages a minute, the function stops calling the AI after 1,500 replies a day, and the console spend limit caps the bill. If anything fails, the site falls back to built-in replies.
+
+**Updating the function later.** Open Edge Functions > `robin-chat` > Code, replace everything with the latest `supabase/functions/robin-chat/index.ts`, and deploy again. The secret and the Verify JWT setting stay as they are.
+
+## How the chat screens messages
+
+Every chat message goes through Pare's screening on the phone before the AI sees it, following the Message Screening Design spec (category, action allow / warn / review / hold, reason code, rule version):
+
+- Flagged messages never reach the AI. Robin answers with a fixed safety reply and a "Pare screening" label showing the action, category and reason code.
+- Checks cover money and gift cards, crypto and investment pitches, codes and passwords, security-question fishing (first pet, maiden name, first school, birthplace), threats and extortion, harassment, unwanted sexual content, phone numbers (masked) and home-alone or address questions.
+- Disguises are undone first: l33t spelling, s p a c e d letters, s.e.p.a.r.a.t.o.r.s, stretched letters, full-width letters, accents, money and gift emoji, and common Spanish, French and German phrases.
+- A question split across the last three messages is still caught.
+- Attempts to jailbreak Robin, read her instructions, or bait her into being rude or flirty get an in-character reply without the AI.
+- The AI's reply is checked again before it is shown. Anything odd is swapped for a built-in reply.
+
+Tests: Luke's 51 text seed cases from Appendix A, plus 86 trick messages, run in a phone-sized browser.
