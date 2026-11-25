@@ -534,6 +534,31 @@ html.rippling,body.rippling{overflow:hidden;}
   opacity:0;
   transition:opacity .8s cubic-bezier(.22,1,.28,1);
 }
+/* Gojo snap: two dark frames, a shockwave ring, a zoom punch and a short shake */
+.snap-fx{position:absolute;inset:0;z-index:7;pointer-events:none;overflow:hidden;display:none;}
+.snap-fx.hit{display:block;}
+.snap-dark{position:absolute;inset:0;background:radial-gradient(circle at 50% 50%,#2a0d4d 0%,#0b0014 70%);opacity:0;}
+.snap-fx.hit .snap-dark{animation:snapDark .2s linear both;}
+.snap-ring{position:absolute;left:50%;top:50%;width:24vmax;height:24vmax;margin:-12vmax 0 0 -12vmax;border-radius:50%;
+  border:3px solid rgba(124,58,237,.9);box-shadow:0 0 22px rgba(124,58,237,.55),inset 0 0 18px rgba(167,139,250,.5);opacity:0;transform:scale(.06);}
+.snap-ring.r2{border-width:2px;border-color:rgba(196,181,253,.9);}
+.snap-fx.hit .snap-ring{animation:snapRing .62s cubic-bezier(.12,.75,.25,1) .03s both;}
+.snap-fx.hit .snap-ring.r2{animation-delay:.11s;animation-duration:.7s;}
+@keyframes snapDark{0%{opacity:1;}30%{opacity:1;}100%{opacity:0;}}
+@keyframes snapRing{0%{opacity:1;transform:scale(.06);}60%{opacity:.55;}100%{opacity:0;transform:scale(4.6);}}
+.purple-overlay.snap-punch{animation:snapPunch .42s cubic-bezier(.2,.8,.3,1) both;}
+@keyframes snapPunch{
+  0%{transform:scale(1.045) translate(0,0);}
+  14%{transform:scale(1.035) translate(-5px,3px);}
+  28%{transform:scale(1.026) translate(4px,-3px);}
+  44%{transform:scale(1.016) translate(-3px,2px);}
+  62%{transform:scale(1.008) translate(2px,-1px);}
+  100%{transform:none;}
+}
+@media (prefers-reduced-motion:reduce){
+  .snap-fx{display:none !important;}
+  .purple-overlay.snap-punch{animation:none;}
+}
 .purple-skip{
   position:absolute;left:0;right:0;bottom:18px;
   text-align:center;z-index:4;
@@ -704,6 +729,10 @@ h3 + .luke-job-title{margin-top:0 !important;}
 #hireNo.shy-touch{
   transition:left .3s cubic-bezier(.22,.8,.24,1), top .3s cubic-bezier(.22,.8,.24,1), transform .3s cubic-bezier(.22,.8,.24,1);
 }
+/* !important: the global .btn transition rule is !important too, and it used to make the dodge snap instantly */
+#hireNo.shy.glide{
+  transition:left .52s cubic-bezier(.22,.82,.3,1.08), top .52s cubic-bezier(.22,.82,.3,1.08), transform .52s cubic-bezier(.22,.82,.3,1.08) !important;
+}
 #hireNo.no-hop{
   transition:none !important;
 }
@@ -761,6 +790,7 @@ h3 + .luke-job-title{margin-top:0 !important;}
   #hireYes.glow{animation:none;box-shadow:0 0 0 4px rgba(128,19,35,.2);}
   #hireNo{transition:none;}
   #hireNo.shy-touch{transition:none;}
+  #hireNo.shy.glide{transition:left .2s ease-out, top .2s ease-out !important;}
   .hire-yes-hint,.hire-no-caption{transition:none;}
   .hire-done.on .hire-polaroid,.hire-done.on .hire-robin-peek{animation:none;}
 }
@@ -2237,34 +2267,42 @@ textarea:focus,.chat-form input:focus,.live-box textarea:focus{border-color:var(
 /* Quiet friend-group credits: one shared roll, rendered by PareCredits into every thank-you screen */
 .quiet-credits{position:relative;margin:16px auto 0;max-width:400px;width:100%;}
 .quiet-credits .qc-mask{
-  height:252px;overflow:hidden;cursor:pointer;
+  height:252px;overflow-x:hidden;overflow-y:auto;cursor:grab;
+  -webkit-overflow-scrolling:touch;overscroll-behavior:contain;touch-action:pan-y;
+  scrollbar-width:none;
   -webkit-mask-image:linear-gradient(to bottom, transparent 0, #000 16px, #000 calc(100% - 16px), transparent 100%);
   mask-image:linear-gradient(to bottom, transparent 0, #000 16px, #000 calc(100% - 16px), transparent 100%);
 }
-.quiet-credits .qc-roll{padding:252px 6px 36px;will-change:transform;color:rgba(28,18,20,.34);}
+.quiet-credits .qc-mask::-webkit-scrollbar{display:none;}
+.quiet-credits .qc-roll{padding:40px 6px 36px;color:rgba(28,18,20,.34);}
 .quiet-credits .qc-head{
   font-size:9px;font-weight:600;letter-spacing:.16em;text-transform:uppercase;
   color:rgba(28,18,20,.22);margin:16px 0 7px;text-align:center;
 }
+/* Real credits grid: thumb | role (right) | fixed center gutter | name (left) | mirror of thumb.
+   The gutter sits exactly on the page's center line, so every row shares one axis. */
 .quiet-credits .qc-row{
   display:grid;
-  grid-template-columns:32px minmax(0,1fr) minmax(0,1fr);
-  column-gap:8px;row-gap:1px;
-  align-items:center;
-  margin:0 auto 11px;
-  max-width:340px;
+  grid-template-columns:32px minmax(0,1fr) 16px minmax(0,1fr) 32px;
+  grid-template-rows:auto auto;
+  column-gap:0;row-gap:2px;
+  align-items:baseline;
+  margin:0 auto 12px;
+  max-width:372px;
 }
 .quiet-credits .qc-thumb{
+  grid-column:1;grid-row:1 / span 2;align-self:center;
   width:32px;height:32px;border-radius:4px;object-fit:cover;display:block;
-  opacity:.38;filter:grayscale(.4);grid-row:1 / span 2;
+  opacity:.38;filter:grayscale(.4);
   background:transparent;
 }
 .quiet-credits .qc-role{
+  grid-column:2;grid-row:1;padding-left:8px;
   font-size:10px;letter-spacing:.07em;text-transform:uppercase;
-  text-align:right;font-weight:600;color:rgba(28,18,20,.3);line-height:1.2;
+  text-align:right;font-weight:600;color:rgba(28,18,20,.3);line-height:1.3;
 }
-.quiet-credits .qc-name{font-size:13px;text-align:left;font-weight:500;color:rgba(28,18,20,.4);line-height:1.2;}
-.quiet-credits .qc-blurb{grid-column:2 / -1;font-size:11px;line-height:1.35;text-align:center;color:rgba(28,18,20,.28);margin-top:1px;}
+.quiet-credits .qc-name{grid-column:4 / 6;grid-row:1;font-size:13px;text-align:left;font-weight:500;color:rgba(28,18,20,.4);line-height:1.2;}
+.quiet-credits .qc-blurb{grid-column:4 / 6;grid-row:2;font-size:11px;line-height:1.35;text-align:left;color:rgba(28,18,20,.28);align-self:start;}
 .quiet-credits .qc-line,.quiet-credits .qc-note{font-size:12px;line-height:1.4;text-align:center;margin:0 auto 5px;max-width:300px;color:rgba(28,18,20,.32);font-weight:500;}
 .quiet-credits .qc-sign{font-family:"Playfair Display",Georgia,serif;font-style:italic;font-size:14px;text-align:center;margin:8px 0 0;color:rgba(28,18,20,.34);}
 .quiet-credits .qc-end{margin:48px auto 0;text-align:center;}
@@ -2826,6 +2864,7 @@ textarea:focus,.chat-form input:focus,.live-box textarea:focus{border-color:var(
   <video id="purpleVideo" playsinline webkit-playsinline preload="auto"></video>
   <button type="button" class="purple-play" id="purplePlay" hidden>Tap to play</button>
   <div id="purpleFlash" class="purple-flash"></div>
+  <div id="snapFx" class="snap-fx" aria-hidden="true"><i class="snap-dark"></i><i class="snap-ring"></i><i class="snap-ring r2"></i></div>
   <p class="purple-skip" id="purpleSkipHint">Tap the screen or press Esc to skip</p>
   <button type="button" class="purple-mute" id="purpleMute">Sound off</button>
   <div id="lukeWrap" class="luke-wrap">
@@ -5630,6 +5669,7 @@ textarea:focus,.chat-form input:focus,.live-box textarea:focus{border-color:var(
     stopAudio();
     clearRipple();
     if(hideOverlay){
+      clearSnapFx();
       purpleOn = false;
       purpleOverlay.classList.remove("on", "clip", "card-on", "card-fade", "rippling");
       purpleOverlay.setAttribute("aria-hidden", "true");
@@ -5691,6 +5731,7 @@ textarea:focus,.chat-form input:focus,.live-box textarea:focus{border-color:var(
       stopAudio();
     }
     if(t >= PURPLE_TIMING.card){
+      gojoSnap();
       showLukeCard(false);
       revealResume(true);
       return;
@@ -5718,6 +5759,116 @@ textarea:focus,.chat-form input:focus,.live-box textarea:focus{border-color:var(
   }
 
   let snapRaf = 0, snapFlashing = false, clipExiting = false, clipVolRaf = 0;
+
+  /* ---------- The Gojo finger snap, right before the résumé ---------- */
+  const SNAP_IMPACT_MS = 110;
+  const snapFx = $("#snapFx");
+  let snapCtx = null, snapBuf = null, snapEl = null, snapFxTimer = 0;
+  // A finger snap built from scratch: a sharp filtered-noise crack, a short
+  // sub-bass whoomp, a few early reflections and a soft room tail.
+  function snapSamples(sr){
+    const n = Math.floor(sr * 0.95), out = new Float32Array(n), dry = new Float32Array(n);
+    let seed = 20261125;
+    const rnd = () => { seed = (seed * 16807) % 2147483647; return seed / 1073741823.5 - 1; };
+    const bp = (f, q) => { const w = 2 * Math.PI * f / sr, al = Math.sin(w) / (2 * q), a0 = 1 + al;
+      return { b0: al / a0, b2: -al / a0, a1: -2 * Math.cos(w) / a0, a2: (1 - al) / a0, x1: 0, x2: 0, y1: 0, y2: 0 }; };
+    const run = (f, x) => { const y = f.b0 * x + f.b2 * f.x2 - f.a1 * f.y1 - f.a2 * f.y2; f.x2 = f.x1; f.x1 = x; f.y2 = f.y1; f.y1 = y; return y; };
+    const body = bp(2400, 1.8), crack = bp(5600, 0.8), air = bp(1700, 0.6);
+    for(let i = 0; i < n; i++){
+      const t = i / sr, z = rnd();
+      const env = t < 0.0006 ? t / 0.0006 : Math.exp(-(t - 0.0006) / 0.012);
+      const cenv = t < 0.0003 ? t / 0.0003 : Math.exp(-(t - 0.0003) / 0.0032);
+      dry[i] = run(body, z) * env * 2.4 + run(crack, z) * cenv * 1.7;
+    }
+    const taps = [[0.019, 0.30], [0.031, 0.22], [0.047, 0.16], [0.071, 0.10], [0.097, 0.06]];
+    let ph = 0;
+    for(let i = 0; i < n; i++){
+      const t = i / sr;
+      let v = dry[i];
+      for(let k = 0; k < taps.length; k++){ const j = i - Math.round(taps[k][0] * sr); if(j >= 0) v += dry[j] * taps[k][1]; }
+      v += run(air, rnd()) * 0.09 * (t < 0.01 ? t / 0.01 : Math.exp(-(t - 0.01) / 0.2));
+      const f = 42 + 70 * Math.exp(-t / 0.07);
+      ph += 2 * Math.PI * f / sr;
+      v += Math.sin(ph) * 0.24 * (t < 0.005 ? t / 0.005 : Math.exp(-(t - 0.005) / 0.15));
+      out[i] = v;
+    }
+    let peak = 0;
+    for(let i = 0; i < n; i++) peak = Math.max(peak, Math.abs(out[i]));
+    const g = 0.9 / (peak || 1), fade = Math.floor(sr * 0.08);
+    for(let i = 0; i < n; i++) out[i] *= g * (i > n - fade ? (n - i) / fade : 1);
+    return out;
+  }
+
+  // Called from the tap that starts the transition, so phones allow the sound later.
+  function primeSnap(){
+    const AC = window.AudioContext || window.webkitAudioContext;
+    try{
+      if(AC && !snapCtx) snapCtx = new AC();
+      if(snapCtx && snapCtx.state === "suspended") snapCtx.resume();
+    }catch(e){ snapCtx = null; }
+    if(!snapEl){
+      try{ snapEl = new Audio("memes/snap.m4a"); snapEl.preload = "auto"; }catch(e){ snapEl = null; }
+      if(snapEl){
+        try{
+          snapEl.muted = true;
+          const p = snapEl.play();
+          const done = () => { try{ snapEl.pause(); snapEl.currentTime = 0; }catch(e){} snapEl.muted = false; };
+          if(p && p.then) p.then(done, () => { snapEl.muted = false; }); else done();
+        }catch(e){ snapEl.muted = false; }
+      }
+    }
+  }
+
+  function playSnapSound(){
+    if(!soundOn) return "muted";
+    if(snapCtx && snapCtx.state === "running"){
+      try{
+        if(!snapBuf){
+          const data = snapSamples(snapCtx.sampleRate);
+          snapBuf = snapCtx.createBuffer(1, data.length, snapCtx.sampleRate);
+          snapBuf.getChannelData(0).set(data);
+        }
+        const src = snapCtx.createBufferSource();
+        const g = snapCtx.createGain();
+        g.gain.value = 0.95;
+        src.buffer = snapBuf;
+        src.connect(g); g.connect(snapCtx.destination);
+        src.start();
+        return "webaudio";
+      }catch(e){}
+    }
+    if(snapEl){
+      try{
+        snapEl.muted = false;
+        snapEl.currentTime = 0;
+        const p = snapEl.play();
+        if(p && p.catch) p.catch(() => {});
+        return "file";
+      }catch(e){}
+    }
+    return "none";
+  }
+
+  function clearSnapFx(){
+    if(snapFxTimer){ clearTimeout(snapFxTimer); snapFxTimer = 0; }
+    if(snapFx) snapFx.classList.remove("hit");
+    purpleOverlay.classList.remove("snap-punch");
+  }
+
+  function gojoSnap(){
+    const via = playSnapSound();
+    const info = { via, t: purpleVideo ? +(purpleVideo.currentTime || 0).toFixed(2) : 0, at: performance.now(), motion: !reducedMotion() };
+    window.PareExpo.lastSnap = info;
+    window.PareExpo.snapCount = (window.PareExpo.snapCount || 0) + 1;
+    if(!reducedMotion()){
+      clearSnapFx();
+      void purpleOverlay.offsetWidth;
+      if(snapFx) snapFx.classList.add("hit");
+      purpleOverlay.classList.add("snap-punch");
+      snapFxTimer = setTimeout(clearSnapFx, 900);
+    }
+    return info;
+  }
   function watchSnap(){
     cancelAnimationFrame(snapRaf);
     snapFlashing = false;
@@ -5806,7 +5957,14 @@ textarea:focus,.chat-form input:focus,.live-box textarea:focus{border-color:var(
     cardTimer = setTimeout(() => {
       cardTimer = 0;
       if(!purpleOn) return;
-      fadeToResume();
+      // The snap lands as the white peaks (about 9.0s), then the résumé eases in.
+      gojoSnap();
+      if(reducedMotion()){ fadeToResume(); return; }
+      cardTimer = setTimeout(() => {
+        cardTimer = 0;
+        if(!purpleOn) return;
+        fadeToResume();
+      }, SNAP_IMPACT_MS);
     }, hold);
   }
 
@@ -6040,13 +6198,20 @@ textarea:focus,.chat-form input:focus,.live-box textarea:focus{border-color:var(
     hideLukeCard();
     setFlash(false, true);
     updateMuteLabel();
+    primeSnap();
 
     if(!opts.forceCanvas && reducedMotion()){
       purpleMode = "reduced";
       clearRipple();
       purpleOverlay.classList.remove("clip");
       setTimeout(() => {
-        if(purpleOn) showLukeCard(false);
+        if(!purpleOn) return;
+        // Reduced motion: no shake or shockwave, but the snap is still heard.
+        const was = soundOn;
+        if(!userSetMute) soundOn = true;
+        gojoSnap();
+        soundOn = was;
+        showLukeCard(false);
       }, 400);
       return Promise.resolve("reduced");
     }
@@ -6567,6 +6732,11 @@ textarea:focus,.chat-form input:focus,.live-box textarea:focus{border-color:var(
       return;
     }
 
+    // Let a dodge glide finish (and cool down) before anything pulls it back.
+    if(hireHopLock){
+      applyHireTransform(now, hirePos.x, hirePos.y);
+      return;
+    }
     if(!atHome(3) && (leaving || lingering || hireMode === "return")){
       if(hireMode !== "return") startReturn(now);
       const t = Math.max(0, Math.min(1, (now - hireReturnStart) / hireReturnDur));
@@ -6606,7 +6776,7 @@ textarea:focus,.chat-form input:focus,.live-box textarea:focus{border-color:var(
       dy = open.y;
       dist = 1;
     }
-    const travel = reducedHire() ? 80 : 180;
+    const travel = reducedHire() ? 90 : 130;
     if(hireMode !== "flee") onHireEscape();
     hireMode = "flee";
     hireNo.classList.add("shy-touch");
@@ -6643,25 +6813,22 @@ textarea:focus,.chat-form input:focus,.live-box textarea:focus{border-color:var(
 
 
   function hirePlayBounds(w, h){
-    const pad = 10;
-    const card = hireAsk ? hireAsk.getBoundingClientRect() : { left:pad, top:pad, right:window.innerWidth-pad, bottom:window.innerHeight-pad };
-    let left = Math.max(pad, card.left + pad);
-    let top = Math.max(pad, card.top + pad);
-    let right = Math.min(window.innerWidth - pad, card.right - pad);
-    let bottom = Math.min(window.innerHeight - pad, card.bottom - pad);
-    const vote = hireAsk.querySelector(".hire-vote-line") || hireAsk.querySelector("h1");
-    if(vote) top = Math.max(top, vote.getBoundingClientRect().bottom + pad);
+    // The button may roam the visible screen near its row (not just the card),
+    // so a 90 to 160px dodge has room on a phone too. It never leaves the screen
+    // and clampHireHop keeps it off Type shit!.
+    const pad = 12;
+    const vw = window.innerWidth, vh = window.innerHeight;
+    const card = hireAsk ? hireAsk.getBoundingClientRect() : { top: pad };
+    let left = pad, right = vw - pad;
+    let top = Math.max(pad, card.top + pad), bottom = vh - pad;
     const row = document.getElementById("hireRow");
     if(row){
       const rr = row.getBoundingClientRect();
-      top = Math.max(top, rr.top - 72);
-      bottom = Math.min(bottom, Math.max(bottom, rr.bottom + 72));
+      top = Math.max(top, rr.top - 200);
+      bottom = Math.min(bottom, rr.bottom + 200);
     }
     if(right - left < w + 8 || bottom - top < h + 8){
-      left = pad;
-      top = pad;
-      right = window.innerWidth - pad;
-      bottom = window.innerHeight - pad;
+      left = pad; top = pad; right = vw - pad; bottom = vh - pad;
     }
     return { left, top, right, bottom };
   }
@@ -6708,8 +6875,9 @@ textarea:focus,.chat-form input:focus,.live-box textarea:focus{border-color:var(
       dx = open.x;
       dy = open.y;
     }
-    const minD = reducedHire() ? 60 : 72;
-    const maxD = reducedHire() ? 88 : 112;
+    // Moderate dodge: clearly out of reach, but it stays near its spot.
+    const minD = reducedHire() ? 80 : 90;
+    const maxD = reducedHire() ? 120 : 160;
     const want = minD + Math.random() * (maxD - minD);
     const angles = [];
     const base = Math.atan2(dy, dx);
@@ -6723,7 +6891,7 @@ textarea:focus,.chat-form input:focus,.live-box textarea:focus{border-color:var(
       const moved = Math.hypot(pos.x - cur.x, pos.y - cur.y);
       const away = fromPointer ? Math.hypot((pos.x + w / 2) - fromPointer.x, (pos.y + h / 2) - fromPointer.y) : moved;
       const score = moved * 2 + away;
-      if(moved >= 48 && score > bestScore){
+      if(moved >= minD * 0.75 && score > bestScore){
         bestScore = score;
         best = pos;
       } else if(!best && score > bestScore){
@@ -6738,13 +6906,18 @@ textarea:focus,.chat-form input:focus,.live-box textarea:focus{border-color:var(
     hireNo.classList.remove("no-hop");
     hireHopLock = true;
     if(hireHopTimer) clearTimeout(hireHopTimer);
+    hireNo.classList.add("glide");
+    (window.PareExpo.hireHops = window.PareExpo.hireHops || []).push({ d: Math.round(Math.hypot(dest.x - cur.x, dest.y - cur.y)), at: Math.round(performance.now()) });
     placeNoAt(dest.x, dest.y, true);
     applyHireTransform(performance.now(), dest.x, dest.y);
-    const hopMs = reducedHire() ? 200 : 300;
+    // One eased glide, then a short cooldown so jumps never chain into a twitch.
+    const hopMs = reducedHire() ? 200 : 520;
+    const coolMs = reducedHire() ? 120 : 180;
     hireHopTimer = setTimeout(() => {
       hireHopLock = false;
       hireHopTimer = 0;
-    }, hopMs + 40);
+      hireNo.classList.remove("glide");
+    }, hopMs + coolMs);
     return dest;
   }
 
@@ -6789,7 +6962,7 @@ textarea:focus,.chat-form input:focus,.live-box textarea:focus{border-color:var(
     hireAsk.classList.remove("hidden");
     hireDone.classList.remove("on");
     try { hcStop(); } catch(e){}
-    hireNo.classList.remove("shy-touch");
+    hireNo.classList.remove("shy-touch", "glide");
     hireYes.classList.remove("glow");
     hideHireCaption();
     if(hireYesHint) hireYesHint.classList.remove("on");
@@ -6977,7 +7150,7 @@ textarea:focus,.chat-form input:focus,.live-box textarea:focus{border-color:var(
     hideHireCaption();
     hireAsk.classList.add("hidden");
     hireDone.classList.add("on");
-    hireNo.classList.remove("shy-touch");
+    hireNo.classList.remove("shy-touch", "glide");
     hireYes.classList.remove("glow");
     hcStop();
     if(hcVid){
@@ -7002,7 +7175,7 @@ textarea:focus,.chat-form input:focus,.live-box textarea:focus{border-color:var(
     hireHopLock = false;
     if(hireHopTimer) clearTimeout(hireHopTimer);
     hireHopTimer = 0;
-    hireNo.classList.remove("shy", "shy-touch", "no-hop");
+    hireNo.classList.remove("shy", "shy-touch", "no-hop", "glide");
     hireNo.style.left = "";
     hireNo.style.top = "";
     hireNo.style.width = "";
@@ -7846,10 +8019,13 @@ window.PARE_LIVE = window.PARE_LIVE || {
     pollResults();
     setInterval(pollResults, 2000);
   }
+  /* #chat is only an explicit deep link: open chat once, then clear the hash
+     so a refresh lands on home instead of reopening chat. */
   function openChatHash(){
     if(location.hash !== "#chat") return;
     var intro = $("#robinIntro"); if(intro){ intro.classList.remove("on"); document.documentElement.classList.remove("ri-lock"); }
     openView("chat");
+    try{ window.history.replaceState(window.history.state, "", location.pathname + location.search); }catch(e){}
   }
   openChatHash();
   window.addEventListener("hashchange", openChatHash);
@@ -8496,7 +8672,7 @@ document.addEventListener("click", function(e){
   if(m) m.click();
 });</script>
 <template id="qcTpl">
-          <div class="qc-mask" role="region" aria-label="Credits. Tap to pause.">
+          <div class="qc-mask" role="region" aria-label="Credits. Scroll to look back; the roll pauses while you scroll.">
             <div class="qc-roll">
               <p class="qc-head">easter eggs</p>
               <div class="qc-row">
@@ -8552,7 +8728,7 @@ document.addEventListener("click", function(e){
                   <div class="qc-did">None of this happens without him.</div>
                 </div>
                 <p class="qc-title">Pare Dating</p>
-                <a class="qc-link" href="#chat">Want to see the Easter eggs?</a>
+                <a class="qc-link" href="./">Want to see the Easter eggs?</a>
               </div>
             </div>
           </div>
@@ -8587,55 +8763,76 @@ document.addEventListener("click", function(e){
       return box;
     }
 
-    var y = 0, last = 0, paused = false, done = false, started = false;
-    var speed = 22;
-    function maxDist(){ return Math.max(0, roll.scrollHeight - mask.clientHeight); }
+    /* Native scroll: the roll creeps up slowly on its own, but people can scroll
+       it by hand (touch, drag, wheel, keys). Any hand scroll pauses the creep; it
+       picks up again from wherever they left it after about 2s idle, and stops
+       on the finale. */
+    var IDLE_MS = 2000, speed = 22;
+    var y = 0, last = 0, done = false, started = false, holding = false, lastUser = 0, ours = -1;
+    mask.setAttribute("tabindex", "0");
     function endDist(){
-      var max = maxDist();
+      var max = Math.max(0, mask.scrollHeight - mask.clientHeight);
       if(!end) return max;
       var target = end.offsetTop + end.offsetHeight - (mask.clientHeight - 20);
       return Math.max(0, Math.min(max, target));
     }
+    function setTop(v){ y = v; ours = Math.round(v); mask.scrollTop = v; }
+    function userNow(){ lastUser = performance.now(); }
     function tick(ts){
       if(!last) last = ts;
       var dt = Math.min(0.05, (ts - last) / 1000);
       last = ts;
-      if(roll.getAttribute("data-freeze") === "1"){ requestAnimationFrame(tick); return; }
-      if(!paused && !done){
-        /* A hidden screen has no size, so wait until it's showing */
-        if(!mask.clientHeight){ requestAnimationFrame(tick); return; }
-        var d = endDist();
-        y += speed * dt;
-        if(y >= d){ y = d; finish(); }
-        roll.style.transform = "translate3d(0," + (-y) + "px,0)";
-      }
-      if(!done) requestAnimationFrame(tick);
+      requestAnimationFrame(tick);
+      if(roll.getAttribute("data-freeze") === "1") return;
+      /* A hidden screen has no size, so wait until it's showing */
+      if(!mask.clientHeight) return;
+      if(holding || (ts - lastUser) < IDLE_MS){ y = mask.scrollTop; return; }
+      var d = endDist();
+      if(y >= d - 0.5){ if(!done){ done = true; if(skip) skip.hidden = true; } return; }
+      done = false;
+      setTop(Math.min(d, y + speed * dt));
     }
     function start(){
-      if(started || done) return;
+      if(started) return;
       started = true;
       loadThumbs();
-      roll.style.paddingTop = "40px";
+      y = mask.scrollTop;
       last = 0;
       requestAnimationFrame(tick);
     }
     function finish(){
-      if(done) return;
+      loadThumbs();
+      if(!started) start();
+      setTop(endDist());
       done = true;
-      paused = false;
-      y = endDist();
-      roll.style.transform = "translate3d(0," + (-y) + "px,0)";
       if(skip) skip.hidden = true;
     }
-    mask.addEventListener("click", function(e){
-      if(e.target.closest("a")) return;
-      if(!started) start();
-      else if(!done) paused = !paused;
+    mask.addEventListener("scroll", function(){
+      /* Scrolls we didn't make ourselves come from the person */
+      if(Math.abs(mask.scrollTop - ours) > 2){ userNow(); y = mask.scrollTop; if(!started) start(); }
+    }, {passive:true});
+    mask.addEventListener("wheel", function(){ userNow(); if(!started) start(); }, {passive:true});
+    mask.addEventListener("touchstart", function(){ holding = true; userNow(); if(!started) start(); }, {passive:true});
+    mask.addEventListener("pointerdown", function(e){ if(e.pointerType !== "touch"){ holding = true; userNow(); } if(!started) start(); });
+    var letGo = function(){ if(holding){ holding = false; userNow(); } };
+    ["touchend", "touchcancel"].forEach(function(ev){ mask.addEventListener(ev, letGo, {passive:true}); });
+    window.addEventListener("pointerup", letGo);
+    window.addEventListener("pointercancel", letGo);
+    mask.addEventListener("keydown", function(e){ if(/^(Arrow|Page|Home|End| )/.test(e.key)) userNow(); });
+    /* Drag to scroll with a mouse, like a touch screen */
+    var drag = null;
+    mask.addEventListener("pointerdown", function(e){
+      if(e.pointerType !== "mouse" || e.button !== 0 || (e.target.closest && e.target.closest("a,button"))) return;
+      drag = {y: e.clientY, top: mask.scrollTop};
     });
+    window.addEventListener("pointermove", function(e){
+      if(!drag) return;
+      userNow();
+      mask.scrollTop = drag.top - (e.clientY - drag.y);
+    });
+    window.addEventListener("pointerup", function(){ drag = null; });
     if(skip) skip.addEventListener("click", function(e){
       e.stopPropagation();
-      loadThumbs();
-      if(!started){ started = true; roll.style.paddingTop = "40px"; }
       finish();
     });
     if("IntersectionObserver" in window){
@@ -8646,7 +8843,7 @@ document.addEventListener("click", function(e){
       }, {threshold:[0.4]});
       io.observe(box);
     } else start();
-    box._qc = {start: start, finish: finish, state: function(){ return {started: started, done: done, y: y}; }};
+    box._qc = {start: start, finish: finish, state: function(){ return {started: started, done: done, y: mask.scrollTop, paused: holding || (performance.now() - lastUser) < IDLE_MS}; }};
     return box;
   }
   function renderAll(root){
@@ -8661,8 +8858,9 @@ document.addEventListener("click", function(e){
     var ov = document.getElementById("purpleOverlay");
     var close = document.getElementById("lukeClose");
     if(ov && ov.classList.contains("on") && close) close.click();
+    /* Open chat in place; never leave #chat in the URL, so a refresh goes home */
     if(window.PareExpo && window.PareExpo.openView) window.PareExpo.openView("chat");
-    else location.hash = "#chat";
+    if(location.hash){ try{ window.history.replaceState(window.history.state, "", location.pathname + location.search); }catch(err){} }
   });
 
   renderAll();
