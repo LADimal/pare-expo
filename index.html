@@ -1560,7 +1560,10 @@ button.persona .tile-go{margin-top:2px;}
 .sk-steps{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(env(safe-area-inset-bottom, 0px) + 14px);z-index:30;display:flex;gap:6px;justify-content:center;
   background:rgba(244,247,229,.86);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
   padding:6px;border-radius:999px;border:1px solid var(--line);box-shadow:0 10px 28px rgba(43,5,8,.18);}
-#view-sidekicks{padding-bottom:84px;}
+#view-sidekicks{padding-bottom:calc(env(safe-area-inset-bottom, 0px) + 108px);}
+#view-sidekicks.voted{padding-bottom:calc(env(safe-area-inset-bottom, 0px) + 156px);}
+#skVote,#voteDone{scroll-margin-bottom:calc(env(safe-area-inset-bottom, 0px) + 100px);}
+#voteDone{padding-bottom:8px;}
 .sk-steps button{display:flex;align-items:center;gap:6px;min-height:40px;padding:6px 14px 6px 8px;border-radius:999px;font-weight:700;font-size:14px;color:var(--soft);transition:background .25s,color .25s;}
 .sk-steps i{font-style:normal;width:24px;height:24px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;background:var(--line);font-size:12px;transition:background .25s,color .25s;}
 .sk-steps button.on{background:var(--acc);color:var(--cream);}
@@ -6412,9 +6415,13 @@ window.PARE_LIVE = window.PARE_LIVE || {
     $("#voteCards").classList.add("locked");
     $("#voteDone").hidden = false;
     $("#voteDoneText").textContent = "You voted for " + NAMES[p] + ". Here's how it's going:";
+    var sk = $("#view-sidekicks"); if(sk) sk.classList.add("voted");
     refreshMini();
   }
-  function startVote(){ var mine = store("pareVote"); if(mine) showVoted(mine); }
+  function startVote(){
+    var sk = $("#view-sidekicks"); if(sk) sk.classList.remove("voted");
+    var mine = store("pareVote"); if(mine) showVoted(mine);
+  }
   startVote();
   $$(".vote-card").forEach(function(c){
     c.addEventListener("click", function(){
@@ -6671,20 +6678,37 @@ window.PARE_LIVE = window.PARE_LIVE || {
   }
 
   /* ---------- Step bar ---------- */
+  var pinStep = null, pinUntil = 0;
+  function markStep(id){
+    $$(".sk-steps button").forEach(function(b){ b.classList.toggle("on", b.dataset.jump === id); });
+  }
+  function currentStep(){
+    var secs = ["skMeet", "skTest", "skVote"].map(function(id){ return document.getElementById(id); }).filter(Boolean);
+    if(!secs.length) return "skMeet";
+    var best = secs[0], mid = innerHeight * .55;
+    secs.forEach(function(s){ if(s.getBoundingClientRect().top < mid) best = s; });
+    if(secs[secs.length-1] && secs[secs.length-1].getBoundingClientRect().bottom <= innerHeight - 80) best = secs[secs.length-1];
+    return best.id;
+  }
   $$(".sk-steps button").forEach(function(b){
-    b.addEventListener("click", function(){ var t = document.getElementById(b.dataset.jump); if(t) t.scrollIntoView({behavior: reduce ? "auto" : "smooth", block:"start"}); });
+    b.addEventListener("click", function(){
+      var t = document.getElementById(b.dataset.jump);
+      pinStep = b.dataset.jump;
+      pinUntil = Date.now() + 1400;
+      markStep(pinStep);
+      if(t) t.scrollIntoView({behavior: reduce ? "auto" : "smooth", block:"start"});
+    });
   });
   if("IntersectionObserver" in window){
     var secs = ["skMeet", "skTest", "skVote"].map(function(id){ return document.getElementById(id); }).filter(Boolean);
-    var io = new IntersectionObserver(function(){
-      var best = secs[0], mid = innerHeight * .45;
-      secs.forEach(function(s){ if(s.getBoundingClientRect().top < mid) best = s; });
-      $$(".sk-steps button").forEach(function(b){ b.classList.toggle("on", b.dataset.jump === best.id); });
-    }, {threshold:[0, .25, .5, .75, 1]});
+    function syncSteps(){
+      if(Date.now() < pinUntil && pinStep){ markStep(pinStep); return; }
+      pinStep = null;
+      markStep(currentStep());
+    }
+    var io = new IntersectionObserver(syncSteps, {threshold:[0, .25, .5, .75, 1]});
     secs.forEach(function(s){ io.observe(s); });
-    window.addEventListener("scroll", function(){ io.takeRecords(); var best = secs[0], mid = innerHeight * .45;
-      secs.forEach(function(s){ if(s.getBoundingClientRect().top < mid) best = s; });
-      $$(".sk-steps button").forEach(function(b){ b.classList.toggle("on", b.dataset.jump === best.id); }); }, {passive:true});
+    window.addEventListener("scroll", syncSteps, {passive:true});
   }
 
   /* ---------- Vote celebration (vote is recorded by the live-vote script) ---------- */
