@@ -360,8 +360,9 @@ img{max-width:100%;display:block;}
   position:relative;
   display:flex;align-items:center;justify-content:center;
   margin-top:22px;
-  padding:4px 40px 10px;
+  padding:4px 12px 10px;
 }
+.click-me-arrow{display:none !important;}
 .click-me-arrow{
   position:absolute;
   left:54%;
@@ -1964,7 +1965,7 @@ textarea:focus,.chat-form input:focus,.live-box textarea:focus{border-color:var(
               <span class="tile-kicker">Game · 4 messages</span>
               <h2>Can you spot the scam?</h2>
               <p>Play as Dana. Choose Reply or Report, and Robin steps in.</p>
-              <span class="tile-go">Play now <i aria-hidden="true">→</i></span>
+              <span class="tile-go">Play now</span>
             </div>
           </button>
           <button type="button" class="tile demo-tile t-live reveal" data-mode="live">
@@ -1976,7 +1977,7 @@ textarea:focus,.chat-form input:focus,.live-box textarea:focus{border-color:var(
               <span class="tile-kicker">Live · type anything</span>
               <h2>Robin reacts live</h2>
               <p>Type a message and see what Robin would say.</p>
-              <span class="tile-go">Try it <i aria-hidden="true">→</i></span>
+              <span class="tile-go">Try it</span>
             </div>
           </button>
           <button type="button" class="tile demo-tile t-sk reveal" data-mode="sidekicks">
@@ -1987,7 +1988,7 @@ textarea:focus,.chat-form input:focus,.live-box textarea:focus{border-color:var(
               <span class="tile-kicker">Compare · then vote</span>
               <h2>Meet the sidekicks</h2>
               <p>Robin, Darcy and Rumi side by side. Then pick your favourite.</p>
-              <span class="tile-go">Meet them <i aria-hidden="true">→</i></span>
+              <span class="tile-go">Meet them</span>
             </div>
           </button>
           <button type="button" class="tile demo-tile t-quiz reveal" data-mode="quiz">
@@ -1999,7 +2000,7 @@ textarea:focus,.chat-form input:focus,.live-box textarea:focus{border-color:var(
               <span class="tile-kicker">Quiz · 5 questions</span>
               <h2>Which sidekick suits you?</h2>
               <p>Answer five quick questions and find your match.</p>
-              <span class="tile-go">Take the quiz <i aria-hidden="true">→</i></span>
+              <span class="tile-go">Take the quiz</span>
             </div>
           </button>
         </div>
@@ -2016,10 +2017,6 @@ textarea:focus,.chat-form input:focus,.live-box textarea:focus{border-color:var(
         <span class="made-stack">
           <button type="button" id="madeByLuke">Made by Luke</button>
           <span class="click-me-wrap">
-            <svg class="click-me-arrow" viewBox="0 0 44 48" aria-hidden="true" focusable="false">
-              <path d="M28 46 C 38 34, 36 18, 18 8" fill="none" stroke="#4C1D95" stroke-width="2.2" stroke-linecap="round"/>
-              <path d="M11 13 L18 7 L23 15" fill="none" stroke="#4C1D95" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
             <img class="click-me-robin" src="data:image/webp;base64,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" alt="">
             <button type="button" class="click-me" id="clickMe">
               Click me
@@ -2032,7 +2029,7 @@ textarea:focus,.chat-form input:focus,.live-box textarea:focus{border-color:var(
     </section>
 
     <section class="view" id="view-game">
-      <button type="button" class="back-link" data-back>← Back</button>
+      <button type="button" class="back-link" data-back>Back</button>
       <div class="mode-head">
         <h1>Can you spot the scam?</h1>
         <p>You're Dana, a Pare member. Read each message and choose Reply or Report.</p>
@@ -2088,7 +2085,7 @@ textarea:focus,.chat-form input:focus,.live-box textarea:focus{border-color:var(
     </section>
 
     <section class="view" id="view-live">
-      <button type="button" class="back-link" data-back>← Back</button>
+      <button type="button" class="back-link" data-back>Back</button>
       <div class="mode-head">
         <h1>Robin reacts live</h1>
         <p>Type a message a member might send or receive. Robin will react, and you'll see what Pare would do with it.</p>
@@ -2123,7 +2120,7 @@ textarea:focus,.chat-form input:focus,.live-box textarea:focus{border-color:var(
     </section>
 
     <section class="view" id="view-meet">
-      <button type="button" class="back-link" data-back>← Back</button>
+      <button type="button" class="back-link" data-back>Back</button>
       <div class="mode-head">
         <h1>Meet Robin</h1>
       </div>
@@ -2288,7 +2285,7 @@ textarea:focus,.chat-form input:focus,.live-box textarea:focus{border-color:var(
 
 
     <section class="view" id="view-sidekicks">
-      <button type="button" class="back-link" data-back>← Back</button>
+      <button type="button" class="back-link" data-back>Back</button>
       <div class="sk2">
         <nav class="sk-steps" aria-label="Steps">
           <button type="button" data-jump="skMeet" class="on"><i>1</i>Meet</button>
@@ -2353,7 +2350,7 @@ textarea:focus,.chat-form input:focus,.live-box textarea:focus{border-color:var(
     </section>
 
     <section class="view" id="view-chat">
-      <button type="button" class="back-link" data-back>← Back</button>
+      <button type="button" class="back-link" data-back>Back</button>
       <div class="chat-shell">
         <div class="chat-head">
           <img class="chat-av" data-face="0" alt="">
@@ -2380,7 +2377,7 @@ textarea:focus,.chat-form input:focus,.live-box textarea:focus{border-color:var(
     </section>
 
     <section class="view" id="view-quiz">
-      <button type="button" class="back-link" data-back>← Back</button>
+      <button type="button" class="back-link" data-back>Back</button>
       <div class="quiz-page">
         <div class="mode-head sk-head">
           <h1>Which sidekick suits you?</h1>
