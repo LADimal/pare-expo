@@ -2004,6 +2004,11 @@ textarea:focus,.chat-form input:focus,.live-box textarea:focus{border-color:var(
 .sk-scen button:active,.quiz-opts button:active,.sk-steps button:active,
 .sk-arrow:active,.home-btn:active,.chat-send:active,.chat-fab:active,
 .seg button:active,.text-link:active{transform:scale(.97);}
+/* Rotating easter egg suggestion */
+.chat-sugs .egg-sug{border-style:dashed !important;border-color:var(--acc) !important;color:var(--acc) !important;}
+.chat-sugs .egg-sug.swap{animation:eggSwap .35s cubic-bezier(.2,.9,.3,1.2);}
+@keyframes eggSwap{from{opacity:0;transform:translateY(6px) scale(.96)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion: reduce){.chat-sugs .egg-sug.swap{animation:none;}}
 </style>
 </head>
 <body>
@@ -2450,6 +2455,7 @@ textarea:focus,.chat-form input:focus,.live-box textarea:focus{border-color:var(
         </div>
         <div class="chat-log" id="chatLog" aria-live="polite"></div>
         <div class="chat-sugs" id="chatSugs">
+          <button type="button" class="egg-sug" id="eggSug" data-say="Jensen Huang">Jensen Huang</button>
           <button type="button" data-say="I'm nervous about my first date in years.">Nervous about a first date</button>
           <button type="button" data-say="How do I write a good first message?">Help with a first message</button>
           <button type="button" data-say="Are you a real person?">Are you a real person?</button>
@@ -4528,7 +4534,11 @@ textarea:focus,.chat-form input:focus,.live-box textarea:focus{border-color:var(
   // as this HTML file, that clip plays instead of the built-in animation.
   // Set CLIP_CUT_SECONDS to a number (for example 11) to cut to the white
   // flash early. Leave it as null to wait until the clip ends.
-  const CLIP_CUT_SECONDS = null;
+  // The finger snap in purple.mp4: the light starts at 7.84s and the clip
+  // cuts to a different scene at 7.97s. Flash to white on the snap, then
+  // go straight to the résumé, so that other scene never shows.
+  const CLIP_FLASH_SECONDS = 7.80;
+  const CLIP_CUT_SECONDS = 7.92;
   const CLIP_FILES = ["purple.mp4", "purple.webm"];
   const PURPLE_TIMING = {
     ripple: 1000,
@@ -5382,9 +5392,28 @@ textarea:focus,.chat-form input:focus,.live-box textarea:focus{border-color:var(
     purpleRaf = requestAnimationFrame(tickPurple);
   }
 
+  let snapRaf = 0, snapFlashing = false;
+  function watchSnap(){
+    cancelAnimationFrame(snapRaf);
+    snapFlashing = false;
+    const tick = () => {
+      if(!purpleOn || purpleMode !== "clip" || lukeWrap.classList.contains("on")) return;
+      const t = purpleVideo.currentTime || 0;
+      if(t >= CLIP_FLASH_SECONDS && !snapFlashing){
+        snapFlashing = true;
+        purpleFlash.style.transition = "opacity .11s ease-in";
+        purpleFlash.classList.add("on");
+      }
+      if(t >= CLIP_CUT_SECONDS){ finishClip(); return; }
+      snapRaf = requestAnimationFrame(tick);
+    };
+    snapRaf = requestAnimationFrame(tick);
+  }
+
   function finishClip(){
     if(!purpleOn || purpleMode !== "clip") return;
     if(clipCutTimer){ clearTimeout(clipCutTimer); clipCutTimer = 0; }
+    cancelAnimationFrame(snapRaf);
     try{ purpleVideo.pause(); }catch(e){}
     stopAudio();
     showLukeCard(true);
@@ -5575,11 +5604,13 @@ textarea:focus,.chat-form input:focus,.live-box textarea:focus{border-color:var(
       if(CLIP_CUT_SECONDS == null) return;
       const dur = isFinite(purpleVideo.duration) ? purpleVideo.duration : CLIP_CUT_SECONDS;
       const cut = Math.min(CLIP_CUT_SECONDS, dur);
-      const ms = Math.max(0, (cut - (purpleVideo.currentTime || 0)) * 1000);
+      /* Safety net only: the frame watcher below makes the precise cut */
+      const ms = Math.max(0, (cut + 1.2 - (purpleVideo.currentTime || 0)) * 1000);
       if(clipCutTimer) clearTimeout(clipCutTimer);
       clipCutTimer = setTimeout(finishClip, ms);
     };
     armCut();
+    watchSnap();
     const fallbackCanvas = () => {
       if(purpleOn && purpleMode === "clip"){
         purpleOverlay.classList.remove("clip");
@@ -7098,7 +7129,24 @@ window.PARE_LIVE = window.PARE_LIVE || {
   window.PareExpo.ask = ask;
   if(form){
     form.addEventListener("submit", function(e){ e.preventDefault(); ask(input.value); });
-    $$("#chatSugs button").forEach(function(b){ b.addEventListener("click", function(){ ask(b.dataset.say); }); });
+    $$("#chatSugs button").forEach(function(b){ if(b.id !== "eggSug") b.addEventListener("click", function(){ ask(b.dataset.say); }); });
+    /* One suggestion is always an easter egg. Each tap plays it and swaps in the next one. */
+    var EGG_SUGS = [
+      ["Jensen Huang", "Jensen Huang"], ["67", "67"], ["Do a barrel roll", "Do a barrel roll"],
+      ["sudo make me a match", "sudo make me a match"], ["Any rizz tips?", "Any rizz tips?"],
+      ["Is this brain rot?", "Is this brain rot?"], ["Delulu is the solulu?", "Delulu is the solulu?"],
+      ["Very demure", "Very demure, very mindful"], ["Okay boomer", "Okay boomer"],
+      ["Meaning of life?", "What's the meaning of life?"], ["Touch grass", "Should I touch grass?"]
+    ];
+    var eggSug = $("#eggSug"), eggAt = 0;
+    if(eggSug) eggSug.addEventListener("click", function(){
+      if(!ask(EGG_SUGS[eggAt][1])) return;
+      eggAt = (eggAt + 1) % EGG_SUGS.length;
+      eggSug.textContent = EGG_SUGS[eggAt][0];
+      eggSug.dataset.say = EGG_SUGS[eggAt][1];
+      eggSug.classList.toggle("swap", false); void eggSug.offsetWidth; eggSug.classList.add("swap");
+      eggSug.parentNode.scrollLeft = 0;
+    });
   }
 
   /* ---------- Vote ---------- */
