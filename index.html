@@ -2392,7 +2392,7 @@ textarea:focus,.chat-form input:focus,.live-box textarea:focus{border-color:var(
         <div class="res-head">
           <p class="res-kicker">Live vote · Pare Dating expo</p>
           <h1>Who should be Pare's sidekick?</h1>
-          <p class="res-total"><b id="resTotal">0</b> votes so far</p>
+          <p class="res-total"><b id="resTotal">0</b> <span id="resTotalLabel">votes so far</span></p>
         </div>
         <div class="res-bars" id="resBars">
           <div class="res-row" data-p="robin"><div class="res-who"><span class="p-av robin"><img data-robin alt=""></span><b>Robin</b></div><div class="res-track"><i></i></div><div class="res-num">0%</div></div>
@@ -6433,6 +6433,8 @@ window.PARE_LIVE = window.PARE_LIVE || {
   function renderResults(c, ok){
     var total = c.robin + c.darcy + c.rumi;
     $("#resTotal").textContent = total;
+    var lab = $("#resTotalLabel");
+    if(lab) lab.textContent = total === 1 ? "vote so far" : "votes so far";
     var max = Math.max(c.robin, c.darcy, c.rumi);
     ["robin", "darcy", "rumi"].forEach(function(p){
       var row = $('.res-row[data-p="' + p + '"]');
