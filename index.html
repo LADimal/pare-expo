@@ -218,6 +218,10 @@ img{max-width:100%;display:block;}
 .chip-hint{margin:12px 0 6px;font-size:14px;font-weight:700;color:var(--soft);}
 .live-count{margin:6px 0 0;font-size:13px;color:var(--soft);text-align:right;}
 .live-count.near{color:var(--acc);font-weight:700;}
+.live-hint{margin:8px 0 0;font-size:14px;color:var(--soft);line-height:1.4;}
+.live-hint .text-link{display:inline;padding:0;border:0;background:none;color:var(--acc);
+  font:inherit;font-weight:700;text-decoration:underline;cursor:pointer;}
+.live-chat-btn{margin-top:14px;}
 .live-wrap,.live-box,.live-out,.chip-row{min-width:0;max-width:100%;}
 .chip-row{margin:0 0 8px;overflow-x:auto;-webkit-overflow-scrolling:touch;}
 .chips{display:flex;flex-wrap:wrap;gap:8px;margin:0;max-width:100%;}
@@ -2094,6 +2098,7 @@ textarea:focus,.chat-form input:focus,.live-box textarea:focus{border-color:var(
           <label for="liveInput" style="font-weight:700;display:block;margin-bottom:8px">The message</label>
           <textarea id="liveInput" placeholder="Type a message here" maxlength="500"></textarea>
           <div class="live-count" id="liveCount" aria-live="polite">0 / 500</div>
+          <p class="live-hint" id="liveHint">This box is for a message you want Robin to react to. To talk with him, use <button type="button" class="text-link" id="liveHintChat">Chat with Robin</button>.</p>
           <p class="chip-hint">Or try one of these</p>
           <div class="chip-row">
             <div class="chips" id="liveChips"></div>
@@ -2786,6 +2791,38 @@ textarea:focus,.chat-form input:focus,.live-box textarea:focus{border-color:var(
     };
   }
 
+  function isPresetLiveText(raw){
+    const text = String(raw == null ? "" : raw).trim();
+    if(!text) return false;
+    if(EXAMPLES.some((t) => t === text)) return true;
+    if(LIVE_CHIPS.some((c) => c.text === text)) return true;
+    return false;
+  }
+
+  /* Free-typed text that looks like a visitor talking to Robin, not a
+     member message for him to react to. Preset chips skip this check. */
+  function looksLikeChatToRobin(raw){
+    const original = String(raw == null ? "" : raw).trim();
+    if(!original) return false;
+    if(isPresetLiveText(original)) return false;
+    const t = normalizeText(original).norm;
+    if(/\brobin\b/.test(t)) return true;
+    if(/\b(are you (a )?(real|human|bot|ai|person)|who are you|what are you|are you real|are you there)\b/.test(t)) return true;
+    if(/^(please )?help( me)?[ .!?]*$/.test(t)) return true;
+    if(/^(hi|hey|hello|yo|howdy|hiya)( there)?[ .!?]*$/.test(t)) return true;
+    const startsGreeting = /^(hi|hey|hello|yo|howdy|hiya)\b/.test(t);
+    const talkingToHim = /\b(help me|i need (some )?help|i need advice|any advice|can you help|could you help|how do i|how can i|how should i|what should i|what do i|who are you|what are you|are you (a )?(real|human|bot|ai|person)|are you real|are you there|can i ask you|i (want to|wanna) (talk|chat|ask)|talk to me|chat with me)\b/.test(t);
+    if(startsGreeting && talkingToHim) return true;
+    if(/\b(how do i|how can i|how should i|what should i|what do i|where do i|why (can|cant|do) i)\b/.test(t)) return true;
+    if(/\b(help me|i need (some )?help|i need advice|any advice|give me advice)\b/.test(t)) return true;
+    if(/\b(can|could|would) you help\b/.test(t)) return true;
+    if(/\b(can|could) you (advise|explain|recommend)\b/.test(t)) return true;
+    if(/\bcan i ask you\b/.test(t) || /\b(i (want to|wanna) (talk|chat|ask)|talk to me|chat with me)\b/.test(t)) return true;
+    if(/\b(what do you do|how does (this|the (demo|app|chat|site)) work|what is this|whats this)\b/.test(t)) return true;
+    if(/\b(tell me about (yourself|you|pare|dating|first dates))\b/.test(t)) return true;
+    return false;
+  }
+
   function isMathOrReligionSin(n){
     const t = n.norm;
     if(/\b(cos|tan|sine|cosine|math|trig|trigonometry|calculus)\b/.test(t)) return true;
@@ -3401,6 +3438,7 @@ textarea:focus,.chat-form input:focus,.live-box textarea:focus{border-color:var(
   }
 
   function liveFaceFor(res){
+    if(res.chatRedirect) return "hello";
     if(res.action === "deliver") return "yay";
     if(res.action === "caution") return "thinking";
     return "holdon";
@@ -3514,18 +3552,33 @@ textarea:focus,.chat-form input:focus,.live-box textarea:focus{border-color:var(
     const pd = card.querySelector(".pare-do");
     said.hidden = false;
     said.textContent = res.robin;
-    chip.hidden = false;
-    chip.className = "status-chip " + status.kind;
-    chip.textContent = status.label;
-    pill.hidden = false;
-    pill.className = "action-pill " + res.action;
-    pill.textContent = "What Pare would do: " + res.actionLabel;
-    pd.hidden = false;
-    pd.textContent = res.pare;
+    if(res.chatRedirect){
+      chip.hidden = true;
+      pill.hidden = true;
+      pd.hidden = true;
+      const go = document.createElement("button");
+      go.type = "button";
+      go.className = "btn live-chat-btn";
+      go.textContent = "Chat with Robin";
+      const msg = res.sourceText || "";
+      go.addEventListener("click", function(){ openChatWithMessage(msg); });
+      (said.parentNode || card).appendChild(go);
+    } else {
+      chip.hidden = false;
+      chip.className = "status-chip " + status.kind;
+      chip.textContent = status.label;
+      pill.hidden = false;
+      pill.className = "action-pill " + res.action;
+      pill.textContent = "What Pare would do: " + res.actionLabel;
+      pd.hidden = false;
+      pd.textContent = res.pare;
+    }
     if(!reducedLiveMotion()){
       said.classList.add("reveal");
-      pill.classList.add("reveal");
-      pd.classList.add("reveal");
+      if(!res.chatRedirect){
+        pill.classList.add("reveal");
+        pd.classList.add("reveal");
+      }
       if(res.action === "block") card.classList.add("shake");
       if(res.action === "deliver"){
         card.classList.add("sparkle");
@@ -3540,12 +3593,16 @@ textarea:focus,.chat-form input:focus,.live-box textarea:focus{border-color:var(
     const box = $("#liveResult");
     const again = $("#liveAgain");
     if(again) again.hidden = false;
-    liveLast = {
-      text: ($("#liveInput") && $("#liveInput").value) || "",
-      label: status.label,
-      kind: status.kind,
-      robin: res.robin
-    };
+    if(res.chatRedirect){
+      liveLast = null;
+    } else {
+      liveLast = {
+        text: ($("#liveInput") && $("#liveInput").value) || "",
+        label: status.label,
+        kind: status.kind,
+        robin: res.robin
+      };
+    }
     setLiveButton(false);
     box.dataset.state = "ready";
     scrollToLiveEl(card, "center");
@@ -3581,7 +3638,18 @@ textarea:focus,.chat-form input:focus,.live-box textarea:focus{border-color:var(
       $("#liveInput").value = raw;
     }
     updateLiveCount();
-    const res = screenMessage(raw);
+    const preset = !!(opts && opts.preset);
+    const res = (!preset && looksLikeChatToRobin(raw))
+      ? {
+          chatRedirect: true,
+          sourceText: raw,
+          face: "hello",
+          robin: "Sounds like you want to chat! Ask me in Chat with Robin.",
+          action: "chat",
+          actionLabel: "",
+          pare: ""
+        }
+      : screenMessage(raw);
     flashLiveButton();
     if(!res){
       if(liveTimer){
@@ -3667,7 +3735,7 @@ textarea:focus,.chat-form input:focus,.live-box textarea:focus{border-color:var(
       $$(".chip", chipWrap).forEach((c) => c.classList.toggle("on", c === el));
       if(el && el.scrollIntoView) el.scrollIntoView({ inline: "center", block: "nearest", behavior: "smooth" });
     }
-    renderLive(input.value, { restart: true });
+    renderLive(input.value, { restart: true, preset: true });
   }
 
   function renderChipRow(order){
@@ -3704,6 +3772,21 @@ textarea:focus,.chat-form input:focus,.live-box textarea:focus{border-color:var(
     applyExample(picked, el);
   }
 
+  function openChatWithMessage(text){
+    const msg = String(text == null ? "" : text).trim().slice(0, 300);
+    if(window.PareExpo && window.PareExpo.openView) window.PareExpo.openView("chat");
+    if(!msg) return;
+    setTimeout(function(){
+      const ask = window.PareExpo && window.PareExpo.ask;
+      if(typeof ask === "function"){
+        const sent = ask(msg);
+        if(sent !== false) return;
+      }
+      const i = document.getElementById("chatInput");
+      if(i){ i.value = msg; if(window.matchMedia("(hover:hover)").matches) i.focus(); }
+    }, 850);
+  }
+
   $("#liveCheck").addEventListener("click", () => renderLive($("#liveInput").value));
   $("#liveInput").addEventListener("keydown", (e) => {
     if(e.key === "Enter" && !e.shiftKey){
@@ -3715,11 +3798,12 @@ textarea:focus,.chat-form input:focus,.live-box textarea:focus{border-color:var(
   $("#liveInput").addEventListener("paste", () => setTimeout(updateLiveCount, 0));
   if($("#liveAgain")) $("#liveAgain").addEventListener("click", tryAnother);
   if($("#liveSurprise")) $("#liveSurprise").addEventListener("click", surpriseLive);
+  if($("#liveHintChat")) $("#liveHintChat").addEventListener("click", function(){ openChatWithMessage(""); });
   renderChipRow();
   updateLiveCount();
 
   /* Expose for headless tests */
-  window.PareExpo = { screenMessage, normalizeText, show, startGame, startLive, LIVE_CHIPS, LIVE_MAX };
+  window.PareExpo = { screenMessage, normalizeText, show, startGame, startLive, LIVE_CHIPS, LIVE_MAX, looksLikeChatToRobin, isPresetLiveText };
 
   window.PareExpo.GAME = GAME;
 
@@ -6234,7 +6318,7 @@ window.PARE_LIVE = window.PARE_LIVE || {
 
   function ask(text){
     text = (text || "").replace(/\s+/g, " ").trim().slice(0, 300);
-    if(!text || busy) return;
+    if(!text || busy) return false;
     busy = true; send.disabled = true;
     input.value = "";
     var started = Date.now();
@@ -6250,7 +6334,7 @@ window.PARE_LIVE = window.PARE_LIVE || {
         if(d.fx) try { eggFx(d.fx); } catch(e){}
         finish(d.reply, d.res);
       });
-      return;
+      return true;
     }
     var reply = LIVE
       ? api("/functions/v1/robin-chat", {messages: history.slice(-8)}, 9000).then(function(d){
@@ -6269,7 +6353,10 @@ window.PARE_LIVE = window.PARE_LIVE || {
       var left = Math.max(0, 650 - (Date.now() - started));
       return wait(left).then(function(){ return r; });
     }).then(function(r){ finish(r); }, function(){ finish(offlineReply(text)); });
+    return true;
   }
+  window.PareExpo = window.PareExpo || {};
+  window.PareExpo.ask = ask;
   if(form){
     form.addEventListener("submit", function(e){ e.preventDefault(); ask(input.value); });
     $$("#chatSugs button").forEach(function(b){ b.addEventListener("click", function(){ ask(b.dataset.say); }); });
