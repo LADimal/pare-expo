@@ -4876,14 +4876,16 @@ textarea:focus,.chat-form input:focus,.live-box textarea:focus{border-color:var(
   // cuts to a different scene at 7.97s. Flash to white on the snap, hold
   // the light, then ease into the résumé so that other scene never shows.
   // Gojo's on-screen snap: the orb bursts into sparks on the 7.717s frame.
-  // The snap sound, rings and punch fire one frame ahead (7.70s) so audio
-  // output latency lands the sound on that frame.
+  // The snap sound is mixed into purple.mp4's own audio at 7.712s, with the
+  // music ducked about 18 dB around it, so it plays through the same element
+  // as the music (same unlock, works with the iPhone silent switch). The rings
+  // and punch fire at 7.70s.
   const CLIP_SNAP_SECONDS = 7.70;
   const CLIP_FLASH_SECONDS = 7.80;
   const CLIP_CUT_SECONDS = 7.92;
   const CLIP_HOLD_MS = 600;
   const CLIP_CROSSFADE_MS = 800;
-  const CLIP_FILES = ["purple.mp4?v=2"];
+  const CLIP_FILES = ["purple.mp4?v=3"];
   const PURPLE_TIMING = {
     ripple: 1000,
     orbsEnd: 4500,
@@ -5768,38 +5770,46 @@ textarea:focus,.chat-form input:focus,.live-box textarea:focus{border-color:var(
   let snapFired = false;
   const snapFx = $("#snapFx");
   let snapCtx = null, snapBuf = null, snapEl = null, snapFxTimer = 0;
-  // A finger snap built from scratch: a sharp filtered-noise crack, a short
-  // sub-bass whoomp, a few early reflections and a soft room tail.
+  // A finger snap built from scratch, loud enough for phone speakers:
+  // a hard click transient, a bright filtered-noise crack, a mid "thock"
+  // that small speakers can play, a deep sub boom, early reflections and a
+  // short room tail. Soft-clipped so it reads loud, peak just under 0 dBFS.
   function snapSamples(sr){
-    const n = Math.floor(sr * 0.95), out = new Float32Array(n), dry = new Float32Array(n);
+    const n = Math.floor(sr * 1.1), out = new Float32Array(n), dry = new Float32Array(n);
     let seed = 20261125;
     const rnd = () => { seed = (seed * 16807) % 2147483647; return seed / 1073741823.5 - 1; };
     const bp = (f, q) => { const w = 2 * Math.PI * f / sr, al = Math.sin(w) / (2 * q), a0 = 1 + al;
       return { b0: al / a0, b2: -al / a0, a1: -2 * Math.cos(w) / a0, a2: (1 - al) / a0, x1: 0, x2: 0, y1: 0, y2: 0 }; };
     const run = (f, x) => { const y = f.b0 * x + f.b2 * f.x2 - f.a1 * f.y1 - f.a2 * f.y2; f.x2 = f.x1; f.x1 = x; f.y2 = f.y1; f.y1 = y; return y; };
-    const body = bp(2400, 1.8), crack = bp(5600, 0.8), air = bp(1700, 0.6);
+    const body = bp(2200, 1.4), crack = bp(4800, 0.9), air = bp(1600, 0.6);
     for(let i = 0; i < n; i++){
       const t = i / sr, z = rnd();
-      const env = t < 0.0006 ? t / 0.0006 : Math.exp(-(t - 0.0006) / 0.012);
-      const cenv = t < 0.0003 ? t / 0.0003 : Math.exp(-(t - 0.0003) / 0.0032);
-      dry[i] = run(body, z) * env * 2.4 + run(crack, z) * cenv * 1.7;
+      const env = t < 0.0005 ? t / 0.0005 : Math.exp(-(t - 0.0005) / 0.018);
+      const cenv = t < 0.0002 ? t / 0.0002 : Math.exp(-(t - 0.0002) / 0.005);
+      const click = t < 0.0012 ? (1 - t / 0.0012) * (i % 2 ? 1 : -1) : 0;
+      dry[i] = run(body, z) * env * 3.2 + run(crack, z) * cenv * 2.6 + click * 0.9;
     }
-    const taps = [[0.019, 0.30], [0.031, 0.22], [0.047, 0.16], [0.071, 0.10], [0.097, 0.06]];
-    let ph = 0;
+    const taps = [[0.017, 0.34], [0.029, 0.26], [0.043, 0.19], [0.064, 0.13], [0.09, 0.08]];
+    let ph = 0, ph2 = 0;
     for(let i = 0; i < n; i++){
       const t = i / sr;
       let v = dry[i];
       for(let k = 0; k < taps.length; k++){ const j = i - Math.round(taps[k][0] * sr); if(j >= 0) v += dry[j] * taps[k][1]; }
-      v += run(air, rnd()) * 0.09 * (t < 0.01 ? t / 0.01 : Math.exp(-(t - 0.01) / 0.2));
-      const f = 42 + 70 * Math.exp(-t / 0.07);
+      v += run(air, rnd()) * 0.12 * (t < 0.01 ? t / 0.01 : Math.exp(-(t - 0.01) / 0.22));
+      // mid thock, audible on phone speakers
+      const f2 = 170 + 160 * Math.exp(-t / 0.02);
+      ph2 += 2 * Math.PI * f2 / sr;
+      v += Math.sin(ph2) * 0.55 * (t < 0.002 ? t / 0.002 : Math.exp(-(t - 0.002) / 0.06));
+      // sub boom
+      const f = 48 + 90 * Math.exp(-t / 0.06);
       ph += 2 * Math.PI * f / sr;
-      v += Math.sin(ph) * 0.24 * (t < 0.005 ? t / 0.005 : Math.exp(-(t - 0.005) / 0.15));
+      v += Math.sin(ph) * 0.45 * (t < 0.004 ? t / 0.004 : Math.exp(-(t - 0.004) / 0.18));
       out[i] = v;
     }
     let peak = 0;
     for(let i = 0; i < n; i++) peak = Math.max(peak, Math.abs(out[i]));
-    const g = 0.9 / (peak || 1), fade = Math.floor(sr * 0.08);
-    for(let i = 0; i < n; i++) out[i] *= g * (i > n - fade ? (n - i) / fade : 1);
+    const drive = 2.2 / (peak || 1), lim = Math.tanh(2.2), fade = Math.floor(sr * 0.1);
+    for(let i = 0; i < n; i++) out[i] = Math.tanh(out[i] * drive) / lim * 0.97 * (i > n - fade ? (n - i) / fade : 1);
     return out;
   }
 
@@ -5809,6 +5819,10 @@ textarea:focus,.chat-form input:focus,.live-box textarea:focus{border-color:var(
     try{
       if(AC && !snapCtx) snapCtx = new AC();
       if(snapCtx && snapCtx.state === "suspended") snapCtx.resume();
+      if(snapCtx){
+        const b = snapCtx.createBuffer(1, 1, snapCtx.sampleRate), src = snapCtx.createBufferSource();
+        src.buffer = b; src.connect(snapCtx.destination); src.start(0);
+      }
     }catch(e){ snapCtx = null; }
     if(!snapEl){
       try{ snapEl = new Audio("memes/snap.m4a"); snapEl.preload = "auto"; }catch(e){ snapEl = null; }
@@ -5823,8 +5837,22 @@ textarea:focus,.chat-form input:focus,.live-box textarea:focus{border-color:var(
     }
   }
 
+  const SNAP_IOS = /iP(hone|ad|od)/.test(navigator.userAgent) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+  function playSnapEl(){
+    if(!snapEl) return false;
+    try{
+      snapEl.muted = false;
+      snapEl.volume = 1;
+      snapEl.currentTime = 0;
+      const p = snapEl.play();
+      if(p && p.catch) p.catch(() => {});
+      return true;
+    }catch(e){ return false; }
+  }
   function playSnapSound(){
     if(!soundOn) return "muted";
+    // iPhone: Web Audio follows the silent switch, a media element does not.
+    if(SNAP_IOS && playSnapEl()) return "file";
     if(snapCtx && snapCtx.state === "running"){
       try{
         if(!snapBuf){
@@ -5841,15 +5869,7 @@ textarea:focus,.chat-form input:focus,.live-box textarea:focus{border-color:var(
         return "webaudio";
       }catch(e){}
     }
-    if(snapEl){
-      try{
-        snapEl.muted = false;
-        snapEl.currentTime = 0;
-        const p = snapEl.play();
-        if(p && p.catch) p.catch(() => {});
-        return "file";
-      }catch(e){}
-    }
+    if(playSnapEl()) return "file";
     return "none";
   }
 
@@ -5860,7 +5880,8 @@ textarea:focus,.chat-form input:focus,.live-box textarea:focus{border-color:var(
   }
 
   function gojoSnap(){
-    const via = playSnapSound();
+    // The clip carries its own snap (mixed into purple.mp4); other modes synthesize it.
+    const via = purpleMode === "clip" ? (purpleVideo.muted ? "muted" : "clip") : playSnapSound();
     const info = { via, t: purpleVideo ? +(purpleVideo.currentTime || 0).toFixed(2) : 0, at: performance.now(), motion: !reducedMotion() };
     window.PareExpo.lastSnap = info;
     window.PareExpo.snapCount = (window.PareExpo.snapCount || 0) + 1;
