@@ -1210,6 +1210,67 @@ html,body{overflow-x:hidden;overflow-y:auto;}
   .hero-bubble{font-size:14px;}
   .tile-preview{height:136px;}
 }
+
+/* Robin opening animation */
+.robin-intro{
+  position:fixed;inset:0;z-index:95;display:none;overflow:hidden;cursor:pointer;
+  background:radial-gradient(120% 90% at 50% 45%, #9b1a2c 0%, #5c0c18 45%, #1a0306 100%);
+  color:var(--cream);-webkit-tap-highlight-color:transparent;
+  clip-path:circle(150% at 50% 50%);
+}
+.robin-intro.on{display:block;}
+html.ri-lock,html.ri-lock body{overflow:hidden;}
+.robin-intro canvas{position:absolute;inset:0;width:100%;height:100%;}
+.ri-center{
+  position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding-left:max(16px, env(safe-area-inset-left, 0px));padding-right:max(16px, env(safe-area-inset-right, 0px));text-align:center;
+}
+.ri-halo{
+  position:absolute;left:50%;top:50%;width:min(80vw,420px);aspect-ratio:1;border-radius:50%;
+  transform:translate(-50%,-62%) scale(0);
+  background:radial-gradient(circle, rgba(255,236,170,.55), rgba(212,175,55,.18) 40%, transparent 68%);
+}
+.ri-robin{
+  position:relative;width:min(52vw,240px);height:auto;transform:scale(0) rotate(-12deg);opacity:0;
+  filter:drop-shadow(0 18px 30px rgba(0,0,0,.35));
+}
+.ri-title{
+  position:relative;margin-top:18px;font-size:clamp(40px,11vw,72px);line-height:1;letter-spacing:.01em;
+  color:var(--cream);min-height:1em;
+}
+.ri-title span{display:inline-block;opacity:0;transform:translateY(24px);}
+.ri-title span.in{opacity:1;transform:none;transition:opacity .35s ease, transform .5s cubic-bezier(.2,1.4,.4,1);}
+.ri-title em{font-style:italic;color:var(--gold);}
+.ri-sub{
+  position:relative;margin-top:12px;font-size:13px;font-weight:700;letter-spacing:.28em;text-transform:uppercase;
+  color:rgba(244,247,229,.8);opacity:0;transform:translateY(8px);transition:opacity .5s ease, transform .5s ease;
+}
+.ri-sub.in{opacity:1;transform:none;}
+.ri-ring{
+  position:absolute;left:50%;top:44%;width:40px;height:40px;border-radius:50%;
+  border:3px solid rgba(255,236,170,.9);transform:translate(-50%,-50%) scale(0);opacity:0;pointer-events:none;
+}
+.ri-skip{
+  position:absolute;left:0;right:0;bottom:max(20px, calc(env(safe-area-inset-bottom, 0px) + 14px));
+  text-align:center;font-size:12.5px;font-weight:700;letter-spacing:.06em;color:rgba(244,247,229,.55);
+}
+.robin-intro.burst .ri-ring{animation:riRing 1s cubic-bezier(.1,.7,.3,1) forwards;}
+.robin-intro.burst .ri-ring.r2{animation-delay:.12s;border-color:rgba(244,247,229,.6);border-width:2px;}
+.robin-intro.burst .ri-robin{animation:riPop .9s cubic-bezier(.2,1.5,.35,1) forwards, riFloat 3s ease-in-out .9s infinite;}
+.robin-intro.burst .ri-halo{animation:riHalo 1.2s ease-out forwards;}
+@keyframes riRing{0%{opacity:1;transform:translate(-50%,-50%) scale(0)}100%{opacity:0;transform:translate(-50%,-50%) scale(26)}}
+@keyframes riPop{0%{opacity:0;transform:scale(0) rotate(-12deg)}60%{opacity:1}100%{opacity:1;transform:scale(1) rotate(0)}}
+@keyframes riFloat{0%,100%{translate:0 0}50%{translate:0 -8px}}
+@keyframes riHalo{0%{transform:translate(-50%,-62%) scale(0);opacity:0}40%{opacity:1}100%{transform:translate(-50%,-62%) scale(1);opacity:.9}}
+.robin-intro.flash::after{content:"";position:absolute;inset:0;background:#fff6dc;animation:riFlash .5s ease-out forwards;pointer-events:none;}
+@keyframes riFlash{0%{opacity:.9}100%{opacity:0}}
+.robin-intro.out{transition:clip-path .9s cubic-bezier(.7,0,.25,1);clip-path:circle(0% at var(--ri-x,50%) var(--ri-y,30%));}
+.robin-intro.fade{transition:opacity .4s ease;opacity:0;}
+@media (prefers-reduced-motion: reduce){
+  .robin-intro.burst .ri-robin{animation:none;opacity:1;transform:none;}
+  .robin-intro.burst .ri-ring{animation:none;}
+  .robin-intro.burst .ri-halo{animation:none;transform:translate(-50%,-62%) scale(1);opacity:.9;}
+}
 </style>
 </head>
 <body>
@@ -1593,6 +1654,19 @@ html,body{overflow-x:hidden;overflow-y:auto;}
       <div class="hire-fest" id="hireFest" aria-hidden="true"></div>
     </section>
   </div>
+</div>
+
+<div id="robinIntro" class="robin-intro" role="dialog" aria-label="Opening animation. Tap to skip.">
+  <canvas id="riCanvas" aria-hidden="true"></canvas>
+  <div class="ri-ring" aria-hidden="true"></div>
+  <div class="ri-ring r2" aria-hidden="true"></div>
+  <div class="ri-center">
+    <div class="ri-halo" aria-hidden="true"></div>
+    <img class="ri-robin" id="riRobin" alt="Robin waving hello">
+    <h2 class="ri-title" id="riTitle" aria-label="Meet Robin"></h2>
+    <p class="ri-sub">Pare's AI sidekick</p>
+  </div>
+  <p class="ri-skip">Tap anywhere to skip</p>
 </div>
 
 <div id="purpleOverlay" class="purple-overlay" aria-hidden="true">
@@ -4804,6 +4878,142 @@ html,body{overflow-x:hidden;overflow-y:auto;}
       else { robin.classList.add("on"); setTimeout(function(){ robin.classList.remove("on"); k=0; tick(); },2800); }
     })();
   }
+})();</script>
+<script>(function(){
+  var el = document.getElementById("robinIntro");
+  if(!el) return;
+  var canvas = document.getElementById("riCanvas"), ctx = canvas.getContext("2d");
+  var robin = document.getElementById("riRobin"), title = document.getElementById("riTitle");
+  var sub = el.querySelector(".ri-sub");
+  var heroArt = document.querySelector("#view-home .hero-art");
+  robin.src = heroArt ? heroArt.src : "";
+  var reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  var timers = [], raf = 0, running = false, parts = [], t0 = 0, W = 0, H = 0, dpr = 1;
+
+  function later(fn, ms){ timers.push(setTimeout(fn, ms)); }
+  function size(){
+    dpr = Math.min(2, window.devicePixelRatio || 1);
+    W = window.innerWidth; H = window.innerHeight;
+    canvas.width = Math.round(W * dpr); canvas.height = Math.round(H * dpr);
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  }
+  function makeParts(){
+    parts = [];
+    var n = Math.min(160, Math.round(W * H / 4200));
+    for(var i = 0; i < n; i++){
+      var a = Math.random() * Math.PI * 2, r = Math.max(W, H) * (0.55 + Math.random() * 0.5);
+      parts.push({a:a, r:r, r0:r, spin:(Math.random() < .5 ? -1 : 1) * (0.8 + Math.random() * 1.4),
+        size:1 + Math.random() * 2.6, gold:Math.random() < .6, delay:Math.random() * 350,
+        out:0, va:0});
+    }
+  }
+  function draw(now){
+    if(!running) return;
+    var t = now - t0, cx = W / 2, cy = H * 0.44;
+    ctx.clearRect(0, 0, W, H);
+    for(var i = 0; i < parts.length; i++){
+      var p = parts[i], x, y, alpha;
+      if(t < 1250){
+        /* Gather: spiral inward toward the centre */
+        var u = Math.max(0, Math.min(1, (t - p.delay) / (1250 - p.delay)));
+        var e = u * u * u;
+        p.r = p.r0 * (1 - e) + 6;
+        var ang = p.a + p.spin * e * 2.4;
+        x = cx + Math.cos(ang) * p.r; y = cy + Math.sin(ang) * p.r;
+        alpha = 0.25 + 0.75 * u;
+        p.va = ang;
+      }else{
+        /* Burst: fly back out as sparkles */
+        var v = (t - 1250) / 1400;
+        var d = 6 + Math.pow(v, 0.6) * p.r0 * 0.55;
+        x = cx + Math.cos(p.va) * d; y = cy + Math.sin(p.va) * d + v * v * 60;
+        alpha = Math.max(0, 1 - v);
+      }
+      if(alpha <= 0) continue;
+      ctx.globalAlpha = alpha;
+      ctx.fillStyle = p.gold ? "#F2D27A" : "#FFF7E6";
+      ctx.beginPath(); ctx.arc(x, y, p.size, 0, Math.PI * 2); ctx.fill();
+    }
+    /* Core glow while gathering */
+    if(t < 1350){
+      var g = Math.min(1, t / 1250);
+      var rad = 10 + g * 50;
+      var grd = ctx.createRadialGradient(cx, cy, 0, cx, cy, rad);
+      grd.addColorStop(0, "rgba(255,246,220," + (0.9 * g) + ")");
+      grd.addColorStop(1, "rgba(255,246,220,0)");
+      ctx.globalAlpha = 1; ctx.fillStyle = grd;
+      ctx.beginPath(); ctx.arc(cx, cy, rad, 0, Math.PI * 2); ctx.fill();
+    }
+    ctx.globalAlpha = 1;
+    if(t < 2800) raf = requestAnimationFrame(draw);
+  }
+  function setTitle(){
+    var word1 = "Meet ", word2 = "Robin";
+    title.innerHTML = "";
+    var spans = [];
+    word1.split("").forEach(function(c){ var s = document.createElement("span"); s.textContent = c === " " ? " " : c; title.appendChild(s); spans.push(s); });
+    var em = document.createElement("em"); title.appendChild(em);
+    word2.split("").forEach(function(c){ var s = document.createElement("span"); s.textContent = c; em.appendChild(s); spans.push(s); });
+    return spans;
+  }
+  function finish(){
+    if(!running) return;
+    running = false;
+    timers.forEach(clearTimeout); timers = []; cancelAnimationFrame(raf);
+    var r = heroArt ? heroArt.getBoundingClientRect() : null;
+    if(r && r.width && !reduce){
+      el.style.setProperty("--ri-x", (r.left + r.width / 2) + "px");
+      el.style.setProperty("--ri-y", (r.top + r.height / 2) + "px");
+      el.classList.add("out");
+    }else{
+      el.classList.add("fade");
+    }
+    setTimeout(function(){
+      el.classList.remove("on", "burst", "flash", "out", "fade");
+      document.documentElement.classList.remove("ri-lock");
+      el.setAttribute("aria-hidden", "true");
+    }, reduce ? 420 : 950);
+  }
+  function play(){
+    if(running) return;
+    running = true;
+    window.scrollTo(0, 0);
+    el.classList.remove("burst", "flash", "out", "fade");
+    el.removeAttribute("aria-hidden");
+    sub.classList.remove("in");
+    var spans = setTitle();
+    el.classList.add("on");
+    document.documentElement.classList.add("ri-lock");
+    if(reduce){
+      el.classList.add("burst");
+      spans.forEach(function(s){ s.classList.add("in"); });
+      sub.classList.add("in");
+      later(finish, 1600);
+      return;
+    }
+    size(); makeParts();
+    t0 = performance.now();
+    raf = requestAnimationFrame(draw);
+    later(function(){ el.classList.add("burst", "flash"); if(navigator.vibrate) try{ navigator.vibrate(18); }catch(e){} }, 1250);
+    spans.forEach(function(s, i){ later(function(){ s.classList.add("in"); }, 1800 + i * 70); });
+    later(function(){ sub.classList.add("in"); }, 1800 + spans.length * 70 + 150);
+    later(finish, 4300);
+  }
+  el.addEventListener("click", finish);
+  document.addEventListener("keydown", function(e){ if(running && (e.key === "Escape" || e.key === "Enter" || e.key === " ")) finish(); });
+  window.addEventListener("resize", function(){ if(running) size(); });
+
+  /* Play once per visit; tapping the Robin at the top replays it. */
+  var seen = false;
+  try{ seen = sessionStorage.getItem("robinIntroSeen") === "1"; sessionStorage.setItem("robinIntroSeen", "1"); }catch(e){}
+  if(!seen) play();
+  if(heroArt){
+    heroArt.style.cursor = "pointer";
+    heroArt.setAttribute("title", "Replay the opening");
+    heroArt.addEventListener("click", play);
+  }
+  window.PareExpo = window.PareExpo || {};
+  window.PareExpo.playRobinIntro = play;
 })();</script>
 </body>
 </html>
