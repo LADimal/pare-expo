@@ -1768,6 +1768,12 @@ h1,h2,h3{letter-spacing:-.015em;font-variant-numeric:lining-nums;}
   .sec-head .eyebrow{grid-column:1 / -1;}
   .sec-head p{text-align:right;max-width:340px;}
 }
+/* Leave room for the Chat with Robin button so it doesn't sit on the title */
+body:has(#view-home.on) #demos .sec-head{padding-right:170px;}
+@media (min-width:760px){
+  body:has(#view-home.on) #demos .sec-head{grid-template-columns:1fr;padding-right:200px;}
+  body:has(#view-home.on) #demos .sec-head p{text-align:left;max-width:none;}
+}
 
 /* ---------- Hero ---------- */
 .hero-v2{max-width:820px;margin:48px auto 0;}
