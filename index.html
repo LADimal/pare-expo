@@ -2221,6 +2221,14 @@ textarea:focus,.chat-form input:focus,.live-box textarea:focus{border-color:var(
 .ig-badge:active{transform:scale(.92);}
 @keyframes igPulse{0%,100%{transform:scale(1)}50%{transform:scale(1.1)}}
 @media (prefers-reduced-motion: reduce){.ig-badge{animation:none;}}
+/* Robin reacts live: less to read */
+#view-live .live-count{display:none;}
+#view-live #liveInput{min-height:88px;}
+/* "Say hi" links to Luke */
+.luke-plug{margin:14px 0 0 !important;font-size:14px;color:var(--muted,#6b6266);}
+.luke-plug .text-link{font-weight:700;color:var(--acc,#7d1426);text-decoration:underline;text-underline-offset:2px;background:none;border:0;padding:0;font:inherit;cursor:pointer;}
+.bub-cta{display:flex;align-items:center;justify-content:center;margin-top:10px;min-height:40px;padding:8px 14px;border-radius:var(--r-s,6px);
+  background:var(--acc,#7d1426);color:#fff;font-weight:700;font-size:14px;border:0;cursor:pointer;width:100%;}
 </style>
 </head>
 <body>
@@ -2382,15 +2390,14 @@ textarea:focus,.chat-form input:focus,.live-box textarea:focus{border-color:var(
       <button type="button" class="back-link" data-back>Back</button>
       <div class="mode-head">
         <h1>Robin reacts live</h1>
-        <p>Pick a conversation, or type a message a member might send. Robin will read the context and tell you how he'd handle it.</p>
+        <p>Type a message. See what Robin does.</p>
       </div>
       <div class="live-wrap">
         <div class="panel live-box">
-          <label for="liveInput" style="font-weight:700;display:block;margin-bottom:8px">A message to check</label>
-          <textarea id="liveInput" placeholder="Type a message here" maxlength="500"></textarea>
+          <label for="liveInput" class="sr-only">A message to check</label>
+          <textarea id="liveInput" placeholder="e.g. Can you send me a gift card?" maxlength="500"></textarea>
           <div class="live-count" id="liveCount" aria-live="polite">0 / 500</div>
-          <p class="live-hint" id="liveHint">This box is for a message you want Robin to react to. To talk with him, use <button type="button" class="text-link" id="liveHintChat">Chat with Robin</button>.</p>
-          <p class="chip-hint">Or try one of these conversations</p>
+                    <p class="chip-hint">Or tap one</p>
           <div class="chip-row">
             <div class="chips" id="liveChips"></div>
           </div>
@@ -2398,7 +2405,7 @@ textarea:focus,.chat-form input:focus,.live-box textarea:focus{border-color:var(
             <button type="button" class="btn" id="liveCheck">Check message</button>
             <button type="button" class="btn ghost" id="liveSurprise">Surprise me</button>
           </div>
-          <p class="demo-note">Demo rules for the booth, not Pare's real screener. Robin reads the whole conversation, not just one word.</p>
+          <p class="demo-note">Demo rules, not Pare's live screener.</p>
         </div>
         <div class="panel live-out is-empty" id="liveOut">
           <div id="liveResult" data-state="empty" aria-live="polite"></div>
@@ -2640,6 +2647,7 @@ textarea:focus,.chat-form input:focus,.live-box textarea:focus{border-color:var(
             <h3>Thanks for voting!</h3>
             <p id="voteDoneText"></p>
             <div class="mini-results" id="miniResults"></div>
+            <p class="luke-plug">Built by Luke Dimal. <button type="button" class="text-link" data-meet-luke>Say hi</button></p>
           </div>
         </section>
       </div>
@@ -6873,7 +6881,8 @@ textarea:focus,.chat-form input:focus,.live-box textarea:focus{border-color:var(
       
       (p.id !== "robin" ? '<p class="ph-note">Placeholder character</p>' : '')+
       '<div class="btn-row"><button type="button" class="btn" id="quizMeet">Meet all three</button><button type="button" class="btn ghost" id="quizAgain">Take it again</button></div>'+
-      '<p class="quiz-fine">You can switch sidekicks any time.</p></div>';
+      '<p class="quiz-fine">You can switch sidekicks any time.</p>'+
+      '<p class="luke-plug">Built by Luke Dimal. <button type="button" class="text-link" data-meet-luke>Say hi</button></p></div>';
     document.getElementById("quizAgain").addEventListener("click", function(){ step=0; score=[0,0,0]; renderQ(); });
     document.getElementById("quizMeet").addEventListener("click", function(){ var t = document.querySelector('.tile[data-mode="sidekicks"]'); if(t) t.click(); });
     setTimeout(function(){ var av = card.querySelector(".p-av"); if(av && window.PareExpo && window.PareExpo.confetti){ var r = av.getBoundingClientRect();
@@ -7257,6 +7266,7 @@ window.PARE_LIVE = window.PARE_LIVE || {
     if(res && res.action !== "allow") return {reply: TOPIC_REPLY[res.topic] || TOPIC_REPLY.money, res: res};
     var egg = easterEgg(text);
     if(egg) return {reply: egg.r, fx: egg.fx};
+    if(MAKER.test(text)) return {reply: MAKER_REPLY, cta: "Meet Luke"};
     if(!S) return null;
     var guard = null;
     try { guard = S.robinGuard(text); } catch(e){}
@@ -7265,9 +7275,20 @@ window.PARE_LIVE = window.PARE_LIVE || {
     return null;
   }
 
-  function finish(r, res){
+  var MAKER = /\bwho\s*('?s|is|was)?\s*(made|built|created|designed|coded|programmed|behind)\s+(you|robin|this|the (site|app|demo))\b|\b(your|robin'?s)\s+(creator|maker|designer|developer)\b|\bwho\s+(made|built|designed)\s+(u|ya)\b/i;
+  var MAKER_REPLY = "Luke Dimal designed me, as part of his BCIT project with Pare Dating. He also wrote Pare's safety policy. Want to meet him?";
+  function finish(r, res, cta){
     typing(false);
-    if(res) screenedBubble(r, res); else bubble("robin", r);
+    if(res) screenedBubble(r, res); else {
+      var bb = bubble("robin", r);
+      if(cta){
+        var cb = document.createElement("button");
+        cb.type = "button"; cb.className = "bub-cta"; cb.textContent = cta;
+        cb.setAttribute("data-meet-luke", "");
+        bb.appendChild(cb);
+        log.scrollTop = log.scrollHeight;
+      }
+    }
     history.push({role: "assistant", content: r});
     busy = false; send.disabled = false;
   }
@@ -7292,7 +7313,7 @@ window.PARE_LIVE = window.PARE_LIVE || {
         if(fxDone && fxDone.then){
           typing(false);
           fxDone.then(function(){ typing(true); return wait(450); }).then(function(){ finish(d.reply, d.res); }, function(){ finish(d.reply, d.res); });
-        } else finish(d.reply, d.res);
+        } else finish(d.reply, d.res, d.cta);
       });
       return true;
     }
@@ -8062,5 +8083,12 @@ window.PARE_LIVE = window.PARE_LIVE || {
 
   window.PareEggFx = FX;
 })();</script>
+<script>/* Any [data-meet-luke] button plays the Made by Luke reveal, which ends on Luke's résumé */
+document.addEventListener("click", function(e){
+  var t = e.target.closest && e.target.closest("[data-meet-luke]");
+  if(!t) return;
+  var m = document.getElementById("madeByLuke");
+  if(m) m.click();
+});</script>
 </body>
 </html>
