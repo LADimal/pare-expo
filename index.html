@@ -706,14 +706,14 @@ h3 + .luke-job-title{margin-top:0 !important;}
 /* Tour and phone layout */
 html,body{overflow-x:hidden;overflow-y:auto;}
 #view-home{flex:1 0 auto;min-height:auto;overflow:visible;}
-#view-meet{flex:1 1 auto;min-height:calc(100dvh - 92px);max-height:calc(100dvh - 92px);overflow:hidden;}
+#view-meet{flex:1 1 auto;min-height:0;max-height:none;overflow:visible;}
 #view-meet .mode-head{flex:none;}
 .tour{flex:1 1 auto;min-height:0;overflow:hidden;display:flex;flex-direction:column;}
-.tour-viewport{flex:1 1 auto;min-height:0;overflow:auto;-webkit-overflow-scrolling:touch;}
+.tour-viewport{flex:0 1 auto;min-height:0;overflow:auto;-webkit-overflow-scrolling:touch;}
 .tour-controls,.meet-next{flex:none;}
 
 .tour{display:flex;flex-direction:column;flex:1;min-height:0;overflow:hidden;}
-.tour-viewport{flex:1;min-height:0;overflow:auto;-webkit-overflow-scrolling:touch;}
+.tour-viewport{flex:0 1 auto;min-height:0;overflow:auto;-webkit-overflow-scrolling:touch;}
 .tour-card{display:none;padding:4px 0 16px;}
 .tour-card.on{display:block;}
 .tour-card h2{font-size:clamp(22px,3vw,28px);color:var(--acc);margin:10px 0 8px;}
@@ -754,7 +754,7 @@ html,body{overflow-x:hidden;overflow-y:auto;}
 .made-by .click-me{min-height:44px;}
 
 @media (max-width:480px){
-  #view-meet{min-height:calc(100dvh - 68px);max-height:calc(100dvh - 68px);}
+  #view-meet{min-height:0;max-height:none;}
   .tour-art{max-width:240px;margin-bottom:6px;}
   .tour-art .caption{font-size:13px;}
   .tour-card h2{margin:4px 0 6px;}
@@ -2129,7 +2129,7 @@ textarea:focus,.chat-form input:focus,.live-box textarea:focus{border-color:var(
           </div>
           <p class="demo-note">Demo rules, not the live app. These are simple keyword checks for the booth, not Pare's real screener.</p>
         </div>
-        <div class="panel live-out" id="liveOut">
+        <div class="panel live-out is-empty" id="liveOut">
           <div id="liveResult" data-state="empty" aria-live="polite"></div>
           <div class="btn-row live-again-row">
             <button type="button" class="btn ghost" id="liveAgain" hidden>Try another</button>
@@ -2261,8 +2261,8 @@ textarea:focus,.chat-form input:focus,.live-box textarea:focus{border-color:var(
           </div>
           <button type="button" class="btn" id="tourNext">Next</button>
         </div>
-        <div class="meet-next">
-          <button type="button" class="btn" id="meetHire">One last thing</button>
+        <div class="meet-next" id="meetNext" hidden>
+          <button type="button" class="btn ghost" id="meetHire">One last thing</button>
         </div>
       </div>
     </section>
@@ -5795,6 +5795,8 @@ textarea:focus,.chat-form input:focus,.live-box textarea:focus{border-color:var(
     const next = $("#tourNext");
     if(back) back.disabled = tourIndex === 0;
     if(next) next.disabled = tourIndex === tourTotal - 1;
+    const last = $("#meetNext");
+    if(last) last.hidden = tourIndex !== tourTotal - 1;
   }
 
   function stepTour(dir){
