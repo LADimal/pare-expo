@@ -557,7 +557,7 @@ html.rippling,body.rippling{overflow:hidden;}
 .luke-wrap.on{display:flex;}
 .luke-card{
   width:min(720px,100%);
-  max-height:calc(100% - 84px);
+  max-height:calc(100% - 120px);
   overflow:auto;
   background:#fff;color:#111;
   border-radius:2px;
@@ -697,9 +697,8 @@ h3 + .luke-job-title{margin-top:0 !important;}
 }
 .hire-brand-logo{height:22px;width:auto;display:block;filter:brightness(0) saturate(100%);opacity:.92;}
 .hire-vote-line{font-size:17px;color:var(--soft);line-height:1.35;margin:0 auto 2px;max-width:22em;}
-.hire-grade{margin-top:28px;}
-.hire-grade a.btn{min-width:160px;text-decoration:none;}
-.hire-grade-hint{font-size:13px;color:var(--soft);margin:8px 0 0;line-height:1.35;}
+.luke-tools a.btn{min-width:160px;text-decoration:none;}
+.luke-grade-hint{font-size:13px;color:var(--soft);margin:0;line-height:1.35;text-align:center;flex:none;}
 #hireYes{
   z-index:5;transform-origin:center center;
   transition:transform .22s ease, box-shadow .22s ease;
@@ -2617,18 +2616,14 @@ textarea:focus,.chat-form input:focus,.live-box textarea:focus{border-color:var(
         <p class="hire-vote-line">Vote for Pare Dating at the expo.</p>
         <div class="hire-row" id="hireRow">
           <div class="hire-yes-col">
-            <button type="button" class="btn" id="hireYes">Type shit</button>
-            <p class="hire-yes-hint" id="hireYesHint">Type shit is right here</p>
+            <button type="button" class="btn" id="hireYes">Type shit!</button>
+            <p class="hire-yes-hint" id="hireYesHint">Type shit! is right here</p>
           </div>
           <span class="hire-no-slot" id="hireNoSlot">
             <button type="button" class="btn ghost" id="hireNo" aria-disabled="true">Are you deadass? 😂</button>
           </span>
         </div>
         <p class="hire-no-caption" id="hireNoCaption" aria-live="polite"></p>
-        <div class="hire-grade">
-          <a class="btn ghost" id="hireGrade" href="https://forms.gle/xrMetQxjRrob7h4b6" target="_blank" rel="noopener noreferrer">Grade our project</a>
-          <p class="hire-grade-hint">Remember your A00# in Other Comments.</p>
-        </div>
       </div>
       <div class="hire-done" id="hireDone">
         <div class="hire-photo-row">
@@ -2866,9 +2861,11 @@ textarea:focus,.chat-form input:focus,.live-box textarea:focus{border-color:var(
       </div>
     </article>
     <div class="luke-tools">
-      <button type="button" class="btn" id="lukeHire">One last thing</button>
+      <a class="btn" id="lukeGrade" href="https://forms.gle/xrMetQxjRrob7h4b6" target="_blank" rel="noopener noreferrer">Grade our project</a>
+      <button type="button" class="btn ghost" id="lukeHire">One last thing</button>
       <button type="button" class="btn ghost" id="lukeClose">Close</button>
     </div>
+    <p class="luke-grade-hint">Remember your A00# in Other Comments.</p>
   </div>
 </div>
 <script>(function(){
@@ -6099,7 +6096,7 @@ textarea:focus,.chat-form input:focus,.live-box textarea:focus{border-color:var(
   const hireFest = $("#hireFest");
   const HIRE_CAPTIONS = [
     "Hmm, not yet",
-    "Type shit is right there",
+    "Type shit! is right there",
     "You already know",
     "Okay okay, one sec"
   ];
@@ -6527,13 +6524,10 @@ textarea:focus,.chat-form input:focus,.live-box textarea:focus{border-color:var(
   function hirePlayBounds(w, h){
     const pad = 10;
     const card = hireAsk ? hireAsk.getBoundingClientRect() : { left:pad, top:pad, right:window.innerWidth-pad, bottom:window.innerHeight-pad };
-    const grade = document.querySelector(".hire-grade");
-    const gr = grade ? grade.getBoundingClientRect() : null;
     let left = Math.max(pad, card.left + pad);
     let top = Math.max(pad, card.top + pad);
     let right = Math.min(window.innerWidth - pad, card.right - pad);
     let bottom = Math.min(window.innerHeight - pad, card.bottom - pad);
-    if(gr && gr.top > card.top + 40) bottom = Math.min(bottom, gr.top - pad);
     const vote = hireAsk.querySelector(".hire-vote-line") || hireAsk.querySelector("h1");
     if(vote) top = Math.max(top, vote.getBoundingClientRect().bottom + pad);
     const row = document.getElementById("hireRow");
@@ -6541,14 +6535,12 @@ textarea:focus,.chat-form input:focus,.live-box textarea:focus{border-color:var(
       const rr = row.getBoundingClientRect();
       top = Math.max(top, rr.top - 72);
       bottom = Math.min(bottom, Math.max(bottom, rr.bottom + 72));
-      if(gr && gr.top > rr.top) bottom = Math.min(bottom, gr.top - pad);
     }
     if(right - left < w + 8 || bottom - top < h + 8){
       left = pad;
       top = pad;
       right = window.innerWidth - pad;
       bottom = window.innerHeight - pad;
-      if(gr && gr.top > pad + h) bottom = Math.min(bottom, gr.top - pad);
     }
     return { left, top, right, bottom };
   }
