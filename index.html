@@ -1108,6 +1108,29 @@ html,body{overflow-x:hidden;overflow-y:auto;}
 .quiz-score{display:flex;justify-content:center;gap:8px;flex-wrap:wrap;margin-bottom:14px;}
 .quiz-score span{font-size:13px;background:var(--alt);border:1px solid var(--line);border-radius:999px;padding:5px 10px;}
 .quiz-fine{font-size:13px;color:var(--soft);margin-top:12px;line-height:1.4;}
+.quiz-result .luke-plug{margin:18px 0 2px;}
+.quiz-result .luke-plug-btn{
+  display:inline-flex;align-items:center;justify-content:center;
+  background:var(--acc);color:var(--cream);
+  font-weight:700;font-size:15.5px;letter-spacing:.01em;
+  padding:12px 26px;border-radius:999px;min-height:48px;
+  box-shadow:0 1px 0 rgba(255,255,255,.14) inset, 0 6px 16px rgba(128,19,35,.25);
+  cursor:pointer;
+  transition:background .2s ease, box-shadow .2s ease, transform .15s ease;
+}
+.quiz-result .luke-plug-btn:hover{
+  background:var(--acc2);
+  box-shadow:0 1px 0 rgba(255,255,255,.14) inset, 0 8px 20px rgba(128,19,35,.32);
+}
+.quiz-result .luke-plug-btn:active{transform:scale(.97);background:var(--acc2);}
+@media (hover:hover){
+  .quiz-result .luke-plug-btn:hover{transform:translateY(-1px);}
+}
+@media (prefers-reduced-motion:reduce){
+  .quiz-result .luke-plug-btn,
+  .quiz-result .luke-plug-btn:hover,
+  .quiz-result .luke-plug-btn:active{transition:none;transform:none;}
+}
 .quiz .btn-row{justify-content:center;}
 
 /* Timeline */
@@ -6898,7 +6921,7 @@ textarea:focus,.chat-form input:focus,.live-box textarea:focus{border-color:var(
       (p.id !== "robin" ? '<p class="ph-note">Placeholder character</p>' : '')+
       '<div class="btn-row"><button type="button" class="btn" id="quizMeet">Meet all three</button><button type="button" class="btn ghost" id="quizAgain">Take it again</button></div>'+
       '<p class="quiz-fine">You can switch sidekicks any time.</p>'+
-      '<p class="luke-plug">Built by Luke Dimal. <button type="button" class="text-link" data-meet-luke>Say hi</button></p></div>';
+      '<p class="luke-plug"><button type="button" class="luke-plug-btn" data-meet-luke>Made by Luke Dimal</button></p></div>';
     document.getElementById("quizAgain").addEventListener("click", function(){ step=0; score=[0,0,0]; renderQ(); });
     document.getElementById("quizMeet").addEventListener("click", function(){ var t = document.querySelector('.tile[data-mode="sidekicks"]'); if(t) t.click(); });
     setTimeout(function(){ var av = card.querySelector(".p-av"); if(av && window.PareExpo && window.PareExpo.confetti){ var r = av.getBoundingClientRect();
