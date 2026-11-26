@@ -9506,7 +9506,7 @@ document.addEventListener("click", function(e){
   var KEY = "pareFeedbackQueue";
   function load(){ try{ return JSON.parse(localStorage.getItem(KEY) || "[]"); }catch(e){ return []; } }
   function save(q){ try{ localStorage.setItem(KEY, JSON.stringify(q)); }catch(e){} }
-  function post(row){
+  function saveDb(row){
     if(!CFG.supabaseUrl || !CFG.supabaseAnonKey) return Promise.reject(new Error("offline mode"));
     var h = {"Content-Type": "application/json", "apikey": CFG.supabaseAnonKey, "Prefer": "return=minimal"};
     if(/^eyJ/.test(CFG.supabaseAnonKey)) h.Authorization = "Bearer " + CFG.supabaseAnonKey;
@@ -9515,12 +9515,30 @@ document.addEventListener("click", function(e){
     return fetch(CFG.supabaseUrl.replace(/\/$/, "") + "/rest/v1/feedback", {method: "POST", headers: h, body: JSON.stringify(row), signal: ctl ? ctl.signal : undefined})
       .then(function(r){ clearTimeout(t); if(!r.ok) throw new Error("HTTP " + r.status); }, function(e){ clearTimeout(t); throw e; });
   }
+  /* Phone ping: straight from the browser to Luke's ntfy topic (works with no backend setup) */
+  var NTFY_TOPIC = "pare-luke-89a3d0dbfcde";
+  function ping(row){
+    var ctl = ("AbortController" in window) ? new AbortController() : null;
+    var t = setTimeout(function(){ if(ctl) ctl.abort(); }, 8000);
+    return fetch("https://ntfy.sh/", {method: "POST", signal: ctl ? ctl.signal : undefined, body: JSON.stringify({
+      topic: NTFY_TOPIC, title: "New feedback" + (row.contact ? " from " + row.contact : ""),
+      message: row.message, tags: ["robot"], priority: 4
+    })}).then(function(r){ clearTimeout(t); if(!r.ok) throw new Error("HTTP " + r.status); }, function(e){ clearTimeout(t); throw e; });
+  }
+  /* Resolves {pinged, saved} if either worked; rejects only when both failed (offline) */
+  function post(row){
+    var ok = function(){ return true; }, no = function(){ return false; };
+    return Promise.all([ping(row).then(ok, no), saveDb(row).then(ok, no)]).then(function(r){
+      if(!r[0] && !r[1]) throw new Error("offline");
+      return {pinged: r[0], saved: r[1]};
+    });
+  }
   var flushing = false;
   function flush(){
     var q = load(); if(!q.length || flushing) return;
     flushing = true;
     post(q[0]).then(function(){ var n = load(); n.shift(); save(n); flushing = false; flush(); },
-      function(e){ flushing = false; if(/HTTP (400|409|413|422)/.test(String(e && e.message))){ var n = load(); n.shift(); save(n); } });
+      function(){ flushing = false; });
   }
   setInterval(flush, 8000); window.addEventListener("online", flush); flush();
 
@@ -9549,16 +9567,15 @@ document.addEventListener("click", function(e){
     $("#fbErr").hidden = true;
     var btn = $("#fbSend"), lbl = btn.querySelector("span"), t0 = Date.now();
     btn.disabled = true; btn.classList.add("going"); lbl.textContent = "Sending...";
-    function done(queued){
+    function done(queued, res){
       var ms = Math.max(120, Date.now() - t0), li = $("#fbDone").querySelectorAll(".fbx-receipt li");
-      li[0].innerHTML = queued ? "<span>Saved on this phone</span><b>&#10003;</b>" : "<span>Saved to database</span><b>&#10003;</b>";
-      li[1].innerHTML = queued ? "<span>Sends when you're back online</span><b>&#8987;</b>" : "<span>Pushed to Luke's phone</span><b>&#10003;</b>";
+      li[0].innerHTML = queued ? "<span>Saved on this phone</span><b>&#10003;</b>" : "<span>Sent over HTTPS</span><b>&#10003;</b>";
+      li[1].innerHTML = queued ? "<span>Sends when you're back online</span><b>&#8987;</b>" : (res && res.pinged ? "<span>Pushed to Luke's phone</span><b>&#10003;</b>" : "<span>Saved for Luke</span><b>&#10003;</b>");
       $("#fbMs").textContent = ms < 1000 ? ms + " ms" : (ms / 1000).toFixed(1) + " s";
       btn.disabled = false; btn.classList.remove("going"); lbl.textContent = "Send"; form.reset(); $("#fbCount").textContent = "0"; show(true); window.scrollTo(0, 0);
     }
-    post(row).then(function(){ done(false); }, function(err){
-      if(!/HTTP (400|409|413|422)/.test(String(err && err.message))){ var q = load(); q.push(row); save(q); return done(true); }
-      done();
+    post(row).then(function(res){ done(false, res); }, function(){
+      var q = load(); q.push(row); save(q); done(true);
     });
   });
 })();</script>
