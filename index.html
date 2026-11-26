@@ -2483,6 +2483,61 @@ html.seen-resume .header-luke::after{display:none;}
 .quiet-credits .qc-us b{display:block;font-weight:700;color:rgba(28,18,20,.5);}
 .quiet-credits .qc-us span{display:block;}
 .hire-done .hire-credits-top{margin:14px auto 6px;}
+
+/* ---------- Leave Luke a note ---------- */
+.fb-status{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:700;letter-spacing:.04em;color:#1f8a4c;}
+.fb-status i{width:8px;height:8px;border-radius:50%;background:#22c55e;box-shadow:0 0 0 0 rgba(34,197,94,.55);animation:fbPulse 1.8s ease-out infinite;}
+@keyframes fbPulse{100%{box-shadow:0 0 0 8px rgba(34,197,94,0)}}
+.fb-card{display:flex;align-items:center;gap:16px;max-width:760px;margin:8px auto 28px;padding:18px 20px;
+  background:var(--white,#fff);border:1px solid var(--line,#e5ded4);border-radius:var(--r-l,16px);box-shadow:0 10px 28px rgba(43,5,8,.08);}
+.fb-face{width:56px;height:56px;box-shadow:0 0 0 2px var(--acc,#7d1426);}
+.fb-card-txt{flex:1;min-width:0;}
+.fb-card-txt h2{margin:2px 0 2px;font-size:22px;}
+.fb-card-txt p{margin:0;color:var(--soft,#6b6266);font-size:15px;}
+.fb-card-btn{flex:none;}
+@media (max-width:620px){.fb-card{flex-wrap:wrap;margin:8px 16px 24px;}.fb-card-txt{flex:1 1 calc(100% - 72px);}.fb-card-btn{width:100%;}}
+.fbx{max-width:560px;margin:8px auto 28px;background:var(--white,#fff);border:1px solid var(--line,#e5ded4);border-radius:18px;overflow:hidden;
+  box-shadow:0 18px 44px rgba(43,5,8,.10);}
+.fbx-head{display:flex;align-items:center;gap:12px;padding:14px 18px;background:linear-gradient(135deg,var(--acc,#7d1426),#4a0b17);color:#fffaf4;}
+.fbx-face{width:44px;height:44px;}
+.fbx-who{display:flex;flex-direction:column;line-height:1.3;}
+.fbx-who b{font-size:16px;}
+.fbx-head .fb-status{color:#b9f5cf;}
+.fbx-body{display:flex;flex-direction:column;padding:20px 18px 22px;}
+.fbx-body h1{margin:0;font-size:28px;line-height:1.15;}
+.fbx-hint{margin:6px 0 14px;color:var(--soft,#6b6266);}
+.fbx textarea,.fbx input{width:100%;box-sizing:border-box;padding:13px 14px;font:inherit;font-size:16px;}
+.fbx textarea{min-height:130px;resize:vertical;}
+.fbx-count{align-self:flex-end;font-size:12px;color:var(--soft,#6b6266);margin:4px 2px 0;font-variant-numeric:tabular-nums;}
+.fbx-label{font-size:14px;font-weight:700;margin:12px 0 6px;}
+.fbx-label span{font-weight:400;color:var(--soft,#6b6266);}
+.fbx-err{color:#b3261e;font-size:14px;margin:8px 0 0;}
+.fbx-send{margin-top:16px;width:100%;display:inline-flex;align-items:center;justify-content:center;gap:8px;}
+.fbx-send svg{width:18px;height:18px;transition:transform .3s;}
+.fbx-send:hover svg{transform:translate(3px,-3px);}
+.fbx-send.going svg{animation:fbFly .6s ease-in forwards;}
+@keyframes fbFly{to{transform:translate(40px,-30px);opacity:0}}
+.fbx-send[disabled]{opacity:.75;cursor:wait;}
+.fbx-flex{display:flex;gap:8px;align-items:flex-start;margin:14px 0 0;font-size:13px;line-height:1.45;color:var(--soft,#6b6266);}
+.fbx-flex svg{width:16px;height:16px;flex:none;margin-top:1px;color:#d4a017;}
+.fbx-done{align-items:center;text-align:center;padding-top:28px;}
+.fbx-done h2{margin:12px 0 16px;font-size:24px;}
+.fbx-check svg{width:72px;height:72px;}
+.fbx-check circle{fill:none;stroke:#22c55e;stroke-width:3;stroke-dasharray:151;stroke-dashoffset:151;}
+.fbx-check path{fill:none;stroke:#22c55e;stroke-width:4;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:40;stroke-dashoffset:40;}
+.fbx-check.in circle{animation:fbDraw .6s ease-out forwards;}
+.fbx-check.in path{animation:fbDraw .4s .45s ease-out forwards;}
+@keyframes fbDraw{to{stroke-dashoffset:0}}
+.fbx-receipt{list-style:none;margin:0 0 18px;padding:12px 14px;width:100%;box-sizing:border-box;background:var(--alt,#faf7f2);border:1px solid var(--line,#e5ded4);border-radius:12px;text-align:left;}
+.fbx-receipt li{display:flex;justify-content:space-between;gap:10px;padding:5px 0;font-size:14px;}
+.fbx-receipt li+li{border-top:1px dashed var(--line,#e5ded4);}
+.fbx-receipt b{color:#1f8a4c;font-variant-numeric:tabular-nums;}
+.fbx-done-btns{display:grid;grid-template-columns:1fr 1fr;gap:10px;width:100%;}
+.fbx-done-btns .btn{width:100%;min-width:0;}
+.fbx-done [data-step]{opacity:0;transform:translateY(6px);transition:opacity .35s,transform .35s;}
+.fbx-done [data-step].in{opacity:1;transform:none;}
+@media (prefers-reduced-motion:reduce){.fb-status i{animation:none;}.fbx-done [data-step]{transition:none;}.fbx-check.in circle,.fbx-check.in path{animation:none;stroke-dashoffset:0;}}
+.hire-done-btns{flex-wrap:wrap;}
 </style>
 </head>
 <body>
@@ -2573,6 +2628,15 @@ html.seen-resume .header-luke::after{display:none;}
 
 
 
+      <div class="fb-card reveal">
+        <span class="hl-face fb-face"><img alt="" data-luke-face></span>
+        <div class="fb-card-txt">
+          <span class="fb-status"><i aria-hidden="true"></i>Online</span>
+          <h2>Leave Luke a note</h2>
+          <p>Favourite part, ideas for Robin, or just say hi.</p>
+        </div>
+        <button type="button" class="btn fb-card-btn" data-feedback>Write a note &rarr;</button>
+      </div>
       <div class="home-end"></div>
       <p class="fine">Fictional examples for the expo. Robin designed by Luke Dimal for Pare Dating, a dating app for people over 40.</p>
       <p class="made-by" hidden>
@@ -2851,6 +2915,7 @@ html.seen-resume .header-luke::after{display:none;}
         <p class="socials"><a href="https://www.linkedin.com/in/luke-dimal-105457133/" target="_blank" rel="noopener" aria-label="Luke on LinkedIn"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="2" width="20" height="20" rx="4" fill="currentColor"/><path d="M7 10v7M7 7v.01M11 17v-7M11 13.2c0-2 1.2-3.2 2.8-3.2S16.5 11 16.5 13v4" stroke="#fff" stroke-width="2" stroke-linecap="round" fill="none"/></svg>LinkedIn</a><a href="https://www.instagram.com/lukes_maxing/" target="_blank" rel="noopener" aria-label="Luke on Instagram"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5" stroke="currentColor" stroke-width="2" fill="none"/><circle cx="12" cy="12" r="4" stroke="currentColor" stroke-width="2" fill="none"/><circle cx="17.2" cy="6.8" r="1.2" fill="currentColor"/></svg>Instagram</a></p>
         <div class="btn-row hire-done-btns">
           <a class="btn" id="lukeGrade" href="https://forms.gle/xrMetQxjRrob7h4b6" target="_blank" rel="noopener noreferrer">Grade our project</a>
+          <button type="button" class="btn ghost" data-feedback>Leave a note</button>
           <button type="button" class="btn ghost" id="hireHome">Back to home</button>
         </div>
       </div>
@@ -2859,6 +2924,44 @@ html.seen-resume .header-luke::after{display:none;}
 
 
 
+
+    <section class="view" id="view-feedback">
+      <button type="button" class="back-link" data-back>Back</button>
+      <div class="fbx">
+        <div class="fbx-head">
+          <span class="hl-face fbx-face"><img alt="" data-luke-face></span>
+          <div class="fbx-who">
+            <b>Luke A. Dimal</b>
+            <span class="fb-status"><i aria-hidden="true"></i>Online &middot; replies fast</span>
+          </div>
+        </div>
+        <form class="fbx-body" id="fbForm" novalidate>
+          <h1>Leave Luke a note</h1>
+          <p class="fbx-hint">Favourite part, ideas for Robin, or just say hi.</p>
+          <label class="sr-only" for="fbMsg">Your note</label>
+          <textarea id="fbMsg" maxlength="1500" rows="5" placeholder="Honestly, the part where..."></textarea>
+          <div class="fbx-count"><span id="fbCount">0</span> / 1500</div>
+          <label class="fbx-label" for="fbWho">Your email or LinkedIn <span>(if you want a reply)</span></label>
+          <input type="text" id="fbWho" maxlength="200" autocomplete="email" inputmode="email" placeholder="you@email.com or linkedin.com/in/you">
+          <p class="fbx-err" id="fbErr" role="alert" hidden></p>
+          <button type="submit" class="btn fbx-send" id="fbSend"><span>Send</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 11.5 21 3l-8.5 18-2.2-7.3z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg></button>
+          <p class="fbx-flex"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M13 2 4 14h7l-1 8 9-12h-7z" fill="currentColor"/></svg>Built, deployed and monitored by me. Your note hits my phone in under a second.</p>
+        </form>
+        <div class="fbx-body fbx-done" id="fbDone" hidden aria-live="polite">
+          <div class="fbx-check" data-step="0"><svg viewBox="0 0 52 52" aria-hidden="true"><circle cx="26" cy="26" r="24"/><path d="M15 27l7 7 15-16"/></svg></div>
+          <h2 data-step="1">Sent. Luke will see it right away.</h2>
+          <ul class="fbx-receipt" data-step="2">
+            <li><span>Saved to database</span><b>&#10003;</b></li>
+            <li><span>Pushed to Luke's phone</span><b>&#10003;</b></li>
+            <li><span>Delivery time</span><b id="fbMs">&lt; 1 s</b></li>
+          </ul>
+          <div class="fbx-done-btns" data-step="3">
+            <button type="button" class="btn ghost" id="fbAgain">Send another</button>
+            <button type="button" class="btn" data-back>Back to home</button>
+          </div>
+        </div>
+      </div>
+    </section>
 
     <section class="view" id="view-sidekicks">
       <button type="button" class="back-link" data-back>Back</button>
@@ -9394,6 +9497,70 @@ document.addEventListener("click", function(e){
       timer = setTimeout(function(){ if(!seen && done.classList.contains("on")) pill.hidden = false; }, 2500);
     }).observe(done, { attributes: true, attributeFilter: ["class"] });
   }
+})();</script>
+<script>/* Leave Luke a note: saved to Supabase (feedback table); a database trigger pings Luke's phone. Offline answers wait on the phone and retry. */
+(function(){
+  var CFG = window.PARE_LIVE || {};
+  var $ = function(x){ return document.querySelector(x); };
+  var form = $("#fbForm"); if(!form) return;
+  var KEY = "pareFeedbackQueue";
+  function load(){ try{ return JSON.parse(localStorage.getItem(KEY) || "[]"); }catch(e){ return []; } }
+  function save(q){ try{ localStorage.setItem(KEY, JSON.stringify(q)); }catch(e){} }
+  function post(row){
+    if(!CFG.supabaseUrl || !CFG.supabaseAnonKey) return Promise.reject(new Error("offline mode"));
+    var h = {"Content-Type": "application/json", "apikey": CFG.supabaseAnonKey, "Prefer": "return=minimal"};
+    if(/^eyJ/.test(CFG.supabaseAnonKey)) h.Authorization = "Bearer " + CFG.supabaseAnonKey;
+    var ctl = ("AbortController" in window) ? new AbortController() : null;
+    var t = setTimeout(function(){ if(ctl) ctl.abort(); }, 8000);
+    return fetch(CFG.supabaseUrl.replace(/\/$/, "") + "/rest/v1/feedback", {method: "POST", headers: h, body: JSON.stringify(row), signal: ctl ? ctl.signal : undefined})
+      .then(function(r){ clearTimeout(t); if(!r.ok) throw new Error("HTTP " + r.status); }, function(e){ clearTimeout(t); throw e; });
+  }
+  var flushing = false;
+  function flush(){
+    var q = load(); if(!q.length || flushing) return;
+    flushing = true;
+    post(q[0]).then(function(){ var n = load(); n.shift(); save(n); flushing = false; flush(); },
+      function(e){ flushing = false; if(/HTTP (400|409|413|422)/.test(String(e && e.message))){ var n = load(); n.shift(); save(n); } });
+  }
+  setInterval(flush, 8000); window.addEventListener("online", flush); flush();
+
+  var timers = [];
+  function show(done){
+    form.hidden = done; var d = $("#fbDone"); d.hidden = !done;
+    timers.forEach(clearTimeout); timers = [];
+    var steps = d.querySelectorAll("[data-step]");
+    steps.forEach(function(x){ x.classList.remove("in"); });
+    if(done) steps.forEach(function(x){ timers.push(setTimeout(function(){ x.classList.add("in"); }, 100 + 420 * Number(x.dataset.step))); });
+  }
+  function openFeedback(){
+    show(false); $("#fbErr").hidden = true;
+    if(window.PareExpo && window.PareExpo.openView) window.PareExpo.openView("feedback");
+    var ov = document.getElementById("purpleOverlay"); if(ov) ov.classList.remove("on");
+  }
+  document.addEventListener("click", function(e){ if(e.target.closest("[data-feedback]")){ e.preventDefault(); openFeedback(); } });
+  $("#fbMsg").addEventListener("input", function(){ $("#fbCount").textContent = this.value.length; });
+  $("#fbAgain").addEventListener("click", function(){ show(false); $("#fbMsg").focus(); });
+  window.PareExpo = window.PareExpo || {}; window.PareExpo.openFeedback = openFeedback;
+
+  form.addEventListener("submit", function(e){
+    e.preventDefault();
+    var row = { message: $("#fbMsg").value.trim().slice(0, 1500), contact: $("#fbWho").value.trim().slice(0, 200) };
+    if(!row.message){ var er = $("#fbErr"); er.textContent = "Write a quick note first."; er.hidden = false; $("#fbMsg").focus(); return; }
+    $("#fbErr").hidden = true;
+    var btn = $("#fbSend"), lbl = btn.querySelector("span"), t0 = Date.now();
+    btn.disabled = true; btn.classList.add("going"); lbl.textContent = "Sending...";
+    function done(queued){
+      var ms = Math.max(120, Date.now() - t0), li = $("#fbDone").querySelectorAll(".fbx-receipt li");
+      li[0].innerHTML = queued ? "<span>Saved on this phone</span><b>&#10003;</b>" : "<span>Saved to database</span><b>&#10003;</b>";
+      li[1].innerHTML = queued ? "<span>Sends when you're back online</span><b>&#8987;</b>" : "<span>Pushed to Luke's phone</span><b>&#10003;</b>";
+      $("#fbMs").textContent = ms < 1000 ? ms + " ms" : (ms / 1000).toFixed(1) + " s";
+      btn.disabled = false; btn.classList.remove("going"); lbl.textContent = "Send"; form.reset(); $("#fbCount").textContent = "0"; show(true); window.scrollTo(0, 0);
+    }
+    post(row).then(function(){ done(false); }, function(err){
+      if(!/HTTP (400|409|413|422)/.test(String(err && err.message))){ var q = load(); q.push(row); save(q); return done(true); }
+      done();
+    });
+  });
 })();</script>
 </body>
 </html>
