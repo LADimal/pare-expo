@@ -53,3 +53,12 @@ Every chat message goes through Pare's screening on the phone before the AI sees
 - The AI's reply is checked again before it is shown. Anything odd is swapped for a built-in reply.
 
 Tests: Luke's 51 text seed cases from Appendix A, plus 86 trick messages, run in a phone-sized browser.
+
+## Feedback terminal (phone notifications)
+
+Visitors can send feedback from the home page or the thank-you page. Each message is saved in the `feedback` table and pushed to your phone through the free ntfy app.
+
+1. Install **ntfy** (App Store or Google Play), tap **+**, and subscribe to your private topic name.
+2. Open `supabase/feedback.sql`, put the same topic name on the line marked `TOPIC`, paste it into Supabase > SQL Editor and press **Run**.
+
+Keep the topic name private: anyone who knows it can read the pings. Read all feedback in Table Editor > feedback.
