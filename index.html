@@ -5022,6 +5022,8 @@ textarea:focus,.chat-form input:focus,.live-box textarea:focus{border-color:var(
     const p = purpleVideo.play();
     if(p && typeof p.then === "function"){
       p.then(() => {
+        // The real clip may already have taken over (it was preloaded); leave it alone.
+        if(purpleMode === "clip" && purpleOn) return;
         purpleVideo.pause();
         purpleVideo.currentTime = 0;
         purpleVideo.muted = wasMuted;
@@ -6101,36 +6103,60 @@ textarea:focus,.chat-form input:focus,.live-box textarea:focus{border-color:var(
     });
   }
 
-  // The clip is fetched whole into memory before it plays, so it never
-  // stalls mid-scene on a phone connection. The fetch starts early (idle
-  // after load, or as soon as a Meet Luke button is touched) and the
-  // ripple covers whatever is left.
-  const CLIP_WAIT_MS = 6000;
-  let clipBlobUrl = null, clipFetchP = null, clipFetchFailed = false;
+  // The clip buffers in the video element itself before it plays, so it
+  // never stalls mid-scene on a phone connection. Buffering starts early
+  // (idle after load, or as soon as a Meet Luke button is touched) and the
+  // ripple covers whatever is left. One download, reused for replays.
+  const CLIP_WAIT_MS = 5000;
+  let clipPreloading = false;
+
+  function clipLoadedHere(){
+    return purpleVideo.getAttribute("src") === CLIP_FILES[0] && !purpleVideo.error;
+  }
 
   function prefetchClip(){
-    if(clipBlobUrl) return Promise.resolve(clipBlobUrl);
-    if(clipFetchP) return clipFetchP;
-    if(clipFetchFailed || !window.fetch || !window.URL || !URL.createObjectURL) return Promise.resolve(null);
-    clipFetchP = fetch(CLIP_FILES[0]).then((r) => {
-      if(!r.ok) throw new Error("clip " + r.status);
-      return r.blob();
-    }).then((b) => {
-      const blob = /^video\//.test(b.type) ? b : new Blob([b], { type: "video/mp4" });
-      clipBlobUrl = URL.createObjectURL(blob);
-      return clipBlobUrl;
-    }).catch(() => {
-      clipFetchFailed = true;
-      clipFetchP = null;
-      return null;
+    if(!purpleVideo || clipPreloading || window.PARE_EMBEDDED_CLIP_URL) return;
+    if(clipLoadedHere()) return;
+    clipPreloading = true;
+    bindClipHandlers();
+    try{
+      purpleVideo.preload = "auto";
+      purpleVideo.src = CLIP_FILES[0];
+      purpleVideo.load();
+    }catch(e){}
+  }
+
+  // Resolves once the preloaded clip has enough data to play through, or
+  // after CLIP_WAIT_MS with whatever it has (true if it can at least start).
+  function waitForPreloadedClip(){
+    return new Promise((resolve) => {
+      if(purpleVideo.readyState >= 4) return resolve(true);
+      let t = 0;
+      const fin = () => {
+        clearTimeout(t);
+        purpleVideo.removeEventListener("canplaythrough", fin);
+        purpleVideo.removeEventListener("error", fin);
+        resolve(clipLoadedHere() && purpleVideo.readyState >= 1);
+      };
+      purpleVideo.addEventListener("canplaythrough", fin);
+      purpleVideo.addEventListener("error", fin);
+      t = setTimeout(fin, CLIP_WAIT_MS);
     });
-    return clipFetchP;
   }
 
   function probeClip(){
     bindClipHandlers();
-    const capped = Promise.race([prefetchClip(), new Promise((r) => setTimeout(() => r(null), CLIP_WAIT_MS))]);
-    return capped.then((blobUrl) => new Promise((resolve) => {
+    if(clipLoadedHere()){
+      return waitForPreloadedClip().then((ok) => {
+        if(ok){ if(window.PareExpo) window.PareExpo.clipSource = "preloaded"; return true; }
+        return loadClipFresh();
+      });
+    }
+    return loadClipFresh();
+  }
+
+  function loadClipFresh(){
+    return new Promise((resolve) => {
       let i = 0;
       let settled = false;
       let timer = 0;
@@ -6140,7 +6166,6 @@ textarea:focus,.chat-form input:focus,.live-box textarea:focus{border-color:var(
         clearTimeout(timer);
         purpleVideo.onerror = null;
         purpleVideo.onloadedmetadata = null;
-        purpleVideo.oncanplaythrough = null;
         if(!ok){
           try{
             purpleVideo.removeAttribute("src");
@@ -6153,7 +6178,6 @@ textarea:focus,.chat-form input:focus,.live-box textarea:focus{border-color:var(
       function candidates(){
         const list = [];
         if(window.PARE_EMBEDDED_CLIP_URL) list.push([window.PARE_EMBEDDED_CLIP_URL, "embedded"]);
-        if(blobUrl) list.push([blobUrl, "memory"]);
         for(let k = 0; k < CLIP_FILES.length; k++) list.push([CLIP_FILES[k], "network"]);
         return list;
       }
@@ -6164,13 +6188,7 @@ textarea:focus,.chat-form input:focus,.live-box textarea:focus{border-color:var(
         clearTimeout(timer);
         timer = setTimeout(() => done(false), 1200);
         purpleVideo.onerror = () => tryNext();
-        purpleVideo.onloadedmetadata = () => {
-          // Let the first frames decode (and, when streaming, buffer) so
-          // playback starts smoothly instead of hitching on frame one.
-          clearTimeout(timer);
-          timer = setTimeout(() => done(true, how), how === "network" ? 2500 : 800);
-          purpleVideo.oncanplaythrough = () => done(true, how);
-        };
+        purpleVideo.onloadedmetadata = () => done(true, how);
         try{
           purpleVideo.preload = "auto";
           purpleVideo.src = name;
@@ -6180,7 +6198,7 @@ textarea:focus,.chat-form input:focus,.live-box textarea:focus{border-color:var(
         }
       }
       tryNext();
-    }));
+    });
   }
 
   (function warmClip(){
