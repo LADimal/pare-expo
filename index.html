@@ -2561,6 +2561,14 @@ html.ri-pre,html.ri-pre body{overflow:hidden;}
 html.ri-pre::after{content:"";position:fixed;inset:0;z-index:94;background:#120608;animation:riPreLift 0s linear 6s forwards;}
 @keyframes riPreLift{to{visibility:hidden;}}
 @media (prefers-reduced-motion:reduce){.header-luke::before,.fb-status i::before,.qp-opts span.on::before{animation:none;display:none;}}
+
+/* Gojo clip: shown while the real clip loads (there is no drawn fallback any more) */
+.purple-loading{position:absolute;z-index:6;left:50%;top:50%;transform:translate(-50%,-50%);display:flex;flex-direction:column;align-items:center;gap:14px;
+  color:rgba(255,255,255,.82);font-size:14px;font-weight:600;letter-spacing:.04em;pointer-events:none;}
+.purple-loading[hidden]{display:none !important;}
+.purple-loading i{width:38px;height:38px;border-radius:50%;border:3px solid rgba(167,139,250,.25);border-top-color:#a78bfa;animation:purpleSpin .9s linear infinite;}
+@keyframes purpleSpin{to{transform:rotate(360deg);}}
+@media (prefers-reduced-motion:reduce){.purple-loading i{animation-duration:2.4s;}}
 </style>
 </head>
 <body>
@@ -3148,6 +3156,7 @@ html.ri-pre::after{content:"";position:fixed;inset:0;z-index:94;background:#1206
   <canvas id="purpleBack" class="purple-back" aria-hidden="true"></canvas>
   <video id="purpleVideo" playsinline webkit-playsinline preload="auto"></video>
   <button type="button" class="purple-play" id="purplePlay" hidden>Tap to play</button>
+  <div class="purple-loading" id="purpleLoading" hidden aria-live="polite"><i aria-hidden="true"></i><span>Loading…</span></div>
   <div id="purpleFlash" class="purple-flash"></div>
   <div id="snapFx" class="snap-fx" aria-hidden="true"><i class="snap-dark"></i><i class="snap-ring"></i><i class="snap-ring r2"></i></div>
   <p class="purple-skip" id="purpleSkipHint">Tap the screen or press Esc to skip</p>
@@ -5226,6 +5235,20 @@ html.ri-pre::after{content:"";position:fixed;inset:0;z-index:94;background:#1206
   let cardTimer = 0;
   let purpleUnlocked = false;
 
+  function showPurpleLoading(on){
+    const el = document.getElementById("purpleLoading");
+    if(el) el.hidden = !on;
+  }
+
+  // No drawn stand-in: if the real clip can't play, go straight to the résumé.
+  function clipUnavailable(){
+    showPurpleLoading(false);
+    if(!purpleOn || lukeWrap.classList.contains("on")) return;
+    purpleMode = "none";
+    purpleOverlay.classList.remove("clip");
+    showLukeCard(true);
+  }
+
   function showPurplePlay(on){
     if(!purplePlay) return;
     purplePlay.hidden = !on;
@@ -5960,6 +5983,7 @@ html.ri-pre::after{content:"";position:fixed;inset:0;z-index:94;background:#1206
 
   function stopPurpleMedia(hideOverlay){
     showPurplePlay(false);
+    showPurpleLoading(false);
     stopGojoCropLoop();
     if(purpleRaf){
       cancelAnimationFrame(purpleRaf);
@@ -6313,10 +6337,7 @@ html.ri-pre::after{content:"";position:fixed;inset:0;z-index:94;background:#1206
       if(purpleVideo.currentTime >= CLIP_CUT_SECONDS) finishClip();
     });
     purpleVideo.addEventListener("error", () => {
-      if(purpleMode === "clip" && purpleOn && !lukeWrap.classList.contains("on")){
-        purpleOverlay.classList.remove("clip");
-        playCanvasAnimation();
-      }
+      if(purpleMode === "clip" && purpleOn && !lukeWrap.classList.contains("on")) clipUnavailable();
     });
   }
 
@@ -6325,14 +6346,20 @@ html.ri-pre::after{content:"";position:fixed;inset:0;z-index:94;background:#1206
   // (idle after load, or as soon as a Meet Luke button is touched) and the
   // ripple covers whatever is left. One download, reused for replays.
   const CLIP_WAIT_MS = 5000;
+  const CLIP_FRESH_MS = 8000;
   let clipPreloading = false;
 
+  // A retry adds "&retry=..." to the same file, so match on the start.
   function clipLoadedHere(){
-    return purpleVideo.getAttribute("src") === CLIP_FILES[0] && !purpleVideo.error;
+    const src = purpleVideo.getAttribute("src") || "";
+    return src.indexOf(CLIP_FILES[0]) === 0 && !purpleVideo.error;
   }
 
   function prefetchClip(){
-    if(!purpleVideo || clipPreloading || window.PARE_EMBEDDED_CLIP_URL) return;
+    if(!purpleVideo || window.PARE_EMBEDDED_CLIP_URL) return;
+    // A phone can drop the download while the page sits idle or in the
+    // background (the video then reports an error). Start it again.
+    if(clipPreloading && clipLoadedHere()) return;
     if(clipLoadedHere()) return;
     clipPreloading = true;
     bindClipHandlers();
@@ -6363,7 +6390,9 @@ html.ri-pre::after{content:"";position:fixed;inset:0;z-index:94;background:#1206
 
   function probeClip(){
     bindClipHandlers();
-    if(clipLoadedHere()){
+    // Already has its first frames: wait (up to CLIP_WAIT_MS) for enough to
+    // play through. Nothing usable yet (dropped while idle): load it again.
+    if(clipLoadedHere() && purpleVideo.readyState >= 1){
       return waitForPreloadedClip().then((ok) => {
         if(ok){ if(window.PareExpo) window.PareExpo.clipSource = "preloaded"; return true; }
         return loadClipFresh();
@@ -6396,6 +6425,8 @@ html.ri-pre::after{content:"";position:fixed;inset:0;z-index:94;background:#1206
         const list = [];
         if(window.PARE_EMBEDDED_CLIP_URL) list.push([window.PARE_EMBEDDED_CLIP_URL, "embedded"]);
         for(let k = 0; k < CLIP_FILES.length; k++) list.push([CLIP_FILES[k], "network"]);
+        // One retry that skips any half-finished copy the browser kept
+        list.push([CLIP_FILES[0] + (CLIP_FILES[0].indexOf("?") < 0 ? "?" : "&") + "retry=" + Date.now(), "retry"]);
         return list;
       }
       const srcs = candidates();
@@ -6403,7 +6434,8 @@ html.ri-pre::after{content:"";position:fixed;inset:0;z-index:94;background:#1206
         if(i >= srcs.length) return done(false);
         const [name, how] = srcs[i++];
         clearTimeout(timer);
-        timer = setTimeout(() => done(false), 1200);
+        // Phones on venue wifi or data can take a few seconds to answer
+        timer = setTimeout(() => tryNext(), CLIP_FRESH_MS);
         purpleVideo.onerror = () => tryNext();
         purpleVideo.onloadedmetadata = () => done(true, how);
         try{
@@ -6430,6 +6462,9 @@ html.ri-pre::after{content:"";position:fixed;inset:0;z-index:94;background:#1206
       prefetchClip();
     };
     const later = () => setTimeout(() => (window.requestIdleCallback ? requestIdleCallback(idle, { timeout: 3000 }) : idle()), 2500);
+    document.addEventListener("visibilitychange", () => {
+      if(document.visibilityState === "visible" && clipPreloading && !clipLoadedHere()) idle();
+    });
     if(document.readyState === "complete") later(); else window.addEventListener("load", later, { once: true });
   })();
 
@@ -6569,12 +6604,6 @@ html.ri-pre::after{content:"";position:fixed;inset:0;z-index:94;background:#1206
     };
     armCut();
     watchSnap();
-    const fallbackCanvas = () => {
-      if(purpleOn && purpleMode === "clip"){
-        purpleOverlay.classList.remove("clip");
-        playCanvasAnimation();
-      }
-    };
     const start = purpleVideo.play();
     if(start && typeof start.then === "function"){
       start.then(() => {
@@ -6626,18 +6655,18 @@ html.ri-pre::after{content:"";position:fixed;inset:0;z-index:94;background:#1206
 
     const afterRipple = (rippleState) => {
       if(!purpleOn || rippleState === "skipped" || lukeWrap.classList.contains("on")) return "aborted";
-      if(opts.forceCanvas){
-        playCanvasAnimation();
-        return "canvas";
-      }
+      // Waiting for the real clip: a small spinner if it takes a moment
+      const loadTimer = setTimeout(() => { if(purpleOn && !lukeWrap.classList.contains("on")) showPurpleLoading(true); }, 350);
       return probeClip().then((ok) => {
-        if(!purpleOn) return "aborted";
+        clearTimeout(loadTimer);
+        showPurpleLoading(false);
+        if(!purpleOn || lukeWrap.classList.contains("on")) return "aborted";
         if(ok){
           playClip();
           return "clip";
         }
-        playCanvasAnimation();
-        return "canvas";
+        clipUnavailable();
+        return "none";
       });
     };
 
