@@ -2632,10 +2632,10 @@ html.seen-resume .header-luke::after{display:none;}
         <span class="hl-face fb-face"><img alt="" data-luke-face></span>
         <div class="fb-card-txt">
           <span class="fb-status"><i aria-hidden="true"></i>Online</span>
-          <h2>Leave Luke a note</h2>
+          <h2>Got feedback? I can take it.</h2>
           <p>Favourite part, ideas for Robin, or just say hi.</p>
         </div>
-        <button type="button" class="btn fb-card-btn" data-feedback>Write a note &rarr;</button>
+        <button type="button" class="btn fb-card-btn" data-feedback>Give feedback &rarr;</button>
       </div>
       <div class="home-end"></div>
       <p class="fine">Fictional examples for the expo. Robin designed by Luke Dimal for Pare Dating, a dating app for people over 40.</p>
@@ -2915,7 +2915,7 @@ html.seen-resume .header-luke::after{display:none;}
         <p class="socials"><a href="https://www.linkedin.com/in/luke-dimal-105457133/" target="_blank" rel="noopener" aria-label="Luke on LinkedIn"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="2" width="20" height="20" rx="4" fill="currentColor"/><path d="M7 10v7M7 7v.01M11 17v-7M11 13.2c0-2 1.2-3.2 2.8-3.2S16.5 11 16.5 13v4" stroke="#fff" stroke-width="2" stroke-linecap="round" fill="none"/></svg>LinkedIn</a><a href="https://www.instagram.com/lukes_maxing/" target="_blank" rel="noopener" aria-label="Luke on Instagram"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5" stroke="currentColor" stroke-width="2" fill="none"/><circle cx="12" cy="12" r="4" stroke="currentColor" stroke-width="2" fill="none"/><circle cx="17.2" cy="6.8" r="1.2" fill="currentColor"/></svg>Instagram</a></p>
         <div class="btn-row hire-done-btns">
           <a class="btn" id="lukeGrade" href="https://forms.gle/xrMetQxjRrob7h4b6" target="_blank" rel="noopener noreferrer">Grade our project</a>
-          <button type="button" class="btn ghost" data-feedback>Leave a note</button>
+          <button type="button" class="btn ghost" data-feedback>Give feedback</button>
           <button type="button" class="btn ghost" id="hireHome">Back to home</button>
         </div>
       </div>
@@ -2936,9 +2936,9 @@ html.seen-resume .header-luke::after{display:none;}
           </div>
         </div>
         <form class="fbx-body" id="fbForm" novalidate>
-          <h1>Leave Luke a note</h1>
+          <h1>Got feedback? I can take it.</h1>
           <p class="fbx-hint">Favourite part, ideas for Robin, or just say hi.</p>
-          <label class="sr-only" for="fbMsg">Your note</label>
+          <label class="sr-only" for="fbMsg">Your feedback</label>
           <textarea id="fbMsg" maxlength="1500" rows="5" placeholder="Honestly, the part where..."></textarea>
           <div class="fbx-count"><span id="fbCount">0</span> / 1500</div>
           <label class="fbx-label" for="fbWho">Want a reply? <span>(optional)</span></label>
@@ -9545,7 +9545,7 @@ document.addEventListener("click", function(e){
   form.addEventListener("submit", function(e){
     e.preventDefault();
     var row = { message: $("#fbMsg").value.trim().slice(0, 1500), contact: $("#fbWho").value.trim().slice(0, 200) };
-    if(!row.message){ var er = $("#fbErr"); er.textContent = "Write a quick note first."; er.hidden = false; $("#fbMsg").focus(); return; }
+    if(!row.message){ var er = $("#fbErr"); er.textContent = "Write your feedback first."; er.hidden = false; $("#fbMsg").focus(); return; }
     $("#fbErr").hidden = true;
     var btn = $("#fbSend"), lbl = btn.querySelector("span"), t0 = Date.now();
     btn.disabled = true; btn.classList.add("going"); lbl.textContent = "Sending...";
