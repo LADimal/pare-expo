@@ -2440,12 +2440,32 @@ html.seen-resume .header-luke::after{display:none;}
 @media (max-width:360px){.hlk-txt small{display:none;}}
 /* Credits: "inspired by" label and the official sponsor */
 .quiet-credits .qc-insp{font-style:italic;margin-top:-3px;margin-bottom:8px;}
-.quiet-credits .qc-sponsor{margin:18px auto 6px;padding:10px 12px 8px;max-width:280px;border:1px solid rgba(212,175,55,.55);border-radius:10px;background:rgba(212,175,55,.07);}
+.quiet-credits .qc-sponsor{margin:4px auto 6px;padding:10px 12px 8px;max-width:280px;border:1px solid rgba(212,175,55,.55);border-radius:10px;background:rgba(212,175,55,.07);}
 .quiet-credits .qc-sponsor .qc-head{margin-top:0;color:rgba(150,112,20,.8);}
 .quiet-credits .qc-sponsor .qc-sp-name{font-size:16px;font-weight:700;color:rgba(28,18,20,.78);margin-bottom:2px;}
 .quiet-credits .qc-sponsor .qc-sp-role{color:rgba(28,18,20,.55);}
 .luke-card .quiet-credits .qc-sponsor p.qc-sp-name{font-size:16px !important;color:rgba(28,18,20,.78) !important;}
 .luke-card .quiet-credits .qc-sponsor p.qc-sp-role{color:rgba(28,18,20,.55) !important;}
+
+/* ---------- Robin reacts live: tidy layout ---------- */
+#view-live .live-box textarea{min-height:96px;font-size:17px;}
+.live-actions{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:12px 0 4px;}
+.live-actions .btn{width:100%;min-width:0;padding-left:10px;padding-right:10px;white-space:nowrap;}
+#liveTalk{display:inline-flex;align-items:center;justify-content:center;gap:7px;}
+#liveTalk svg{width:18px;height:18px;flex:none;}
+.ex-head{display:flex;align-items:baseline;justify-content:space-between;gap:10px;margin:16px 0 8px;padding-top:14px;border-top:1px solid var(--line,#e5ded4);}
+.ex-head .chip-hint{margin:0;}
+.ex-surprise{background:none;border:0;padding:4px 0;font:inherit;font-size:14px;font-weight:700;color:var(--acc,#7d1426);cursor:pointer;}
+#view-live .chip-row{overflow:visible;-webkit-mask-image:none;mask-image:none;margin:0;}
+#view-live .chips{display:grid !important;grid-template-columns:1fr 1fr;gap:8px;padding:0 !important;flex-wrap:wrap;}
+#view-live .chips .chip{white-space:normal !important;max-width:none;width:100%;min-height:44px;padding:9px 12px;border-radius:12px;
+  font-size:14px;line-height:1.25;text-align:left;background:var(--alt,#faf7f2);display:flex;align-items:center;}
+#view-live .chips .chip:nth-child(n+7){display:none;}
+#view-live .chips.all .chip:nth-child(n+7){display:flex;}
+.ex-more{display:block;margin:10px auto 0;background:none;border:0;padding:6px 10px;font:inherit;font-size:14px;font-weight:600;color:var(--soft,#6b6266);
+  text-decoration:underline;text-underline-offset:3px;cursor:pointer;}
+#view-live .demo-note{text-align:center;margin-top:8px;}
+@media (min-width:981px){#view-live .chips{grid-template-columns:1fr 1fr 1fr;}#view-live .chips .chip:nth-child(n+7){display:none;}#view-live .chips.all .chip:nth-child(n+7){display:flex;}}
 </style>
 </head>
 <body>
@@ -2620,15 +2640,19 @@ html.seen-resume .header-luke::after{display:none;}
           <label for="liveInput" class="sr-only">A message to check</label>
           <textarea id="liveInput" placeholder="e.g. Can you send me a gift card?" maxlength="500"></textarea>
           <div class="live-count" id="liveCount" aria-live="polite">0 / 500</div>
-                    <p class="chip-hint">Or tap one</p>
+          <div class="live-actions">
+            <button type="button" class="btn" id="liveCheck">Check message</button>
+            <button type="button" class="btn ghost" id="liveTalk"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16v11H9l-5 4z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>Talk to Robin</button>
+          </div>
+          <div class="ex-head">
+            <p class="chip-hint">Or try an example</p>
+            <button type="button" class="ex-surprise" id="liveSurprise">&#127922; Surprise me</button>
+          </div>
           <div class="chip-row">
             <div class="chips" id="liveChips"></div>
           </div>
-          <div class="btn-row">
-            <button type="button" class="btn" id="liveCheck">Check message</button>
-            <button type="button" class="btn ghost" id="liveSurprise">Surprise me</button>
-          </div>
-          <p class="demo-note">Demo rules, not Pare's live screener.</p>
+          <button type="button" class="ex-more" id="liveMore" aria-expanded="false">More examples</button>
+          <p class="demo-note">Demo rules, not Pare Dating's live screener.</p>
         </div>
         <div class="panel live-out is-empty" id="liveOut">
           <div id="liveResult" data-state="empty" aria-live="polite"></div>
@@ -4948,8 +4972,10 @@ html.seen-resume .header-luke::after{display:none;}
       shuffled[j] = shuffled[k];
       shuffled[k] = tmp;
     }
-    renderChipRow(shuffled);
     const picked = LIVE_CHIPS[i];
+    shuffled.splice(shuffled.indexOf(picked), 1);
+    shuffled.unshift(picked);
+    renderChipRow(shuffled);
     const el = $$("#liveChips .chip").find((c) => c.textContent === picked.label);
     applyExample(picked, el);
   }
@@ -4985,6 +5011,12 @@ html.seen-resume .header-luke::after{display:none;}
   $("#liveInput").addEventListener("paste", () => setTimeout(updateLiveCount, 0));
   if($("#liveAgain")) $("#liveAgain").addEventListener("click", tryAnother);
   if($("#liveSurprise")) $("#liveSurprise").addEventListener("click", surpriseLive);
+  if($("#liveTalk")) $("#liveTalk").addEventListener("click", function(){ openChatWithMessage($("#liveInput").value); });
+  if($("#liveMore")) $("#liveMore").addEventListener("click", function(){
+    const w = $("#liveChips"), all = w.classList.toggle("all");
+    this.textContent = all ? "Fewer examples" : "More examples";
+    this.setAttribute("aria-expanded", all ? "true" : "false");
+  });
   if($("#liveHintChat")) $("#liveHintChat").addEventListener("click", function(){ openChatWithMessage(""); });
   renderChipRow();
   updateLiveCount();
@@ -8950,6 +8982,12 @@ document.addEventListener("click", function(e){
 <template id="qcTpl">
           <div class="qc-mask" role="region" aria-label="Credits. Scroll to look back; the roll pauses while you scroll.">
             <div class="qc-roll">
+              <div class="qc-sponsor">
+                <p class="qc-head">official project sponsor</p>
+                <p class="qc-line qc-sp-name">Emma Irvine</p>
+                <p class="qc-line qc-sp-role">CEO, Pare Dating</p>
+                <p class="qc-note">For backing Robin from day one.</p>
+              </div>
               <p class="qc-head">easter eggs</p>
               <p class="qc-note qc-insp">inspired by</p>
               <div class="qc-row">
@@ -8975,12 +9013,6 @@ document.addEventListener("click", function(e){
                 <span class="qc-role">Gojo</span>
                 <span class="qc-name">Richard</span>
                 <span class="qc-blurb">Domain Expansion: Leg Day.</span>
-              </div>
-              <div class="qc-sponsor">
-                <p class="qc-head">official project sponsor</p>
-                <p class="qc-line qc-sp-name">Emma Irvine</p>
-                <p class="qc-line qc-sp-role">CEO, Pare Dating</p>
-                <p class="qc-note">For backing Robin from day one.</p>
               </div>
               <p class="qc-head">unofficial sponsors</p>
               <p class="qc-line">Pre-workout, scoop still in the tub</p>
