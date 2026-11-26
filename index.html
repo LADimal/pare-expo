@@ -2466,6 +2466,19 @@ html.seen-resume .header-luke::after{display:none;}
   text-decoration:underline;text-underline-offset:3px;cursor:pointer;}
 #view-live .demo-note{text-align:center;margin-top:8px;}
 @media (min-width:981px){#view-live .chips{grid-template-columns:1fr 1fr 1fr;}#view-live .chips .chip:nth-child(n+7){display:none;}#view-live .chips.all .chip:nth-child(n+7){display:flex;}}
+
+/* Thank-you page: nudge people down to the credits */
+.credits-nudge{display:flex;flex-direction:column;align-items:center;gap:2px;margin:18px auto 0;padding:10px 18px 6px;background:none;border:0;cursor:pointer;font:inherit;color:var(--ink,#1c1214);}
+.credits-nudge .cn-top{font-size:15px;font-weight:700;}
+.credits-nudge .cn-sub{font-size:12.5px;color:var(--soft,#6b6266);}
+.credits-nudge .cn-arrow{font-size:20px;line-height:1;color:var(--acc,#7d1426);animation:cnBob 1.4s ease-in-out infinite;margin-top:2px;}
+@keyframes cnBob{0%,100%{transform:translateY(0)}50%{transform:translateY(5px)}}
+@media (prefers-reduced-motion:reduce){.credits-nudge .cn-arrow{animation:none;}}
+.credits-pill{position:fixed;left:50%;bottom:calc(18px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);z-index:40;
+  padding:10px 18px;border:0;border-radius:999px;background:var(--ink,#1c1214);color:#fff;font:inherit;font-size:14px;font-weight:700;
+  box-shadow:0 8px 22px rgba(0,0,0,.25);cursor:pointer;animation:cpIn .35s ease both;}
+.credits-pill[hidden]{display:none;}
+@keyframes cpIn{from{opacity:0;transform:translate(-50%,12px)}to{opacity:1;transform:translate(-50%,0)}}
 </style>
 </head>
 <body>
@@ -2835,7 +2848,11 @@ html.seen-resume .header-luke::after{display:none;}
           <a class="btn" id="lukeGrade" href="https://forms.gle/xrMetQxjRrob7h4b6" target="_blank" rel="noopener noreferrer">Grade our project</a>
           <button type="button" class="btn ghost" id="hireHome">Back to home</button>
         </div>
-        <p class="luke-grade-hint">Remember your A00# in Other Comments.</p>
+        <button type="button" class="credits-nudge" id="creditsNudge" aria-controls="quietCredits">
+          <span class="cn-top">&#127916; Stay for the credits</span>
+          <span class="cn-sub">Starring Emma, Ken, Vincent and Richard</span>
+          <span class="cn-arrow" aria-hidden="true">&darr;</span>
+        </button>
 
         <div class="quiet-credits" id="quietCredits" data-credits></div>
       </div>
@@ -9012,7 +9029,7 @@ document.addEventListener("click", function(e){
                 <img class="qc-thumb" data-src="credits/weakhero-sm.webp?v=1" alt="" width="32" height="32" decoding="async">
                 <span class="qc-role">Weak Hero</span>
                 <span class="qc-name">Vincent</span>
-                <span class="qc-blurb">Cold, but black to the core.</span>
+                <span class="qc-blurb">Looks innocent, but black to the core.</span>
               </div>
               <div class="qc-row">
                 <img class="qc-thumb" data-src="credits/gojo-sm.webp?v=1" alt="" width="32" height="32" decoding="async">
@@ -9349,6 +9366,36 @@ document.addEventListener("click", function(e){
   function seen(){ document.documentElement.classList.add("seen-resume"); }
   try { if(localStorage.getItem("pareSeenResume") === "1") seen(); } catch(e){}
   document.addEventListener("pare-resume-seen", seen);
+})();</script>
+<script>/* "Stay for the credits" scrolls the roll into view */
+(function(){
+  var b = document.getElementById("creditsNudge");
+  if(!b) return;
+  var c = document.getElementById("quietCredits"), done = document.getElementById("hireDone");
+  function go(){ if(c) c.scrollIntoView({ behavior: "smooth", block: "center" }); }
+  b.addEventListener("click", go);
+  /* Floating pill: shows a moment after the thank-you page opens, until the credits are on screen */
+  var pill = document.createElement("button");
+  pill.type = "button"; pill.className = "credits-pill"; pill.hidden = true;
+  pill.innerHTML = "&#127916; Credits &darr;";
+  pill.addEventListener("click", function(){ pill.hidden = true; go(); });
+  document.body.appendChild(pill);
+  var seen = false, timer = 0, wasOn = false;
+  if(c && "IntersectionObserver" in window){
+    new IntersectionObserver(function(es){
+      es.forEach(function(e){ if(e.isIntersecting){ seen = true; pill.hidden = true; } });
+    }, { threshold: 0.3 }).observe(c);
+  }
+  if(done && "MutationObserver" in window){
+    new MutationObserver(function(){
+      var on = done.classList.contains("on");
+      if(on === wasOn) return;
+      wasOn = on;
+      clearTimeout(timer);
+      if(!on){ pill.hidden = true; seen = false; return; }
+      timer = setTimeout(function(){ if(!seen && done.classList.contains("on")) pill.hidden = false; }, 2500);
+    }).observe(done, { attributes: true, attributeFilter: ["class"] });
+  }
 })();</script>
 </body>
 </html>
