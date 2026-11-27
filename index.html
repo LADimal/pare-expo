@@ -2645,6 +2645,17 @@ html.ri-pre::after{content:"";position:fixed;inset:0;z-index:94;background:#1206
 
 /* credits: a role that wraps to two lines spans both rows, so the blurb stays right under the name */
 .quiet-credits .qc-role{grid-row:1 / span 2;}
+
+/* Thank-you beat drop: the hits peak sooner, so they land on the beat you hear */
+@keyframes hpThud{0%{opacity:0;transform:scale(1.35)}28%{opacity:1;transform:scale(.96)}100%{opacity:1;transform:scale(1)}}
+@keyframes hpAttitude{
+  0%{transform:rotate(6deg) translateY(0) scaleX(1);}
+  12%{transform:rotate(-14deg) translateY(-16px) scaleX(-1);}
+  40%{transform:rotate(4deg) translateY(0) scaleX(-1);}
+  62%{transform:rotate(-3deg) translateY(-6px) scaleX(-1);}
+  100%{transform:rotate(-6deg) translateY(0) scaleX(-1);}
+}
+@keyframes hpSnap{0%{transform:rotate(-2deg) scale(1)}20%{transform:rotate(1deg) scale(1.05)}100%{transform:rotate(-2deg) scale(1)}}
 </style>
 </head>
 <body>
@@ -7602,6 +7613,9 @@ html.ri-pre::after{content:"";position:fixed;inset:0;z-index:94;background:#1206
   const hcMus = $("#hireClipMusic");
   const hcBtn = $("#hireClipSound");
   const HC_DROP = 1.0;
+  /* The page hits land a hair early so the flash and thud read as on the beat */
+  const HC_LEAD = .05;
+  let hcHeld = false;
   let hcRaf = 0, hcDropped = false, hcLoud = false, hcLoops = 0, hcWatch = 0, hcClipDone = false, hcAway = null;
   function hcWarm(){
     [hcVid, hcMus].forEach((m) => {
@@ -7632,15 +7646,41 @@ html.ri-pre::after{content:"";position:fixed;inset:0;z-index:94;background:#1206
     }
     spawnConfetti();
   }
+  function hcMusOn(){ return !!(hcLoud && hcMus && !hcMus.paused); }
   function hcTick(){
     hcRaf = 0;
     if(!hireDoneOn || !hcVid) return;
-    if(!hcDropped && hcVid.currentTime >= HC_DROP) hcDrop();
-    /* Keep the music on the picture while the clip runs */
-    if(hcLoud && hcMus && !hcClipDone && !hcVid.paused && !hcMus.paused && Math.abs(hcMus.currentTime - hcVid.currentTime) > .15){
-      try { hcMus.currentTime = hcVid.currentTime; } catch(e){}
+    const musOn = hcMusOn();
+    /* With sound, the music is the clock: the drop fires on what you hear,
+       and the picture is nudged to follow it (never the other way round) */
+    if(musOn && !hcClipDone && !hcVid.paused){
+      const d = hcMus.currentTime - hcVid.currentTime;
+      if(Math.abs(d) > .25){ try { hcVid.currentTime = hcMus.currentTime; } catch(e){} hcVid.playbackRate = 1; }
+      else hcVid.playbackRate = Math.max(.9, Math.min(1.1, 1 + d * .8));
+    } else if(hcVid.playbackRate !== 1) hcVid.playbackRate = 1;
+    if(!hcDropped){
+      const t = hcLoud ? (musOn ? hcMus.currentTime : -1) : hcVid.currentTime;
+      if(t >= HC_DROP - HC_LEAD) hcDrop();
     }
-    if(!hcVid.paused) hcRaf = requestAnimationFrame(hcTick);
+    if(!hcVid.paused || musOn) hcRaf = requestAnimationFrame(hcTick);
+  }
+  function hcStartVid(at){
+    if(!hcVid || !hireDoneOn) return;
+    hcHeld = false;
+    try { if(at != null) hcVid.currentTime = at; } catch(e){}
+    let pr;
+    try { pr = hcVid.play(); } catch(e){ pr = null; }
+    const go = () => { if(!hcRaf) hcRaf = requestAnimationFrame(hcTick); };
+    if(pr && pr.then) pr.then(go).catch(() => { if(hireDoneOn && !hcLoud) hcSettle(); else go(); });
+    else go();
+  }
+  function hcGoSilent(){
+    /* Sound could not start in time: carry on without it, clip-driven */
+    hcMusicOff();
+    hcLabel();
+    if(hcVid && hcVid.paused && !hcClipDone) hcStartVid(null);
+    if(hcWatch) clearTimeout(hcWatch);
+    hcWatch = setTimeout(() => { hcWatch = 0; if(hireDoneOn && !hcDropped && hcVid.currentTime < .05) hcDrop(); }, 1600);
   }
   function hcSettle(){
     /* Clip done: the turn hands over to Luke's photo, the music carries on */
@@ -7662,7 +7702,7 @@ html.ri-pre::after{content:"";position:fixed;inset:0;z-index:94;background:#1206
     hcMusicOff();
     hireDone.classList.remove("clip-on", "pre-drop", "drop", "hp-shake");
     if(hcBtn) hcBtn.hidden = true;
-    hcDropped = false; hcLoops = 0; hcClipDone = false; hcAway = null;
+    hcDropped = false; hcLoops = 0; hcClipDone = false; hcAway = null; hcHeld = false;
   }
   function hcPlay(loud){
     if(!hcVid) return false;
@@ -7670,25 +7710,30 @@ html.ri-pre::after{content:"";position:fixed;inset:0;z-index:94;background:#1206
     hcClipDone = false;
     hcLoops = 0;
     hcVid.muted = true;
-    try { hcVid.currentTime = 0; } catch(e){}
+    try { hcVid.pause(); hcVid.currentTime = 0; hcVid.playbackRate = 1; } catch(e){}
     hireDone.classList.add("clip-on");
-    const go = () => { if(!hcRaf) hcRaf = requestAnimationFrame(hcTick); };
-    let pr;
-    try { pr = hcVid.play(); } catch(e){ pr = null; }
-    if(pr && pr.then) pr.then(go).catch(() => { if(hireDoneOn) hcSettle(); });
-    else go();
     hcMusicOff();
+    if(hcWatch) clearTimeout(hcWatch);
+    hcWatch = 0;
     if(loud && hcMus){
-      /* Started inside the tap, so phones allow it */
+      /* Started inside the tap, so phones allow it. The picture waits for the
+         music to actually play, so a slow download can't put them out of step. */
       hcLoud = true;
+      hcHeld = true;
       try { hcMus.currentTime = 0; } catch(e){}
       let mp;
       try { mp = hcMus.play(); } catch(e){ mp = null; }
-      if(mp && mp.then) mp.then(hcLabel).catch(() => { hcLoud = false; hcLabel(); });
+      if(mp && mp.then) mp.then(() => { if(!hireDoneOn || !hcLoud) return; if(hcWatch){ clearTimeout(hcWatch); hcWatch = 0; } hcStartVid(hcMus.currentTime); hcLabel(); })
+        .catch(() => { hcLoud = false; if(hireDoneOn) hcGoSilent(); });
+      else hcStartVid(0);
+      /* Never leave the page waiting on music that won't start */
+      hcWatch = setTimeout(() => { hcWatch = 0; if(hireDoneOn && hcLoud && hcMus.currentTime < .05) hcGoSilent(); }, 3000);
+      hcLabel();
+      return true;
     }
+    hcStartVid(0);
     hcLabel();
     /* Never leave the page waiting on a clip that won't start */
-    if(hcWatch) clearTimeout(hcWatch);
     hcWatch = setTimeout(() => { hcWatch = 0; if(hireDoneOn && !hcDropped && hcVid.currentTime < .05) hcDrop(); }, 1600);
     return true;
   }
@@ -7705,7 +7750,17 @@ html.ri-pre::after{content:"";position:fixed;inset:0;z-index:94;background:#1206
   if(hcMus){
     hcMus.addEventListener("ended", () => { hcLoud = false; if(hireDoneOn) hcLabel(); });
     hcMus.addEventListener("pause", () => { if(hireDoneOn && !hcAway) hcLabel(); });
-    hcMus.addEventListener("playing", () => { if(hireDoneOn) hcLabel(); });
+    hcMus.addEventListener("playing", () => {
+      if(!hireDoneOn) return;
+      hcLabel();
+      /* Music caught up after buffering: bring the picture back in step */
+      if(hcLoud && !hcClipDone && hcVid && (hcHeld || hcVid.paused) && !hcAway) hcStartVid(hcMus.currentTime);
+      if(!hcRaf) hcRaf = requestAnimationFrame(hcTick);
+    });
+    hcMus.addEventListener("waiting", () => {
+      /* Music stalled mid-clip: hold the picture so the two stay together */
+      if(hireDoneOn && hcLoud && !hcClipDone && hcVid && !hcVid.paused){ hcHeld = true; try { hcVid.pause(); } catch(e){} }
+    });
   }
   if(hcBtn) hcBtn.addEventListener("click", (e) => {
     e.stopPropagation();
@@ -7721,8 +7776,9 @@ html.ri-pre::after{content:"";position:fixed;inset:0;z-index:94;background:#1206
       if(hcMus) try { hcMus.pause(); } catch(e){}
     } else if(hcAway){
       const a = hcAway; hcAway = null;
-      if(a.vid) hcVid.play().catch(() => {});
-      if(a.mus && hcMus) hcMus.play().catch(() => { hcLoud = false; hcLabel(); });
+      if(a.mus && hcMus){
+        hcMus.play().then(() => { if(a.vid && hireDoneOn) hcStartVid(hcMus.currentTime); }).catch(() => { hcLoud = false; hcLabel(); if(a.vid) hcStartVid(null); });
+      } else if(a.vid) hcStartVid(null);
     }
   });
 
