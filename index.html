@@ -7696,6 +7696,10 @@ html.ri-pre::after{content:"";position:fixed;inset:0;z-index:94;background:#1206
   const HC_DROP = 1.0;
   /* The page hits land a hair early so the flash and thud read as on the beat */
   const HC_LEAD = .05;
+  /* The music is a different cut from the clip's own soundtrack: the bow
+     (head snapping down, about 1.5 s into the video) has to sit on the music's
+     drop at 1.0 s, so the picture runs half a second ahead of the music. */
+  const HC_VOFF = .5;
   let hcHeld = false;
   let hcRaf = 0, hcDropped = false, hcLoud = false, hcLoops = 0, hcWatch = 0, hcClipDone = false, hcAway = null;
   function hcWarm(){
@@ -7735,12 +7739,12 @@ html.ri-pre::after{content:"";position:fixed;inset:0;z-index:94;background:#1206
     /* With sound, the music is the clock: the drop fires on what you hear,
        and the picture is nudged to follow it (never the other way round) */
     if(musOn && !hcClipDone && !hcVid.paused){
-      const d = hcMus.currentTime - hcVid.currentTime;
-      if(Math.abs(d) > .25){ try { hcVid.currentTime = hcMus.currentTime; } catch(e){} hcVid.playbackRate = 1; }
+      const d = (hcMus.currentTime + HC_VOFF) - hcVid.currentTime;
+      if(Math.abs(d) > .25){ try { hcVid.currentTime = hcMus.currentTime + HC_VOFF; } catch(e){} hcVid.playbackRate = 1; }
       else hcVid.playbackRate = Math.max(.9, Math.min(1.1, 1 + d * .8));
     } else if(hcVid.playbackRate !== 1) hcVid.playbackRate = 1;
     if(!hcDropped){
-      const t = hcLoud ? (musOn ? hcMus.currentTime : -1) : hcVid.currentTime;
+      const t = hcLoud ? (musOn ? hcMus.currentTime : -1) : hcVid.currentTime - HC_VOFF;
       if(t >= HC_DROP - HC_LEAD) hcDrop();
     }
     if(!hcVid.paused || musOn) hcRaf = requestAnimationFrame(hcTick);
@@ -7748,7 +7752,11 @@ html.ri-pre::after{content:"";position:fixed;inset:0;z-index:94;background:#1206
   function hcStartVid(at){
     if(!hcVid || !hireDoneOn) return;
     hcHeld = false;
-    try { if(at != null) hcVid.currentTime = at; } catch(e){}
+    /* at is a music time; the picture runs HC_VOFF ahead of it */
+    try {
+      if(at != null) hcVid.currentTime = at + HC_VOFF;
+      else if((hcVid.currentTime || 0) < HC_VOFF) hcVid.currentTime = HC_VOFF;
+    } catch(e){}
     let pr;
     try { pr = hcVid.play(); } catch(e){ pr = null; }
     const go = () => { if(!hcRaf) hcRaf = requestAnimationFrame(hcTick); };
@@ -7761,7 +7769,7 @@ html.ri-pre::after{content:"";position:fixed;inset:0;z-index:94;background:#1206
     hcLabel();
     if(hcVid && hcVid.paused && !hcClipDone) hcStartVid(null);
     if(hcWatch) clearTimeout(hcWatch);
-    hcWatch = setTimeout(() => { hcWatch = 0; if(hireDoneOn && !hcDropped && hcVid.currentTime < .05) hcDrop(); }, 1600);
+    hcWatch = setTimeout(() => { hcWatch = 0; if(hireDoneOn && !hcDropped && hcVid.currentTime < HC_VOFF + .05) hcDrop(); }, 1600);
   }
   function hcSettle(){
     /* Clip done: the turn hands over to Luke's photo, the music carries on */
@@ -7791,7 +7799,7 @@ html.ri-pre::after{content:"";position:fixed;inset:0;z-index:94;background:#1206
     hcClipDone = false;
     hcLoops = 0;
     hcVid.muted = true;
-    try { hcVid.pause(); hcVid.currentTime = 0; hcVid.playbackRate = 1; } catch(e){}
+    try { hcVid.pause(); hcVid.currentTime = HC_VOFF; hcVid.playbackRate = 1; } catch(e){}
     hireDone.classList.add("clip-on");
     hcMusicOff();
     if(hcWatch) clearTimeout(hcWatch);
@@ -7815,7 +7823,7 @@ html.ri-pre::after{content:"";position:fixed;inset:0;z-index:94;background:#1206
     hcStartVid(0);
     hcLabel();
     /* Never leave the page waiting on a clip that won't start */
-    hcWatch = setTimeout(() => { hcWatch = 0; if(hireDoneOn && !hcDropped && hcVid.currentTime < .05) hcDrop(); }, 1600);
+    hcWatch = setTimeout(() => { hcWatch = 0; if(hireDoneOn && !hcDropped && hcVid.currentTime < HC_VOFF + .05) hcDrop(); }, 1600);
     return true;
   }
   if(hcVid){
@@ -7823,7 +7831,7 @@ html.ri-pre::after{content:"";position:fixed;inset:0;z-index:94;background:#1206
     hcVid.addEventListener("ended", () => {
       if(!hireDoneOn) return;
       /* Without sound the clip runs twice before Luke's photo takes over */
-      if(!hcLoud && ++hcLoops < 2){ try { hcVid.currentTime = 0; hcVid.play().catch(hcSettle); } catch(e){ hcSettle(); } return; }
+      if(!hcLoud && ++hcLoops < 2){ try { hcVid.currentTime = HC_VOFF; hcVid.play().catch(hcSettle); } catch(e){ hcSettle(); } return; }
       hcSettle();
     });
     hcVid.addEventListener("error", () => { if(hireDoneOn) hcSettle(); }, true);
