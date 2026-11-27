@@ -8467,26 +8467,18 @@ window.PARE_LIVE = window.PARE_LIVE || {
     for(var i = 0; i < EGGS.length; i++){ if(EGGS[i].k.test(text)) return EGGS[i]; }
     return null;
   }
-  /* "Show me an Easter egg" never repeats an egg until every other egg has played
-     since it last showed: each tap picks at random from the eggs NOT among the last
-     (number of eggs - 1) shown, so any run of taps as long as the egg list is all
-     different. Kept in sessionStorage so a reload carries on where it left off. */
+  /* "Show me an Easter egg" plays the eggs in Luke's order: Richmond drivers,
+     then Jensen, then GTA VI, and round again. Kept in sessionStorage so a
+     reload carries on where it left off. */
   var EGG_ASK = /^\W*((show|give) me |play |any )?(an(other)? |one more |some )?easter eggs?\W*$/i;
-  var EGG_BAG_KEY = "pareEggRecent";
-  function eggRecent(){
-    var known = EGGS.map(function(e){ return e.fx; }), r = null;
-    try { r = JSON.parse(sessionStorage.getItem(EGG_BAG_KEY) || "null"); } catch(e){ r = null; }
-    if(!Array.isArray(r)) r = [];
-    return r.filter(function(k, i, a){ return known.indexOf(k) >= 0 && a.indexOf(k) === i; }).slice(-(known.length - 1));
-  }
+  var EGG_ORDER = ["richmond", "jensen", "gta6"];
+  var EGG_NEXT_KEY = "pareEggNext";
   function nextEgg(){
-    var recent = eggRecent();
-    var pool = EGGS.filter(function(e){ return recent.indexOf(e.fx) < 0; });
-    if(!pool.length) pool = EGGS.slice();
-    var egg = pool[Math.floor(Math.random() * pool.length)];
-    recent.push(egg.fx);
-    recent = recent.slice(-(EGGS.length - 1));
-    try { sessionStorage.setItem(EGG_BAG_KEY, JSON.stringify(recent)); } catch(e){}
+    var i = 0;
+    try { i = parseInt(sessionStorage.getItem(EGG_NEXT_KEY) || "0", 10) || 0; } catch(e){ i = 0; }
+    var fx = EGG_ORDER[((i % EGG_ORDER.length) + EGG_ORDER.length) % EGG_ORDER.length];
+    var egg = EGGS.filter(function(e){ return e.fx === fx; })[0] || EGGS[0];
+    try { sessionStorage.setItem(EGG_NEXT_KEY, String((i + 1) % EGG_ORDER.length)); } catch(e){}
     return egg;
   }
   function eggFx(kind){
