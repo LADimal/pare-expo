@@ -2569,6 +2569,79 @@ html.ri-pre::after{content:"";position:fixed;inset:0;z-index:94;background:#1206
 .purple-loading i{width:38px;height:38px;border-radius:50%;border:3px solid rgba(167,139,250,.25);border-top-color:#a78bfa;animation:purpleSpin .9s linear infinite;}
 @keyframes purpleSpin{to{transform:rotate(360deg);}}
 @media (prefers-reduced-motion:reduce){.purple-loading i{animation-duration:2.4s;}}
+
+/* Site footer (home): link columns, follow icons, badge buttons, disclaimer */
+.site-foot{--sf-bg:#22090f;--sf-fg:#f6efe6;--sf-dim:rgba(246,239,230,.68);--sf-line:rgba(246,239,230,.14);
+  background:var(--sf-bg);color:var(--sf-fg);border-radius:20px;margin:56px 0 8px;padding:34px clamp(20px,4vw,44px) 26px;
+  display:grid;gap:30px;text-align:left;}
+.sf-cols{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:28px 32px;}
+.sf-col{display:flex;flex-direction:column;align-items:flex-start;gap:10px;min-width:0;}
+.site-foot h3{font-family:Inter,"Segoe UI",Arial,sans-serif;font-size:15px;font-weight:800;letter-spacing:.01em;margin:0 0 4px;color:var(--sf-fg);}
+.sf-col button,.sf-col a{background:none;border:0;padding:0;font:inherit;font-size:15px;color:var(--sf-dim);text-decoration:none;cursor:pointer;text-align:left;
+  transition:color .15s ease;}
+.sf-col button:hover,.sf-col a:hover,.sf-col button:focus-visible,.sf-col a:focus-visible{color:var(--sf-fg);}
+.sf-col p{margin:0;font-size:15px;color:var(--sf-dim);}
+.sf-mail{user-select:all;word-break:break-all;}
+.sf-follow{display:flex;flex-direction:column;align-items:center;gap:14px;}
+.sf-follow h3{margin:0;font-size:18px;}
+.sf-icons{display:flex;gap:14px;}
+.sf-icons a{width:46px;height:46px;border-radius:50%;display:grid;place-items:center;color:var(--sf-fg);border:1.5px solid var(--sf-line);
+  transition:transform .15s ease,background .15s ease,border-color .15s ease;}
+.sf-icons a:hover,.sf-icons a:focus-visible{background:rgba(246,239,230,.1);border-color:var(--sf-dim);transform:translateY(-2px);}
+.sf-icons svg{width:22px;height:22px;display:block;}
+.sf-badges{display:flex;flex-wrap:wrap;justify-content:center;gap:12px;}
+.sf-badge{display:inline-flex;align-items:center;gap:10px;min-width:150px;padding:8px 16px 8px 12px;border-radius:10px;
+  background:#000;color:#fff;border:1px solid rgba(255,255,255,.55);font:inherit;text-decoration:none;cursor:pointer;
+  transition:transform .15s ease,border-color .15s ease;}
+.sf-badge:hover,.sf-badge:focus-visible{transform:translateY(-2px);border-color:#fff;color:#fff;}
+.sf-badge svg{width:26px;height:26px;flex:none;color:var(--gold,#c9a24a);}
+.sf-badge span{display:flex;flex-direction:column;align-items:flex-start;line-height:1.05;font-size:19px;font-weight:700;letter-spacing:-.01em;}
+.sf-badge small{font-size:10.5px;font-weight:600;letter-spacing:.04em;opacity:.85;margin-bottom:2px;}
+.sf-note{margin:0;padding-top:18px;border-top:1px solid var(--sf-line);font-size:12.5px;line-height:1.55;color:var(--sf-dim);text-align:center;text-wrap:balance;}
+.site-foot :focus-visible{outline:2px solid var(--gold,#c9a24a);outline-offset:3px;border-radius:4px;}
+@media (max-width:640px){
+  .site-foot{margin-top:40px;padding:28px 20px 22px;border-radius:16px;}
+  .sf-cols{grid-template-columns:1fr 1fr;}
+  .sf-cols .sf-col:last-child{grid-column:1 / -1;}
+}
+@media (max-width:360px){.sf-cols{grid-template-columns:1fr;}}
+@media (prefers-reduced-motion:reduce){.sf-icons a,.sf-badge{transition:none;}.sf-icons a:hover,.sf-badge:hover{transform:none;}}
+
+
+/* Footer sidekicks perched on the panel edge: tap one for a line */
+.site-foot{position:relative;margin-top:96px;}
+.sf-perch{position:absolute;right:clamp(16px,5vw,48px);bottom:calc(100% - 10px);display:flex;align-items:flex-end;gap:2px;}
+.sf-bird{background:none;border:0;padding:0;cursor:pointer;line-height:0;transform-origin:50% 100%;animation:sfBob 3.6s ease-in-out infinite;}
+.sf-bird img{height:62px;width:auto;display:block;filter:drop-shadow(0 3px 2px rgba(0,0,0,.18));}
+.sf-bird.b-darcy img{height:66px;}
+.sf-bird.b-robin{animation-delay:-1.2s;} .sf-bird.b-rumi{animation-delay:-2.4s;}
+.sf-bird.hop{animation:sfHop .5s ease-out;}
+.sf-bird:focus-visible{outline:2px solid var(--gold,#c9a24a);outline-offset:2px;border-radius:8px;}
+@keyframes sfBob{0%,100%{transform:translateY(0) rotate(0)}50%{transform:translateY(-2px) rotate(-1.5deg)}}
+@keyframes sfHop{0%{transform:translateY(0)}35%{transform:translateY(-14px) rotate(-4deg)}70%{transform:translateY(0) scaleY(.92)}100%{transform:none}}
+.sf-say{position:absolute;right:0;bottom:calc(100% + 8px);margin:0;width:max-content;max-width:min(260px,calc(100vw - 48px));
+  background:#fffaf4;color:#2a1216;border:1px solid rgba(43,5,8,.12);border-radius:14px 14px 4px 14px;padding:8px 12px;
+  font-size:13.5px;line-height:1.35;box-shadow:0 8px 20px rgba(43,5,8,.16);opacity:0;transform:translateY(6px);pointer-events:none;
+  transition:opacity .2s ease,transform .2s ease;}
+.sf-say.on{opacity:1;transform:none;}
+@media (max-width:640px){.site-foot{margin-top:88px;margin-bottom:84px;}.sf-bird img{height:54px;}.sf-bird.b-darcy img{height:58px;}}
+@media (prefers-reduced-motion:reduce){.sf-bird,.sf-bird.hop{animation:none;}.sf-say{transition:none;}}
+
+/* Footer: networking card preview that flips now and then */
+.sf-peek{margin:0;display:flex;flex-direction:column;align-items:center;gap:12px;}
+.sf-flip{background:none;border:0;padding:0;cursor:pointer;width:min(300px,78vw);aspect-ratio:5/3;perspective:1000px;border-radius:10px;}
+.sf-flip-in{position:relative;display:block;width:100%;height:100%;transform-style:preserve-3d;animation:sfFlip 14s cubic-bezier(.65,0,.35,1) 2s infinite;}
+.sf-face{position:absolute;inset:0;width:100%;height:100%;border-radius:10px;backface-visibility:hidden;-webkit-backface-visibility:hidden;
+  box-shadow:0 10px 26px rgba(0,0,0,.4),0 0 0 1px rgba(255,255,255,.06);}
+.sf-back{transform:rotateY(180deg);}
+@keyframes sfFlip{0%,40%{transform:rotateY(0)}50%,90%{transform:rotateY(180deg)}100%{transform:rotateY(360deg)}}
+.sf-flip:hover .sf-flip-in{animation-play-state:paused;}
+.sf-flip.manual .sf-flip-in{animation:none;transition:transform .8s cubic-bezier(.65,0,.35,1);transform:rotateY(0);}
+.sf-flip.manual.show-back .sf-flip-in{transform:rotateY(180deg);}
+.sf-peek figcaption{font-size:14.5px;color:var(--sf-dim);text-align:center;}
+.sf-peek figcaption b{color:var(--gold,#c9a24a);font-weight:700;}
+.sf-flip:focus-visible{outline:2px solid var(--gold,#c9a24a);outline-offset:4px;}
+@media (prefers-reduced-motion:reduce){.sf-flip-in{animation:none;}.sf-flip.manual .sf-flip-in{transition:none;}}
 </style>
 </head>
 <body>
@@ -2669,7 +2742,57 @@ html.ri-pre::after{content:"";position:fixed;inset:0;z-index:94;background:#1206
         <button type="button" class="btn fb-card-btn" data-feedback>Give feedback &rarr;</button>
       </div>
       <div class="home-end"></div>
-      <p class="fine">Fictional examples for the expo. Robin designed by Luke Dimal for Pare Dating, a dating app for people over 40.</p>
+      <footer class="site-foot" aria-label="About this site">
+        <div class="sf-perch">
+          <p class="sf-say" id="sfSay" aria-live="polite"></p>
+          <button type="button" class="sf-bird b-darcy" data-sf-bird="darcy" aria-label="Darcy, tap for a word"><img src="img/darcy.webp" alt="" width="243" height="370" loading="lazy" decoding="async"></button>
+          <button type="button" class="sf-bird b-robin" data-sf-bird="robin" aria-label="Robin, tap for a word"><img src="img/robin-hello.webp" alt="" width="392" height="354" loading="lazy" decoding="async"></button>
+          <button type="button" class="sf-bird b-rumi" data-sf-bird="rumi" aria-label="Rumi, tap for a word"><img src="img/rumi.webp" alt="" width="392" height="354" loading="lazy" decoding="async"></button>
+        </div>
+        <div class="sf-cols">
+          <nav class="sf-col" aria-label="Demos">
+            <h3>Try the demos</h3>
+            <button type="button" data-foot-mode="sidekicks">Meet the sidekicks</button>
+            <button type="button" data-foot-mode="live">Robin reacts live</button>
+            <button type="button" data-foot-mode="quiz">Which sidekick suits you?</button>
+            <button type="button" data-foot-chat>Chat with Robin</button>
+          </nav>
+          <nav class="sf-col" aria-label="The project">
+            <h3>The project</h3>
+            <button type="button" data-meet-luke>Meet Luke</button>
+            <button type="button" data-feedback>Give feedback</button>
+            <a href="https://forms.gle/xrMetQxjRrob7h4b6" target="_blank" rel="noopener noreferrer">Grade our project</a>
+          </nav>
+          <div class="sf-col">
+            <h3>Luke Dimal</h3>
+            <p>BCIT ISSP practicum, Fall 2026</p>
+            <p>Robin, Pare's AI sidekick</p>
+            <p class="sf-mail">lukedimal@outlook.com</p>
+          </div>
+        </div>
+        <div class="sf-follow">
+          <h3>Follow Luke</h3>
+          <div class="sf-icons">
+            <a href="https://www.instagram.com/lukes_maxing/" target="_blank" rel="noopener" aria-label="Luke on Instagram"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5" stroke="currentColor" stroke-width="2" fill="none"/><circle cx="12" cy="12" r="4" stroke="currentColor" stroke-width="2" fill="none"/><circle cx="17.2" cy="6.8" r="1.2" fill="currentColor"/></svg></a>
+            <a href="https://www.linkedin.com/in/luke-dimal-105457133/" target="_blank" rel="noopener" aria-label="Luke on LinkedIn"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6.5 9.5v8M6.5 6.2v.01M10.5 17.5v-8M10.5 13.3c0-2.2 1.3-3.6 3.1-3.6s2.9 1.3 2.9 3.4v4.4" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" fill="none"/></svg></a>
+            <a href="mailto:lukedimal@outlook.com" aria-label="Email Luke"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5.5" width="18" height="13" rx="2.5" stroke="currentColor" stroke-width="2" fill="none"/><path d="M4 7l8 6 8-6" stroke="currentColor" stroke-width="2" fill="none" stroke-linejoin="round"/></svg></a>
+          </div>
+          <div class="sf-badges">
+            <button type="button" class="sf-badge" data-foot-chat><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5.5h16v10H9l-4.5 3.5V15.5H4z" fill="currentColor"/><circle cx="9" cy="10.5" r="1.1" fill="var(--sf-bg)"/><circle cx="12" cy="10.5" r="1.1" fill="var(--sf-bg)"/><circle cx="15" cy="10.5" r="1.1" fill="var(--sf-bg)"/></svg><span><small>Talk to</small>Robin</span></button>
+            <a class="sf-badge" href="https://forms.gle/xrMetQxjRrob7h4b6" target="_blank" rel="noopener noreferrer"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3.2l2.7 5.6 6.1.8-4.5 4.2 1.1 6.1L12 17l-5.4 2.9 1.1-6.1-4.5-4.2 6.1-.8z" fill="currentColor"/></svg><span><small>Rate the</small>Project</span></a>
+          </div>
+        </div>
+        <figure class="sf-peek">
+          <button type="button" class="sf-flip" id="sfFlip" aria-label="Luke's networking card. Tap to flip it.">
+            <span class="sf-flip-in">
+              <img class="sf-face" src="img/luke-card-front-sm.webp" alt="Front of Luke A. Dimal's networking card: CIT student at BCIT, Set B class rep, ISSP project Robin for Pare Dating, email, LinkedIn, Instagram and a QR code to this site." width="720" height="432" loading="lazy" decoding="async">
+              <img class="sf-face sf-back" src="img/luke-card-back.webp" alt="Back of the card: help desk, IT support and databases. Calm when things break, careful with the details. Count Team Supervisor at Hard Rock Casino Vancouver since 2017, GEM Award, open to IT and co-op roles in Greater Vancouver." width="720" height="432" loading="lazy" decoding="async">
+            </span>
+          </button>
+          <figcaption>Saw my networking card? <b>Ask for one!</b></figcaption>
+        </figure>
+        <p class="sf-note">This site is Luke Dimal's BCIT ISSP practicum project. The designs, opinions and jokes here are his own and don't represent Pare Dating or any other company. All examples are fictional. &copy; 2026 Luke Dimal.</p>
+      </footer>
       <p class="made-by" hidden>
         <span class="made-stack">
           <button type="button" id="madeByLuke">Made by Luke</button>
@@ -9646,5 +9769,41 @@ document.addEventListener("click", function(e){
     });
   });
 })();</script>
+<script>/* Footer links: open a demo the same way its home tile does */
+(function(){
+  document.addEventListener("click", function(e){
+    var m = e.target.closest && e.target.closest("[data-foot-mode]");
+    if(m){ var t = document.querySelector('.tile[data-mode="' + m.getAttribute("data-foot-mode") + '"]'); if(t){ window.scrollTo(0, 0); t.click(); } return; }
+    var c = e.target.closest && e.target.closest("[data-foot-chat]");
+    if(c && window.PareExpo && window.PareExpo.openView) window.PareExpo.openView("chat");
+  });
+})();
+</script>
+<script>
+(function(){
+  var LINES={
+    robin:["Hi, I'm Robin! Come chat with me.","You found the footer. That's commitment.","Psst. Ask me for an Easter egg."],
+    darcy:["Darcy here. I read the fine print so you don't have to.","Everything above is fictional. Except Luke.","Planner tip: grab Luke's card before you go."],
+    rumi:["Rumi says: rate the project, it takes a minute.","We perch here on weekends.","Follow Luke. He made us wear these scarves."]
+  };
+  var seen={}, say=document.getElementById("sfSay"), t;
+  document.addEventListener("click",function(e){
+    var b=e.target.closest&&e.target.closest("[data-sf-bird]"); if(!b||!say) return;
+    var k=b.getAttribute("data-sf-bird"), list=LINES[k], n=seen[k]||0;
+    say.textContent=list[n%list.length]; seen[k]=n+1;
+    say.classList.add("on"); b.classList.remove("hop"); void b.offsetWidth; b.classList.add("hop");
+    clearTimeout(t); t=setTimeout(function(){ say.classList.remove("on"); },3200);
+  });
+  document.addEventListener("animationend",function(e){ if(e.target.classList&&e.target.classList.contains("sf-bird")) e.target.classList.remove("hop"); });
+})();
+</script>
+<script>
+(function(){ var f=document.getElementById("sfFlip"); if(!f) return;
+  f.addEventListener("click",function(){
+    if(!f.classList.contains("manual")){ f.classList.add("manual"); void f.offsetWidth; f.classList.add("show-back"); }
+    else f.classList.toggle("show-back");
+  });
+})();
+</script>
 </body>
 </html>
