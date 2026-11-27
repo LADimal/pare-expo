@@ -2657,7 +2657,7 @@ html.ri-pre::after{content:"";position:fixed;inset:0;z-index:94;background:#1206
 }
 @keyframes hpSnap{0%{transform:rotate(-2deg) scale(1)}20%{transform:rotate(1deg) scale(1.05)}100%{transform:rotate(-2deg) scale(1)}}
 
-/* Hire ask spotlight: everything dims except Type shit!, with an arrow pointing at it */
+/* Hire ask spotlight: everything dims except Yes, with an arrow pointing at it */
 .hire-spot{position:fixed;inset:0;z-index:60;pointer-events:none;opacity:0;visibility:hidden;transition:opacity .25s ease,visibility 0s linear .4s;}
 .hire-spot.on{opacity:1;visibility:visible;transition:opacity .25s ease,visibility 0s;}
 .hs-ring{position:fixed;border-radius:999px;box-shadow:0 0 0 200vmax rgba(18,6,8,.8),0 0 0 3px rgba(242,201,76,.95),0 0 26px 6px rgba(242,201,76,.55);}
@@ -2676,6 +2676,11 @@ html.ri-pre::after{content:"";position:fixed;inset:0;z-index:94;background:#1206
 
 /* Gojo replay: hide the video until it is back on its first frames */
 .purple-overlay.clip-wait video{opacity:0 !important;}
+.hire-grade{margin:14px auto 4px;max-width:340px;display:flex;flex-direction:column;align-items:center;gap:6px;}
+.hire-grade .btn{min-width:200px;text-decoration:none;}
+.hire-grade .hg-tip{font-size:13px !important;line-height:1.4;color:rgba(28,18,20,.62);margin:2px 0 0;}
+.hire-grade .hg-head{font-size:11px !important;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:rgba(28,18,20,.55);margin:0;}
+.hire-grade .hg-opt{display:flex;flex-direction:column;align-items:center;gap:2px;margin-top:6px;}
 </style>
 </head>
 <body>
@@ -2795,7 +2800,8 @@ html.ri-pre::after{content:"";position:fixed;inset:0;z-index:94;background:#1206
             <h3>The project</h3>
             <button type="button" data-meet-luke>Meet Luke</button>
             <button type="button" data-feedback>Give feedback</button>
-            <a href="https://forms.gle/xrMetQxjRrob7h4b6" target="_blank" rel="noopener noreferrer">Grade our project</a>
+            <a href="https://forms.gle/xrMetQxjRrob7h4b6" target="_blank" rel="noopener noreferrer">Student vote</a>
+            <a href="https://forms.gle/AyNY1RVcVgEhM5h97" target="_blank" rel="noopener noreferrer">Sponsor vote</a>
           </nav>
           <div class="sf-col">
             <h3>Luke Dimal</h3>
@@ -2813,7 +2819,7 @@ html.ri-pre::after{content:"";position:fixed;inset:0;z-index:94;background:#1206
           </div>
           <div class="sf-badges">
             <button type="button" class="sf-badge" data-foot-chat><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5.5h16v10H9l-4.5 3.5V15.5H4z" fill="currentColor"/><circle cx="9" cy="10.5" r="1.1" fill="var(--sf-bg)"/><circle cx="12" cy="10.5" r="1.1" fill="var(--sf-bg)"/><circle cx="15" cy="10.5" r="1.1" fill="var(--sf-bg)"/></svg><span><small>Talk to</small>Robin</span></button>
-            <a class="sf-badge" href="https://forms.gle/xrMetQxjRrob7h4b6" target="_blank" rel="noopener noreferrer"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3.2l2.7 5.6 6.1.8-4.5 4.2 1.1 6.1L12 17l-5.4 2.9 1.1-6.1-4.5-4.2 6.1-.8z" fill="currentColor"/></svg><span><small>Rate the</small>Project</span></a>
+            <a class="sf-badge" href="https://forms.gle/xrMetQxjRrob7h4b6" target="_blank" rel="noopener noreferrer"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3.2l2.7 5.6 6.1.8-4.5 4.2 1.1 6.1L12 17l-5.4 2.9 1.1-6.1-4.5-4.2 6.1-.8z" fill="currentColor"/></svg><span><small>Student</small>Vote</span></a>
           </div>
         </div>
         <figure class="sf-peek">
@@ -3070,15 +3076,15 @@ html.ri-pre::after{content:"";position:fixed;inset:0;z-index:94;background:#1206
       <div class="hire-ask" id="hireAsk">
         <img class="hire-art" src="img/robin-hello.webp" alt="Robin waving hello" width="392" height="354" decoding="async" fetchpriority="low">
         <p class="hire-brand"><img class="hire-brand-logo" alt="Pare Dating"> Team Pare Dating</p>
-        <h1>Is this tough twin?</h1>
+        <h1>Will you vote for us?</h1>
         <p class="hire-vote-line"><span class="hire-vote-pill"><svg class="hire-vote-mark" viewBox="0 0 20 20" aria-hidden="true"><rect x="2.75" y="2.75" width="14.5" height="14.5" rx="3.2" fill="none" stroke="currentColor" stroke-width="1.7"/><path d="M6.1 10.3l2.5 2.5 5.4-6.1" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg>Vote for Pare Dating at the expo</span></p>
         <div class="hire-row" id="hireRow">
           <div class="hire-yes-col">
-            <button type="button" class="btn" id="hireYes">Type shit!</button>
-            <p class="hire-yes-hint" id="hireYesHint">Type shit! is right here</p>
+            <button type="button" class="btn" id="hireYes">Yes</button>
+            <p class="hire-yes-hint" id="hireYesHint">Yes is right here</p>
           </div>
           <span class="hire-no-slot" id="hireNoSlot">
-            <button type="button" class="btn ghost" id="hireNo" aria-disabled="true">Are you deadass? 😂</button>
+            <button type="button" class="btn ghost" id="hireNo" aria-disabled="true">No</button>
           </span>
         </div>
         <p class="hire-no-caption" id="hireNoCaption" aria-live="polite"></p>
@@ -3099,6 +3105,17 @@ html.ri-pre::after{content:"";position:fixed;inset:0;z-index:94;background:#1206
         <p class="hire-name">Luke A. Dimal</p>
         <p class="hire-note">I'm Luke, from the Pare Dating team. I designed Robin and wrote the safety policy. Happy to talk about it anytime.</p>
         <p>BCIT CIT</p>
+        <div class="hire-grade">
+          <p class="hg-head">Cast your vote</p>
+          <div class="hg-opt">
+            <a class="btn" href="https://forms.gle/xrMetQxjRrob7h4b6" target="_blank" rel="noopener noreferrer">Student vote</a>
+            <p class="hg-tip">For students. Please add your A00# in the &ldquo;Other Comments&rdquo; field so your vote can be verified.</p>
+          </div>
+          <div class="hg-opt">
+            <a class="btn ghost" href="https://forms.gle/AyNY1RVcVgEhM5h97" target="_blank" rel="noopener noreferrer">Sponsor vote</a>
+            <p class="hg-tip">For sponsors only, grading their own group.</p>
+          </div>
+        </div>
         <div class="btn-row hire-done-btns">
           <button type="button" class="btn ghost" id="hireHome">Back to home</button>
         </div>
@@ -7006,9 +7023,9 @@ html.ri-pre::after{content:"";position:fixed;inset:0;z-index:94;background:#1206
   const hireFest = $("#hireFest");
   const HIRE_CAPTIONS = [
     "Hmm, not yet",
-    "Type shit! is right there",
-    "You already know",
-    "Ayo, stop capping!"
+    "Yes is right there",
+    "Are you sure?",
+    "Please reconsider"
   ];
   let hireDoneOn = false;
   let hirePointer = null;
@@ -7252,7 +7269,7 @@ html.ri-pre::after{content:"";position:fixed;inset:0;z-index:94;background:#1206
     placeCaption();
   }
 
-  /* "Type shit! is right there": dim the page, light up Type shit! and point at it */
+  /* "Yes is right there": dim the page, light up Yes and point at it */
   let hireSpotEl = null, hireSpotRaf = 0, hireSpotTimer = 0;
   function hireSpotPlace(){
     if(!hireSpotEl) return;
@@ -7486,7 +7503,7 @@ html.ri-pre::after{content:"";position:fixed;inset:0;z-index:94;background:#1206
   function hirePlayBounds(w, h){
     // The button may roam the visible screen near its row (not just the card),
     // so a 90 to 160px dodge has room on a phone too. It never leaves the screen
-    // and clampHireHop keeps it off Type shit!.
+    // and clampHireHop keeps it off Yes.
     const pad = 12;
     const vw = window.innerWidth, vh = window.innerHeight;
     const card = hireAsk ? hireAsk.getBoundingClientRect() : { top: pad };
@@ -7878,7 +7895,7 @@ html.ri-pre::after{content:"";position:fixed;inset:0;z-index:94;background:#1206
     hireYes.classList.remove("glow");
     hcStop();
     if(hcVid){
-      /* The Type shit! tap is the gesture, so try with sound first */
+      /* The Yes tap is the gesture, so try with sound first */
       hireDone.classList.add("pre-drop");
       hcPlay(true);
     } else spawnConfetti();
