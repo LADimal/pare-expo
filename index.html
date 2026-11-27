@@ -6339,6 +6339,14 @@ html.ri-pre::after{content:"";position:fixed;inset:0;z-index:94;background:#1206
     purpleVideo.addEventListener("error", () => {
       if(purpleMode === "clip" && purpleOn && !lukeWrap.classList.contains("on")) clipUnavailable();
     });
+    // Frozen clip (connection dropped mid-video): after 6 s with no progress, skip to the résumé
+    let lastT = -1, stuckSince = 0;
+    setInterval(() => {
+      if(purpleMode !== "clip" || !purpleOn || clipExiting || lukeWrap.classList.contains("on") || purpleVideo.paused){ stuckSince = 0; lastT = -1; return; }
+      const t = purpleVideo.currentTime || 0;
+      if(t !== lastT){ lastT = t; stuckSince = performance.now(); return; }
+      if(stuckSince && performance.now() - stuckSince > 6000){ stuckSince = 0; skipToCard(); }
+    }, 1000);
   }
 
   // The clip buffers in the video element itself before it plays, so it
@@ -6388,7 +6396,19 @@ html.ri-pre::after{content:"";position:fixed;inset:0;z-index:94;background:#1206
     });
   }
 
+  // Never leave the visitor on the spinner for long: offline with nothing
+  // buffered, or still nothing after CLIP_GIVE_UP_MS, go to the résumé.
+  const CLIP_GIVE_UP_MS = 12000;
   function probeClip(){
+    if(navigator.onLine === false && !(clipLoadedHere() && purpleVideo.readyState >= 3)) return Promise.resolve(false);
+    let giveUp = 0;
+    return Promise.race([
+      probeClipInner(),
+      new Promise((resolve) => { giveUp = setTimeout(() => resolve(false), CLIP_GIVE_UP_MS); })
+    ]).then((ok) => { clearTimeout(giveUp); return ok; });
+  }
+
+  function probeClipInner(){
     bindClipHandlers();
     // Already has its first frames: wait (up to CLIP_WAIT_MS) for enough to
     // play through. Nothing usable yet (dropped while idle): load it again.
@@ -8180,33 +8200,27 @@ window.PARE_LIVE = window.PARE_LIVE || {
     for(var i = 0; i < EGGS.length; i++){ if(EGGS[i].k.test(text)) return EGGS[i]; }
     return null;
   }
-  /* "Show me an Easter egg" deals from a shuffle bag: every egg plays once in a random
-     order before any repeats, and a new round never opens on the egg that just played.
-     The bag lives in sessionStorage so a reload carries on where it left off. */
+  /* "Show me an Easter egg" never repeats an egg until every other egg has played
+     since it last showed: each tap picks at random from the eggs NOT among the last
+     (number of eggs - 1) shown, so any run of taps as long as the egg list is all
+     different. Kept in sessionStorage so a reload carries on where it left off. */
   var EGG_ASK = /^\W*((show|give) me |play |any )?(an(other)? |one more |some )?easter eggs?\W*$/i;
-  var EGG_BAG_KEY = "pareEggBag";
-  function eggBag(){
-    var b = null;
-    try { b = JSON.parse(sessionStorage.getItem(EGG_BAG_KEY) || "null"); } catch(e){ b = null; }
-    if(!b || !Array.isArray(b.left)) b = {left: [], last: null};
-    var known = EGGS.map(function(e){ return e.fx; });
-    b.left = b.left.filter(function(k, i, a){ return known.indexOf(k) >= 0 && a.indexOf(k) === i; });
-    if(known.indexOf(b.last) < 0) b.last = null;
-    return b;
+  var EGG_BAG_KEY = "pareEggRecent";
+  function eggRecent(){
+    var known = EGGS.map(function(e){ return e.fx; }), r = null;
+    try { r = JSON.parse(sessionStorage.getItem(EGG_BAG_KEY) || "null"); } catch(e){ r = null; }
+    if(!Array.isArray(r)) r = [];
+    return r.filter(function(k, i, a){ return known.indexOf(k) >= 0 && a.indexOf(k) === i; }).slice(-(known.length - 1));
   }
   function nextEgg(){
-    var b = eggBag();
-    if(!b.left.length){
-      var deck = EGGS.map(function(e){ return e.fx; });
-      for(var i = deck.length - 1; i > 0; i--){ var j = Math.floor(Math.random() * (i + 1)), t = deck[i]; deck[i] = deck[j]; deck[j] = t; }
-      if(deck.length > 1 && deck[0] === b.last){ var k = 1 + Math.floor(Math.random() * (deck.length - 1)), t2 = deck[0]; deck[0] = deck[k]; deck[k] = t2; }
-      b.left = deck;
-    }
-    var fx = b.left.shift();
-    b.last = fx;
-    try { sessionStorage.setItem(EGG_BAG_KEY, JSON.stringify(b)); } catch(e){}
-    for(var n = 0; n < EGGS.length; n++) if(EGGS[n].fx === fx) return EGGS[n];
-    return EGGS[0];
+    var recent = eggRecent();
+    var pool = EGGS.filter(function(e){ return recent.indexOf(e.fx) < 0; });
+    if(!pool.length) pool = EGGS.slice();
+    var egg = pool[Math.floor(Math.random() * pool.length)];
+    recent.push(egg.fx);
+    recent = recent.slice(-(EGGS.length - 1));
+    try { sessionStorage.setItem(EGG_BAG_KEY, JSON.stringify(recent)); } catch(e){}
+    return egg;
   }
   function eggFx(kind){
     var stages = window.PareEggFx || {};
