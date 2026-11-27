@@ -2673,6 +2673,9 @@ html.ri-pre::after{content:"";position:fixed;inset:0;z-index:94;background:#1206
 @keyframes hsPoint{from{transform:translateY(-5px)}to{transform:translateY(5px)}}
 #hireYes.spot{position:relative;z-index:61;}
 @media (prefers-reduced-motion:reduce){.hire-spot.on .hs-ring,.hire-spot.on .hs-arrow svg,.hire-spot.on .hs-tag{animation:none;}}
+
+/* Gojo replay: hide the video until it is back on its first frames */
+.purple-overlay.clip-wait video{opacity:0 !important;}
 </style>
 </head>
 <body>
@@ -6160,7 +6163,7 @@ html.ri-pre::after{content:"";position:fixed;inset:0;z-index:94;background:#1206
     if(hideOverlay){
       clearSnapFx();
       purpleOn = false;
-      purpleOverlay.classList.remove("on", "clip", "card-on", "card-fade", "rippling");
+      purpleOverlay.classList.remove("on", "clip", "clip-wait", "card-on", "card-fade", "rippling");
       purpleOverlay.setAttribute("aria-hidden", "true");
       hideLukeCard();
       setFlash(false, true);
@@ -6759,7 +6762,21 @@ html.ri-pre::after{content:"";position:fixed;inset:0;z-index:94;background:#1206
     if(!userSetMute) soundOn = true;
     purpleVideo.muted = !soundOn;
     updateMuteLabel();
-    purpleVideo.currentTime = 0;
+    /* Replays: the video still holds the last frame of the previous run until
+       the rewind lands, so keep it hidden until a frame from the start is shown */
+    purpleOverlay.classList.add("clip-wait");
+    let shown = false;
+    const reveal = () => { if(shown) return; shown = true; purpleOverlay.classList.remove("clip-wait"); };
+    const fresh = () => !purpleVideo.seeking && (purpleVideo.currentTime || 0) < 1;
+    if(purpleVideo.requestVideoFrameCallback){
+      const onFrame = (now, meta) => { if(shown) return; if(meta && meta.mediaTime < 1 && !purpleVideo.seeking) reveal(); else purpleVideo.requestVideoFrameCallback(onFrame); };
+      purpleVideo.requestVideoFrameCallback(onFrame);
+    } else {
+      const onTime = () => { if(fresh() && !purpleVideo.paused){ purpleVideo.removeEventListener("timeupdate", onTime); reveal(); } };
+      purpleVideo.addEventListener("timeupdate", onTime);
+    }
+    setTimeout(() => { if(fresh()) reveal(); else setTimeout(reveal, 1200); }, 1500);
+    try{ purpleVideo.currentTime = 0; }catch(e){}
     applyGojoCrop();
     startGojoCropLoop();
     const armCut = () => {
