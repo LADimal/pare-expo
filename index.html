@@ -2642,6 +2642,9 @@ html.ri-pre::after{content:"";position:fixed;inset:0;z-index:94;background:#1206
 .sf-peek figcaption b{color:var(--gold,#c9a24a);font-weight:700;}
 .sf-flip:focus-visible{outline:2px solid var(--gold,#c9a24a);outline-offset:4px;}
 @media (prefers-reduced-motion:reduce){.sf-flip-in{animation:none;}.sf-flip.manual .sf-flip-in{transition:none;}}
+
+/* credits: a role that wraps to two lines spans both rows, so the blurb stays right under the name */
+.quiet-credits .qc-role{grid-row:1 / span 2;}
 </style>
 </head>
 <body>
