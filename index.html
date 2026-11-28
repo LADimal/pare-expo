@@ -2681,6 +2681,28 @@ html.ri-pre::after{content:"";position:fixed;inset:0;z-index:94;background:#1206
 .hire-grade .hg-tip{font-size:13px !important;line-height:1.4;color:rgba(28,18,20,.62);margin:2px 0 0;}
 .hire-grade .hg-head{font-size:11px !important;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:rgba(28,18,20,.55);margin:0;}
 .hire-grade .hg-opt{display:flex;flex-direction:column;align-items:center;gap:2px;margin-top:6px;}
+/* Networking card zoom: tap the footer card to open it big, tap again to flip, X to close */
+.cz{position:fixed;inset:0;z-index:9000;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;padding:64px 16px 32px;
+  background:rgba(14,8,10,0);-webkit-backdrop-filter:blur(0);backdrop-filter:blur(0);transition:background .35s ease,backdrop-filter .35s ease,-webkit-backdrop-filter .35s ease,visibility 0s linear .45s;visibility:hidden;}
+.cz.on{visibility:visible;transition-delay:0s;background:rgba(14,8,10,.82);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);}
+.cz-card{position:relative;background:none;border:0;padding:0;cursor:pointer;width:min(900px,92vw,calc((100vh - 170px) * 5 / 3));aspect-ratio:5/3;perspective:1600px;
+  transform-origin:center;transition:transform .45s cubic-bezier(.2,.8,.2,1);}
+.cz-in{position:relative;display:block;width:100%;height:100%;transform-style:preserve-3d;transition:transform .75s cubic-bezier(.65,0,.35,1);}
+.cz.back .cz-in{transform:rotateY(180deg);}
+.cz-face{position:absolute;inset:0;width:100%;height:100%;border-radius:clamp(8px,1.6vw,16px);backface-visibility:hidden;-webkit-backface-visibility:hidden;
+  box-shadow:0 24px 60px rgba(0,0,0,.55),0 0 0 1px rgba(255,255,255,.08);background:#f6efe6;}
+.cz-back{transform:rotateY(180deg);}
+.cz-x{position:absolute;top:max(14px,env(safe-area-inset-top));right:14px;width:46px;height:46px;border-radius:50%;border:1px solid rgba(255,255,255,.28);
+  background:rgba(255,255,255,.1);color:#fff;font-size:26px;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center;
+  opacity:0;transition:opacity .3s ease .1s,background .2s;}
+.cz.on .cz-x{opacity:1;}
+.cz-x:hover{background:rgba(255,255,255,.2);}
+.cz-x:focus-visible,.cz-card:focus-visible{outline:2px solid var(--gold,#c9a24a);outline-offset:4px;}
+.cz-hint{margin:0;color:rgba(255,255,255,.75);font-size:14px;letter-spacing:.02em;text-align:center;opacity:0;transition:opacity .3s ease .15s;}
+.cz-hint b{color:var(--gold,#c9a24a);}
+.cz.on .cz-hint{opacity:1;}
+html.cz-lock,html.cz-lock body{overflow:hidden;}
+@media (prefers-reduced-motion:reduce){.cz,.cz-card,.cz-in,.cz-x,.cz-hint{transition:none;}}
 </style>
 </head>
 <body>
@@ -2823,7 +2845,7 @@ html.ri-pre::after{content:"";position:fixed;inset:0;z-index:94;background:#1206
           </div>
         </div>
         <figure class="sf-peek">
-          <button type="button" class="sf-flip" aria-label="Luke's networking card. Tap to flip it.">
+          <button type="button" class="sf-flip" aria-label="Luke's networking card. Tap to zoom in.">
             <span class="sf-flip-in">
               <img class="sf-face" src="img/luke-card-front-sm.webp" alt="Front of Luke A. Dimal's networking card: CIT student at BCIT, Set B class rep, ISSP project Robin for Pare Dating, email, LinkedIn, Instagram and a QR code to this site." width="720" height="432" loading="lazy" decoding="async">
               <img class="sf-face sf-back" src="img/luke-card-back.webp?v=3" alt="Back of the card, Character Stats: looks, intelligence, vibe, confidence and sense of humour all MAX, resistance to Asian spies 1/10, knows who JSON is 0/10. Most people come to school to learn. I came to show I&rsquo;m the best. Joking aside, I&rsquo;ll debug for food. Please hire me. HMU. @lukes_maxing" width="720" height="432" loading="lazy" decoding="async">
@@ -9955,6 +9977,7 @@ document.addEventListener("click", function(e){
 (function(){
   document.addEventListener("click",function(e){
     var f=e.target.closest&&e.target.closest(".sf-flip"); if(!f) return;
+    if(window.PareCardZoom){ window.PareCardZoom.open(f); return; }
     if(!f.classList.contains("manual")){ f.classList.add("manual"); void f.offsetWidth; f.classList.add("show-back"); }
     else f.classList.toggle("show-back");
   });
@@ -9964,6 +9987,58 @@ document.addEventListener("click", function(e){
     var v=document.getElementById("view-"+id); if(v && !v.querySelector(".site-foot")) v.appendChild(src.cloneNode(true));
   });
   var done=document.getElementById("hireDone"); if(done && !done.querySelector(".site-foot")) done.appendChild(src.cloneNode(true));
+})();
+</script>
+<script>/* PareCardZoom: footer networking card opens big; tap flips; X, Esc or the backdrop closes */
+(function(){
+  var el=null, card=null, src=null, lastFocus=null;
+  function build(){
+    el=document.createElement("div"); el.className="cz"; el.setAttribute("role","dialog"); el.setAttribute("aria-modal","true"); el.setAttribute("aria-label","Luke's networking card");
+    el.innerHTML='<button type="button" class="cz-x" aria-label="Close">&times;</button>'+
+      '<button type="button" class="cz-card" aria-label="Flip the card"><span class="cz-in">'+
+      '<img class="cz-face" alt="" width="1440" height="864" decoding="async">'+
+      '<img class="cz-face cz-back" alt="" width="1440" height="864" decoding="async"></span></button>'+
+      '<p class="cz-hint">Tap the card to flip it. <b>Ask Luke for one!</b></p>';
+    document.body.appendChild(el);
+    card=el.querySelector(".cz-card");
+    el.querySelector(".cz-x").addEventListener("click",close);
+    card.addEventListener("click",function(e){ e.stopPropagation(); el.classList.toggle("back"); });
+    el.addEventListener("click",function(e){ if(e.target===el) close(); });
+    document.addEventListener("keydown",function(e){ if(!el.classList.contains("on")) return; if(e.key==="Escape") close(); });
+  }
+  function fromRect(){
+    if(!src) return "";
+    var a=src.getBoundingClientRect(), b=card.getBoundingClientRect();
+    if(!a.width||!b.width) return "";
+    var s=a.width/b.width, dx=(a.left+a.width/2)-(b.left+b.width/2), dy=(a.top+a.height/2)-(b.top+b.height/2);
+    return "translate("+dx+"px,"+dy+"px) scale("+s+")";
+  }
+  function open(f){
+    if(!el) build();
+    src=f; lastFocus=document.activeElement;
+    var imgs=f.querySelectorAll("img"), z=el.querySelectorAll(".cz-face");
+    z[0].src="img/luke-card-front-lg.webp?v=1"; z[0].alt=imgs[0]?imgs[0].alt:"";
+    z[1].src="img/luke-card-back-lg.webp?v=1"; z[1].alt=imgs[1]?imgs[1].alt:"";
+    el.classList.remove("back");
+    card.style.transition="none"; el.style.visibility="visible";
+    card.style.transform=fromRect(); void card.offsetWidth;
+    card.style.transition=""; el.style.visibility="";
+    el.classList.add("on"); card.style.transform="";
+    f.style.visibility="hidden";
+    document.documentElement.classList.add("cz-lock");
+    card.focus({preventScroll:true});
+  }
+  function close(){
+    if(!el||!el.classList.contains("on")) return;
+    el.classList.remove("back");
+    card.style.transform=fromRect();
+    el.classList.remove("on");
+    document.documentElement.classList.remove("cz-lock");
+    var was=src;
+    setTimeout(function(){ if(!el.classList.contains("on")) card.style.transform=""; if(was) was.style.visibility=""; },450);
+    if(lastFocus&&lastFocus.focus) try{ lastFocus.focus({preventScroll:true}); }catch(e){}
+  }
+  window.PareCardZoom={open:open,close:close};
 })();
 </script>
 </body>
